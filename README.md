@@ -1,7 +1,7 @@
 textract
 ========
 
-A text extraction node module.
+A fork of text extraction node module with additional fixes.
 
 [![NPM](https://nodei.co/npm/textract.png?compact=true)](https://nodei.co/npm/textract/)
 [![NPM](https://nodei.co/npm-dl/textract.png)](https://nodei.co/npm/textract/)
