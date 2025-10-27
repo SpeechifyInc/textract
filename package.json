@@ -1,6 +1,6 @@
 {
   "name": "@speechifyinc/textract",
-  "version": "2.5.1",
+  "version": "2.5.2",
   "publishConfig": {
     "access": "restricted",
     "registry": "https://npm.pkg.github.com"
@@ -86,5 +86,6 @@
   "bin": {
     "textract": "./bin/textract"
   },
-  "main": "./lib/index"
+  "main": "./lib/index",
+  "types": "./lib/index.d.ts"
 }
