@@ -1,6 +1,6 @@
-const path = require('node:path');
-const fs = require('node:fs');
 import { describe, it, expect } from 'vitest';
+const fs = require('node:fs');
+const path = require('node:path');
 const textract = require('../lib');
 
 const {
@@ -11,12 +11,12 @@ const {
   fromUrl,
 } = textract;
 
-describe('textract', function () {
-  it('should be an object', function () {
+describe('textract', () => {
+  it('should be an object', () => {
     expect(textract).to.be.an.instanceof(Object);
   });
 
-  it('properties should be functions', function () {
+  it('properties should be functions', () => {
     expect(typeof fromFileWithPath).to.eql('function');
     expect(typeof fromFileWithMimeAndPath).to.eql('function');
     expect(typeof fromBufferWithName).to.eql('function');
@@ -24,22 +24,22 @@ describe('textract', function () {
     expect(typeof fromUrl).to.eql('function');
   });
 
-  describe('will error out gracefully', function () {
-    it('when file does not exist', function () {
-      var filePath = 'foo/bar/foo.txt';
-      fromFileWithPath(filePath, function (error, text) {
+  describe('will error out gracefully', () => {
+    it('when file does not exist', () => {
+      const filePath = 'foo/bar/foo.txt';
+      fromFileWithPath(filePath, (error, text) => {
         expect(text).to.be.null;
         expect(error).not.toBeNull();
         expect(error).to.have.property('message');
         expect(error.message).to.eql(
-          'File at path [[ ' + filePath + ' ]] does not exist.',
+          `File at path [[ ${  filePath  } ]] does not exist.`,
         );
       });
     });
 
-    it('when file has unregistered mime type', function (done) {
-      var filePath = path.join(__dirname, 'files', 'MxAgCrProd.ppt');
-      fromFileWithPath(filePath, function (error, text) {
+    it('when file has unregistered mime type', (done) => {
+      const filePath = path.join(__dirname, 'files', 'MxAgCrProd.ppt');
+      fromFileWithPath(filePath, (error, text) => {
         expect(text).to.be.null;
         expect(error).to.be.an('object');
         expect(error.message).to.be.an('string');
@@ -52,12 +52,12 @@ describe('textract', function () {
     });
   });
 
-  it('can handle types of varying cases', function (done) {
-    var filePath = path.join(__dirname, 'files', 'new docx(1).docx');
+  it('can handle types of varying cases', (done) => {
+    const filePath = path.join(__dirname, 'files', 'new docx(1).docx');
     fromFileWithMimeAndPath(
       'appLication/vnd.openXMLformats-Officedocument.WordProcessingml.Document',
       filePath,
-      function (error, text) {
+      (error, text) => {
         expect(error).to.be.null;
         expect(text).to.be.a('string');
         expect(text.substring(0, 38)).to.eql(
@@ -68,9 +68,9 @@ describe('textract', function () {
     );
   });
 
-  it('can handle a text file with parens', function (done) {
-    var filePath = path.join(__dirname, 'files', 'new doc(1).txt');
-    fromFileWithPath(filePath, function (error, text) {
+  it('can handle a text file with parens', (done) => {
+    const filePath = path.join(__dirname, 'files', 'new doc(1).txt');
+    fromFileWithPath(filePath, (error, text) => {
       expect(error).to.be.null;
       expect(text).to.be.a('string');
       expect(text).to.eql('text!!!');
@@ -78,9 +78,9 @@ describe('textract', function () {
     });
   });
 
-  it('can handle a docx file with parens', function (done) {
-    var filePath = path.join(__dirname, 'files', 'new docx(1).docx');
-    fromFileWithPath(filePath, function (error, text) {
+  it('can handle a docx file with parens', (done) => {
+    const filePath = path.join(__dirname, 'files', 'new docx(1).docx');
+    fromFileWithPath(filePath, (error, text) => {
       expect(error).to.be.null;
       expect(text).to.be.a('string');
       expect(text.substring(0, 20)).to.eql('This is a test Just ');
@@ -88,9 +88,9 @@ describe('textract', function () {
     });
   });
 
-  it('can handle cyrillic', function (done) {
-    var filePath = path.join(__dirname, 'files', 'cyrillic.docx');
-    fromFileWithPath(filePath, function (error, text) {
+  it('can handle cyrillic', (done) => {
+    const filePath = path.join(__dirname, 'files', 'cyrillic.docx');
+    fromFileWithPath(filePath, (error, text) => {
       expect(error).to.be.null;
       expect(text).to.be.a('string');
       expect(text.substring(0, 100)).to.eql(
@@ -100,9 +100,9 @@ describe('textract', function () {
     });
   });
 
-  it('can handle special chinese characters', function (done) {
-    var filePath = path.join(__dirname, 'files', 'chi.txt');
-    fromFileWithPath(filePath, function (error, text) {
+  it('can handle special chinese characters', (done) => {
+    const filePath = path.join(__dirname, 'files', 'chi.txt');
+    fromFileWithPath(filePath, (error, text) => {
       expect(error).to.be.null;
       expect(text).to.be.a('string');
       expect(text.substring(0, 100)).to.eql('，卧虎藏龙卧');
@@ -110,10 +110,10 @@ describe('textract', function () {
     });
   });
 
-  describe('with multi line files', function () {
-    it('strips line breaks', function (done) {
-      var filePath = path.join(__dirname, 'files', 'multi-line.txt');
-      fromFileWithPath(filePath, function (error, text) {
+  describe('with multi line files', () => {
+    it('strips line breaks', (done) => {
+      const filePath = path.join(__dirname, 'files', 'multi-line.txt');
+      fromFileWithPath(filePath, (error, text) => {
         expect(error).to.be.null;
         expect(text).to.be.a('string');
         expect(text).to.eql(
@@ -123,12 +123,12 @@ describe('textract', function () {
       });
     });
 
-    it('does not strip line breaks when configured as such', function (done) {
-      var filePath = path.join(__dirname, 'files', 'multi-line.txt');
+    it('does not strip line breaks when configured as such', (done) => {
+      const filePath = path.join(__dirname, 'files', 'multi-line.txt');
       fromFileWithPath(
         filePath,
         { preserveLineBreaks: true },
-        function (error, text) {
+        (error, text) => {
           expect(error).to.be.null;
           expect(text).to.be.a('string');
           expect(text).to.eql(
@@ -139,12 +139,12 @@ describe('textract', function () {
       );
     });
 
-    it('will only strip single line breaks when requested', function (done) {
-      var filePath = path.join(__dirname, 'files', 'line-breaks.txt');
+    it('will only strip single line breaks when requested', (done) => {
+      const filePath = path.join(__dirname, 'files', 'line-breaks.txt');
       fromFileWithPath(
         filePath,
         { preserveOnlyMultipleLineBreaks: true },
-        function (error, text) {
+        (error, text) => {
           expect(error).to.be.null;
           expect(text).to.be.a('string');
           expect(text).to.eql(
@@ -156,8 +156,8 @@ describe('textract', function () {
     });
   });
 
-  describe('can handle all the different API variations', function () {
-    var test = function (done) {
+  describe('can handle all the different API variations', () => {
+    const test = function (done) {
       return function (error, text) {
         expect(error).to.be.null;
         expect(text).to.be.a('string');
@@ -166,18 +166,18 @@ describe('textract', function () {
       };
     };
 
-    it('fromFileWithPath(filePath, callback) ', function (done) {
-      var filePath = path.join(__dirname, 'files', 'new docx(1).docx');
+    it('fromFileWithPath(filePath, callback) ', (done) => {
+      const filePath = path.join(__dirname, 'files', 'new docx(1).docx');
       fromFileWithPath(filePath, test(done));
     });
 
-    it('fromFileWithPath(filePath, options, callback) ', function (done) {
-      var filePath = path.join(__dirname, 'files', 'new docx(1).docx');
+    it('fromFileWithPath(filePath, options, callback) ', (done) => {
+      const filePath = path.join(__dirname, 'files', 'new docx(1).docx');
       fromFileWithPath(filePath, {}, test(done));
     });
 
-    it('fromFileWithMimeAndPath(mimeType, filePath, callback)', function (done) {
-      var filePath = path.join(__dirname, 'files', 'new docx(1).docx');
+    it('fromFileWithMimeAndPath(mimeType, filePath, callback)', (done) => {
+      const filePath = path.join(__dirname, 'files', 'new docx(1).docx');
       fromFileWithMimeAndPath(
         'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
         filePath,
@@ -185,8 +185,8 @@ describe('textract', function () {
       );
     });
 
-    it('fromFileWithMimeAndPath(mimeType, filePath, options, callback)', function (done) {
-      var filePath = path.join(__dirname, 'files', 'new docx(1).docx');
+    it('fromFileWithMimeAndPath(mimeType, filePath, options, callback)', (done) => {
+      const filePath = path.join(__dirname, 'files', 'new docx(1).docx');
       fromFileWithMimeAndPath(
         'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
         filePath,
@@ -195,8 +195,8 @@ describe('textract', function () {
       );
     });
 
-    it('fromBufferWithMime(mimeType, buffer, options, callback)', function (done) {
-      var filePath = path.join(__dirname, 'files', 'new docx(1).docx'),
+    it('fromBufferWithMime(mimeType, buffer, options, callback)', (done) => {
+      const filePath = path.join(__dirname, 'files', 'new docx(1).docx'),
         textBuff = fs.readFileSync(filePath);
       fromBufferWithMime(
         'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
@@ -206,8 +206,8 @@ describe('textract', function () {
       );
     });
 
-    it('fromBufferWithMime(mimeType, buffer, callback)', function (done) {
-      var filePath = path.join(__dirname, 'files', 'new docx(1).docx'),
+    it('fromBufferWithMime(mimeType, buffer, callback)', (done) => {
+      const filePath = path.join(__dirname, 'files', 'new docx(1).docx'),
         textBuff = fs.readFileSync(filePath);
       fromBufferWithMime(
         'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
@@ -216,26 +216,26 @@ describe('textract', function () {
       );
     });
 
-    it('fromBufferWithName(fileName, buffer, options, callback)', function (done) {
-      var filePath = path.join(__dirname, 'files', 'new docx(1).docx'),
+    it('fromBufferWithName(fileName, buffer, options, callback)', (done) => {
+      const filePath = path.join(__dirname, 'files', 'new docx(1).docx'),
         textBuff = fs.readFileSync(filePath);
       fromBufferWithName(filePath, textBuff, {}, test(done));
     });
 
-    it('fromBufferWithName(fileName, buffer, callback)', function (done) {
-      var filePath = path.join(__dirname, 'files', 'new docx(1).docx'),
+    it('fromBufferWithName(fileName, buffer, callback)', (done) => {
+      const filePath = path.join(__dirname, 'files', 'new docx(1).docx'),
         textBuff = fs.readFileSync(filePath);
       fromBufferWithName(filePath, textBuff, test(done));
     });
 
-    it('fromUrl(url, options, callback)', function (done) {
-      var url =
+    it('fromUrl(url, options, callback)', (done) => {
+      const url =
         'https://cdn.rawgit.com/dbashford/textract/master/test/files/new%20docx(1).docx?raw=true';
       fromUrl(url, {}, test(done));
     });
 
-    it('fromUrl1(url,callback)', function (done) {
-      var url =
+    it('fromUrl1(url,callback)', (done) => {
+      const url =
         'https://cdn.rawgit.com/dbashford/textract/master/test/files/new%20docx(1).docx?raw=true';
       fromUrl(url, test(done));
     });

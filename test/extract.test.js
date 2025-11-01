@@ -1,16 +1,17 @@
-const path = require('node:path');
 import { describe, it, expect } from 'vitest';
+
+const path = require('node:path');
 const { fromFileWithPath } = require('../lib');
 
-describe('textract', function () {
-  var test;
+describe('textract', () => {
+  let test;
 
-  describe('for .csv files ', function () {
+  describe('for .csv files ', () => {
     // is some oddness testing html files, not sure what the deal is
 
-    it('from csv files', function (done) {
-      var docPath = path.join(__dirname, 'files', 'csv.csv');
-      fromFileWithPath(docPath, function (error, text) {
+    it('from csv files', (done) => {
+      const docPath = path.join(__dirname, 'files', 'csv.csv');
+      fromFileWithPath(docPath, (error, text) => {
         expect(error).to.be.null;
         expect(text).to.be.an('string');
         expect(text.length).to.eql(18);
@@ -19,12 +20,12 @@ describe('textract', function () {
       });
     });
 
-    it('it will extract text from csv files and insert newlines in the right places', function (done) {
-      var docPath = path.join(__dirname, 'files', 'csv.csv');
+    it('it will extract text from csv files and insert newlines in the right places', (done) => {
+      const docPath = path.join(__dirname, 'files', 'csv.csv');
       fromFileWithPath(
         docPath,
         { preserveLineBreaks: true },
-        function (error, text) {
+        (error, text) => {
           expect(error).to.be.null;
           expect(text).to.be.an('string');
           expect(text.length).to.eql(18);
@@ -35,15 +36,15 @@ describe('textract', function () {
     });
   });
 
-  describe('for .html files', function () {
+  describe('for .html files', () => {
     // is some oddness testing html files, not sure what the deal is
 
-    it('will extract text from html files and insert newlines in the right places', function (done) {
-      var docPath = path.join(__dirname, 'files', 'test.html');
+    it('will extract text from html files and insert newlines in the right places', (done) => {
+      const docPath = path.join(__dirname, 'files', 'test.html');
       fromFileWithPath(
         docPath,
         { preserveLineBreaks: true },
-        function (error, text) {
+        (error, text) => {
           expect(error).to.be.null;
           expect(text).to.be.an('string');
           expect(text.length).to.eql(80);
@@ -55,9 +56,9 @@ describe('textract', function () {
       );
     });
 
-    it('will extract text from html files', function (done) {
-      var docPath = path.join(__dirname, 'files', 'Google.html');
-      fromFileWithPath(docPath, function (error, text) {
+    it('will extract text from html files', (done) => {
+      const docPath = path.join(__dirname, 'files', 'Google.html');
+      fromFileWithPath(docPath, (error, text) => {
         expect(error).to.be.null;
         expect(text).to.be.an('string');
         expect(text.length).to.eql(869);
@@ -68,12 +69,12 @@ describe('textract', function () {
       });
     });
 
-    it('will extract text from html files and preserve alt text when asked', function (done) {
-      var docPath = path.join(__dirname, 'files', 'test-alt.html');
+    it('will extract text from html files and preserve alt text when asked', (done) => {
+      const docPath = path.join(__dirname, 'files', 'test-alt.html');
       fromFileWithPath(
         docPath,
         { includeAltText: true },
-        function (error, text) {
+        (error, text) => {
           expect(error).to.be.null;
           expect(text).to.be.an('string');
           expect(text.length).to.eql(46);
@@ -84,10 +85,10 @@ describe('textract', function () {
     });
   });
 
-  describe('for .rss files', function () {
-    it('will extract text from rss files', function (done) {
-      var docPath = path.join(__dirname, 'files', 'rss.rss');
-      fromFileWithPath(docPath, function (error, text) {
+  describe('for .rss files', () => {
+    it('will extract text from rss files', (done) => {
+      const docPath = path.join(__dirname, 'files', 'rss.rss');
+      fromFileWithPath(docPath, (error, text) => {
         expect(error).to.be.null;
         expect(text).to.be.an('string');
         expect(text.length).to.eql(5399);
@@ -98,12 +99,12 @@ describe('textract', function () {
       });
     });
 
-    it('will extract text from rss files and preserve line breaks', function (done) {
-      var docPath = path.join(__dirname, 'files', 'rss.rss');
+    it('will extract text from rss files and preserve line breaks', (done) => {
+      const docPath = path.join(__dirname, 'files', 'rss.rss');
       fromFileWithPath(
         docPath,
         { preserveLineBreaks: true },
-        function (error, text) {
+        (error, text) => {
           expect(error).to.be.null;
           expect(text).to.be.an('string');
           expect(text.length).to.eql(5534);
@@ -116,11 +117,11 @@ describe('textract', function () {
     });
   });
 
-  describe('for .epub files', { timeout: 5000 }, function () {
-    it('will extract text from epub files', function (done) {
-      var docPath = path.join(__dirname, 'files', 'Metamorphosis-jackson.epub');
+  describe('for .epub files', { timeout: 5000 }, () => {
+    it('will extract text from epub files', (done) => {
+      const docPath = path.join(__dirname, 'files', 'Metamorphosis-jackson.epub');
 
-      fromFileWithPath(docPath, function (error, text) {
+      fromFileWithPath(docPath, (error, text) => {
         expect(error).to.be.null;
         expect(text).to.be.an('string');
         expect(text.length).to.eql(119329);
@@ -131,13 +132,13 @@ describe('textract', function () {
       });
     });
 
-    it('will extract text from epub files and preserve line breaks', function (done) {
-      var docPath = path.join(__dirname, 'files', 'Metamorphosis-jackson.epub');
+    it('will extract text from epub files and preserve line breaks', (done) => {
+      const docPath = path.join(__dirname, 'files', 'Metamorphosis-jackson.epub');
 
       fromFileWithPath(
         docPath,
         { preserveLineBreaks: true },
-        function (error, text) {
+        (error, text) => {
           expect(error).to.be.null;
           expect(text).to.be.an('string');
           expect(text.length).to.eql(119342);
@@ -150,10 +151,10 @@ describe('textract', function () {
     });
   });
 
-  describe('for .atom files', function () {
-    it('will extract text from atom files', function (done) {
-      var docPath = path.join(__dirname, 'files', 'atom.atom');
-      fromFileWithPath(docPath, function (error, text) {
+  describe('for .atom files', () => {
+    it('will extract text from atom files', (done) => {
+      const docPath = path.join(__dirname, 'files', 'atom.atom');
+      fromFileWithPath(docPath, (error, text) => {
         expect(error).to.be.null;
         expect(text).to.be.an('string');
         expect(text.length).to.eql(26731);
@@ -164,12 +165,12 @@ describe('textract', function () {
       });
     });
 
-    it('will extract text from atom files and preserve line breaks', function (done) {
-      var docPath = path.join(__dirname, 'files', 'atom.atom');
+    it('will extract text from atom files and preserve line breaks', (done) => {
+      const docPath = path.join(__dirname, 'files', 'atom.atom');
       fromFileWithPath(
         docPath,
         { preserveLineBreaks: true },
-        function (error, text) {
+        (error, text) => {
           expect(error).to.be.null;
           expect(text).to.be.an('string');
           expect(text.length).to.eql(27441);
@@ -182,10 +183,10 @@ describe('textract', function () {
     });
   });
 
-  describe('for .rtf files', function () {
-    it('will extract text from rtf files', function (done) {
-      var docPath = path.join(__dirname, 'files', 'sample.rtf');
-      fromFileWithPath(docPath, function (error, text) {
+  describe('for .rtf files', () => {
+    it('will extract text from rtf files', (done) => {
+      const docPath = path.join(__dirname, 'files', 'sample.rtf');
+      fromFileWithPath(docPath, (error, text) => {
         expect(error).to.be.null;
         expect(text).to.be.an('string');
         expect(text.substring(144, 220)).to.eql(
@@ -195,9 +196,9 @@ describe('textract', function () {
       });
     });
 
-    it('will extract when there are spaces in the name', function (done) {
-      var docPath = path.join(__dirname, 'files', 'sample rtf.rtf');
-      fromFileWithPath(docPath, function (error, text) {
+    it('will extract when there are spaces in the name', (done) => {
+      const docPath = path.join(__dirname, 'files', 'sample rtf.rtf');
+      fromFileWithPath(docPath, (error, text) => {
         expect(error).to.be.null;
         expect(text).to.be.an('string');
         expect(text.substring(144, 220)).to.eql(
@@ -207,12 +208,12 @@ describe('textract', function () {
       });
     });
 
-    it('will extract text from actual rtf files with lines left in', function (done) {
-      var docPath = path.join(__dirname, 'files', 'sample.rtf');
+    it('will extract text from actual rtf files with lines left in', (done) => {
+      const docPath = path.join(__dirname, 'files', 'sample.rtf');
       fromFileWithPath(
         docPath,
         { preserveLineBreaks: true },
-        function (error, text) {
+        (error, text) => {
           expect(error).to.be.null;
           expect(text).to.be.an('string');
           expect(text.substring(144, 230)).to.eql(
@@ -224,10 +225,10 @@ describe('textract', function () {
     });
   });
 
-  describe('for .doc files', function () {
-    it('will extract text from actual doc files', function (done) {
-      var docPath = path.join(__dirname, 'files', 'doc.doc');
-      fromFileWithPath(docPath, function (error, text) {
+  describe('for .doc files', () => {
+    it('will extract text from actual doc files', (done) => {
+      const docPath = path.join(__dirname, 'files', 'doc.doc');
+      fromFileWithPath(docPath, (error, text) => {
         expect(error).to.be.null;
         expect(text).to.be.an('string');
         expect(text.substring(0, 100)).to.eql(
@@ -237,9 +238,9 @@ describe('textract', function () {
       });
     });
 
-    it('will extract text from actual doc files with spaces in the name', function (done) {
-      var docPath = path.join(__dirname, 'files', 'doc space.doc');
-      fromFileWithPath(docPath, function (error, text) {
+    it('will extract text from actual doc files with spaces in the name', (done) => {
+      const docPath = path.join(__dirname, 'files', 'doc space.doc');
+      fromFileWithPath(docPath, (error, text) => {
         expect(error).to.be.null;
         expect(text).to.be.an('string');
         expect(text.substring(0, 100)).to.eql(
@@ -249,9 +250,9 @@ describe('textract', function () {
       });
     });
 
-    it('will not extract text from text files masquerading as doc files', function (done) {
-      var docPath = path.join(__dirname, 'files', 'notadoc.doc');
-      fromFileWithPath(docPath, function (error, text) {
+    it('will not extract text from text files masquerading as doc files', (done) => {
+      const docPath = path.join(__dirname, 'files', 'notadoc.doc');
+      fromFileWithPath(docPath, (error, text) => {
         expect(text).to.be.null;
         expect(
           error.toString().indexOf('does not appear to really be a .doc file'),
@@ -260,9 +261,9 @@ describe('textract', function () {
       });
     });
 
-    it('will extract text from large .doc', function (done) {
-      var docPath = path.join(__dirname, 'files', 'sample.doc');
-      fromFileWithPath(docPath, function (error, text) {
+    it('will extract text from large .doc', (done) => {
+      const docPath = path.join(__dirname, 'files', 'sample.doc');
+      fromFileWithPath(docPath, (error, text) => {
         expect(error).to.be.null;
         expect(text).to.be.an('string');
         expect(text.length).to.eql(32658);
@@ -270,8 +271,8 @@ describe('textract', function () {
       });
     });
 
-    it('will extract text preserving line breaks without word wrap', function (done) {
-      var docPath = path.join(
+    it('will extract text preserving line breaks without word wrap', (done) => {
+      const docPath = path.join(
         __dirname,
         'files',
         'multiple-long-paragraphs.doc',
@@ -279,7 +280,7 @@ describe('textract', function () {
       fromFileWithPath(
         docPath,
         { preserveLineBreaks: true },
-        function (error, text) {
+        (error, text) => {
           expect(error).to.be.null;
           expect(text.match(/\r\n|\n/g).length).to.eql(21);
           done();
@@ -288,10 +289,10 @@ describe('textract', function () {
     });
   });
 
-  describe('for .xls files', function () {
-    it('will extract text', function (done) {
-      var docPath = path.join(__dirname, 'files', 'test.xls');
-      fromFileWithPath(docPath, function (error, text) {
+  describe('for .xls files', () => {
+    it('will extract text', (done) => {
+      const docPath = path.join(__dirname, 'files', 'test.xls');
+      fromFileWithPath(docPath, (error, text) => {
         expect(error).to.be.null;
         expect(text).to.be.a('string');
         expect(text.substring(0, 20)).to.eql('This,is,a,spreadshee');
@@ -299,9 +300,9 @@ describe('textract', function () {
       });
     });
 
-    it('will extract text from multi-line files', function (done) {
-      var docPath = path.join(__dirname, 'files', 'test-multiline.xls');
-      fromFileWithPath(docPath, function (error, text) {
+    it('will extract text from multi-line files', (done) => {
+      const docPath = path.join(__dirname, 'files', 'test-multiline.xls');
+      fromFileWithPath(docPath, (error, text) => {
         expect(error).to.be.null;
         expect(text).to.be.a('string');
         expect(text.substring(0, 40)).to.eql(
@@ -311,12 +312,12 @@ describe('textract', function () {
       });
     });
 
-    it('will extract text from multi-line files and keep line breaks', function (done) {
-      var docPath = path.join(__dirname, 'files', 'test-multiline.xls');
+    it('will extract text from multi-line files and keep line breaks', (done) => {
+      const docPath = path.join(__dirname, 'files', 'test-multiline.xls');
       fromFileWithPath(
         docPath,
         { preserveLineBreaks: true },
-        function (error, text) {
+        (error, text) => {
           expect(error).to.be.null;
           expect(text).to.be.a('string');
           expect(text.substring(0, 40)).to.eql(
@@ -328,10 +329,10 @@ describe('textract', function () {
     });
   });
 
-  describe('for .xlsx files', function () {
-    it('will extract text and numbers from XLSX files', function (done) {
-      var filePath = path.join(__dirname, 'files', 'pi.xlsx');
-      fromFileWithPath(filePath, function (error, text) {
+  describe('for .xlsx files', () => {
+    it('will extract text and numbers from XLSX files', (done) => {
+      const filePath = path.join(__dirname, 'files', 'pi.xlsx');
+      fromFileWithPath(filePath, (error, text) => {
         expect(error).to.be.null;
         expect(text).to.be.an('string');
         expect(text).to.eql('This is the value of PI:,3.141592 ');
@@ -339,9 +340,9 @@ describe('textract', function () {
       });
     });
 
-    it('will extract text from XLSX files with multiple sheets', function (done) {
-      var filePath = path.join(__dirname, 'files', 'xlsx.xlsx');
-      fromFileWithPath(filePath, function (error, text) {
+    it('will extract text from XLSX files with multiple sheets', (done) => {
+      const filePath = path.join(__dirname, 'files', 'xlsx.xlsx');
+      fromFileWithPath(filePath, (error, text) => {
         expect(error).to.be.null;
         expect(text).to.be.an('string');
         expect(text.substring(49, 96)).to.eql(
@@ -351,9 +352,9 @@ describe('textract', function () {
       });
     });
 
-    it('will error when input file is not an actual xlsx file', function (done) {
-      var filePath = path.join(__dirname, 'files', 'notaxlsx.xlsx');
-      fromFileWithPath(filePath, function (error) {
+    it('will error when input file is not an actual xlsx file', (done) => {
+      const filePath = path.join(__dirname, 'files', 'notaxlsx.xlsx');
+      fromFileWithPath(filePath, (error) => {
         expect(error).to.be.an('object');
         expect(error.message).to.be.a('string');
         expect(error.message.substring(0, 43)).to.eql(
@@ -364,10 +365,10 @@ describe('textract', function () {
     });
   });
 
-  describe('for .pdf files', function () {
-    it('will extract text from actual pdf files', function (done) {
-      var filePath = path.join(__dirname, 'files', 'pdf.pdf');
-      fromFileWithPath(filePath, function (error, text) {
+  describe('for .pdf files', () => {
+    it('will extract text from actual pdf files', (done) => {
+      const filePath = path.join(__dirname, 'files', 'pdf.pdf');
+      fromFileWithPath(filePath, (error, text) => {
         expect(error).to.be.null;
         expect(text).to.be.a('string');
         expect(text).to.eql('This is a test. Please ignore.');
@@ -375,12 +376,12 @@ describe('textract', function () {
       });
     });
 
-    it('will extract pdf text and preserve multiple lines', function (done) {
-      var filePath = path.join(__dirname, 'files', 'testpdf-multiline.pdf');
+    it('will extract pdf text and preserve multiple lines', (done) => {
+      const filePath = path.join(__dirname, 'files', 'testpdf-multiline.pdf');
       fromFileWithPath(
         filePath,
         { preserveLineBreaks: true },
-        function (error, text) {
+        (error, text) => {
           expect(error).to.be.null;
           expect(text).to.be.a('string');
           expect(text).to.eql(
@@ -391,9 +392,9 @@ describe('textract', function () {
       );
     });
 
-    it("will error out when pdf file isn't actually a pdf", function (done) {
-      var filePath = path.join(__dirname, 'files', 'notapdf.pdf');
-      fromFileWithPath(filePath, function (error, text) {
+    it("will error out when pdf file isn't actually a pdf", (done) => {
+      const filePath = path.join(__dirname, 'files', 'notapdf.pdf');
+      fromFileWithPath(filePath, (error, text) => {
         expect(text).to.be.null;
         expect(error).to.be.an('object');
         expect(error.message).to.be.a('string');
@@ -404,12 +405,12 @@ describe('textract', function () {
       });
     });
 
-    it('will properly handle multiple columns', function (done) {
-      var filePath = path.join(__dirname, 'files', 'two_columns.pdf');
+    it('will properly handle multiple columns', (done) => {
+      const filePath = path.join(__dirname, 'files', 'two_columns.pdf');
       fromFileWithPath(
         filePath,
         { preserveLineBreaks: true },
-        function (error, text) {
+        (error, text) => {
           expect(error).to.be.null;
           expect(text).to.be.a('string');
           expect(
@@ -422,12 +423,12 @@ describe('textract', function () {
       );
     });
 
-    it('can handle files with spaces in the name', function (done) {
-      var filePath = path.join(__dirname, 'files', 'two columns.pdf');
+    it('can handle files with spaces in the name', (done) => {
+      const filePath = path.join(__dirname, 'files', 'two columns.pdf');
       fromFileWithPath(
         filePath,
         { preserveLineBreaks: true },
-        function (error, text) {
+        (error, text) => {
           expect(error).to.be.null;
           expect(text).to.be.a('string');
           expect(
@@ -440,8 +441,8 @@ describe('textract', function () {
       );
     });
 
-    it('can handle manage PDFs with passwords', function (done) {
-      var filePath = path.join(
+    it('can handle manage PDFs with passwords', (done) => {
+      const filePath = path.join(
         __dirname,
         'files',
         'pdf-example-password.original.pdf',
@@ -449,7 +450,7 @@ describe('textract', function () {
       fromFileWithPath(
         filePath,
         { pdftotextOptions: { userPassword: 'test' } },
-        function (error, text) {
+        (error, text) => {
           expect(error).to.be.null;
           expect(text).to.be.a('string');
           expect(text.substring(0, 200)).to.eql(
@@ -460,9 +461,9 @@ describe('textract', function () {
       );
     });
 
-    it('can handle manage PDFS with full-width Japanese characters', function (done) {
-      var filePath = path.join(__dirname, 'files', 'full-width-j.pdf');
-      fromFileWithPath(filePath, function (error, text) {
+    it('can handle manage PDFS with full-width Japanese characters', (done) => {
+      const filePath = path.join(__dirname, 'files', 'full-width-j.pdf');
+      fromFileWithPath(filePath, (error, text) => {
         expect(error).to.be.null;
         expect(text).to.be.a('string');
         expect(text.replace(/ /g, '').substring(2685, 2900)).to.eql(
@@ -483,10 +484,10 @@ describe('textract', function () {
     // });
   });
 
-  describe('for .docx files', function () {
-    it('will extract text from actual docx files', function (done) {
-      var filePath = path.join(__dirname, 'files', 'docx.docx');
-      fromFileWithPath(filePath, function (error, text) {
+  describe('for .docx files', () => {
+    it('will extract text from actual docx files', (done) => {
+      const filePath = path.join(__dirname, 'files', 'docx.docx');
+      fromFileWithPath(filePath, (error, text) => {
         expect(error).to.be.null;
         expect(text).to.be.a('string');
         expect(text.substring(0, 20)).to.eql('This is a test Just ');
@@ -494,12 +495,12 @@ describe('textract', function () {
       });
     });
 
-    it('will extract text from actual docx files and preserve line breaks', function (done) {
-      var filePath = path.join(__dirname, 'files', 'docx.docx');
+    it('will extract text from actual docx files and preserve line breaks', (done) => {
+      const filePath = path.join(__dirname, 'files', 'docx.docx');
       fromFileWithPath(
         filePath,
         { preserveLineBreaks: true },
-        function (error, text) {
+        (error, text) => {
           expect(error).to.be.null;
           expect(text).to.be.a('string');
           expect(text.substring(20, 40)).to.eql('so you know:\nLorem i');
@@ -508,12 +509,12 @@ describe('textract', function () {
       );
     });
 
-    it('will extract text from actual docx files and preserve line breaks [line-breaks.docx]', function (done) {
-      var filePath = path.join(__dirname, 'files', 'line-breaks.docx');
+    it('will extract text from actual docx files and preserve line breaks [line-breaks.docx]', (done) => {
+      const filePath = path.join(__dirname, 'files', 'line-breaks.docx');
       fromFileWithPath(
         filePath,
         { preserveLineBreaks: true },
-        function (error, text) {
+        (error, text) => {
           expect(error).to.be.null;
           expect(text).to.be.a('string');
           expect(text).to.eql(
@@ -524,9 +525,9 @@ describe('textract', function () {
       );
     });
 
-    it("will error out when docx file isn't actually a docx", function (done) {
-      var filePath = path.join(__dirname, 'files', 'notadocx.docx');
-      fromFileWithPath(filePath, function (error, text) {
+    it("will error out when docx file isn't actually a docx", (done) => {
+      const filePath = path.join(__dirname, 'files', 'notadocx.docx');
+      fromFileWithPath(filePath, (error, text) => {
         expect(text).to.be.null;
         expect(error).to.be.an('object');
         expect(error.message).to.be.a('string');
@@ -537,9 +538,9 @@ describe('textract', function () {
       });
     });
 
-    it('will not extract smashed together text', function (done) {
-      var filePath = path.join(__dirname, 'files', 'testresume.docx');
-      fromFileWithPath(filePath, function (error, text) {
+    it('will not extract smashed together text', (done) => {
+      const filePath = path.join(__dirname, 'files', 'testresume.docx');
+      fromFileWithPath(filePath, (error, text) => {
         expect(error).to.be.null;
         expect(text).to.be.a('string');
         expect(text.substring(0, 31)).to.eql('Karol Miner 336 W. Chugalug Way');
@@ -547,9 +548,9 @@ describe('textract', function () {
       });
     });
 
-    it('can handle funky formatting', function (done) {
-      var filePath = path.join(__dirname, 'files', 'Untitleddocument.docx');
-      fromFileWithPath(filePath, function (error, text) {
+    it('can handle funky formatting', (done) => {
+      const filePath = path.join(__dirname, 'files', 'Untitleddocument.docx');
+      fromFileWithPath(filePath, (error, text) => {
         expect(error).to.be.null;
         expect(text).to.be.a('string');
         expect(text).to.eql(
@@ -559,9 +560,9 @@ describe('textract', function () {
       });
     });
 
-    it('can handle a huge docx', function (done) {
-      var filePath = path.join(__dirname, 'files', 'LargeLorem.docx');
-      fromFileWithPath(filePath, function (error, text) {
+    it('can handle a huge docx', (done) => {
+      const filePath = path.join(__dirname, 'files', 'LargeLorem.docx');
+      fromFileWithPath(filePath, (error, text) => {
         expect(error).to.be.null;
         expect(text).to.be.a('string');
         expect(text.substring(0, 100)).to.eql(
@@ -571,9 +572,9 @@ describe('textract', function () {
       });
     });
 
-    it('can handle arabic', function (done) {
-      var filePath = path.join(__dirname, 'files', 'arabic.docx');
-      fromFileWithPath(filePath, function (error, text) {
+    it('can handle arabic', (done) => {
+      const filePath = path.join(__dirname, 'files', 'arabic.docx');
+      fromFileWithPath(filePath, (error, text) => {
         expect(error).to.be.null;
         expect(text).to.be.a('string');
         expect(text.substring(0, 100)).to.eql(
@@ -584,10 +585,10 @@ describe('textract', function () {
     });
   });
 
-  describe('for text/* files', function () {
-    it('will extract text from specifically a .txt file', function (done) {
-      var filePath = path.join(__dirname, 'files', 'txt.txt');
-      fromFileWithPath(filePath, function (error, text) {
+  describe('for text/* files', () => {
+    it('will extract text from specifically a .txt file', (done) => {
+      const filePath = path.join(__dirname, 'files', 'txt.txt');
+      fromFileWithPath(filePath, (error, text) => {
         expect(error).to.be.null;
         expect(text).to.be.a('string');
         expect(text).to.eql('This is a plain old text file.');
@@ -595,9 +596,9 @@ describe('textract', function () {
       });
     });
 
-    it('will extract text from specifically a non utf8 .txt file', function (done) {
-      var filePath = path.join(__dirname, 'files', 'non-utf8.txt');
-      fromFileWithPath(filePath, function (error, text) {
+    it('will extract text from specifically a non utf8 .txt file', (done) => {
+      const filePath = path.join(__dirname, 'files', 'non-utf8.txt');
+      fromFileWithPath(filePath, (error, text) => {
         expect(error).to.be.null;
         expect(text).to.be.a('string');
         expect(text).to.eql('これは非UTF8 テキストファイルです ');
@@ -605,9 +606,9 @@ describe('textract', function () {
       });
     });
 
-    it('will error when .txt file encoding cannot be detected', function (done) {
-      var filePath = path.join(__dirname, 'files', 'unknown-encoding.txt');
-      fromFileWithPath(filePath, function (error) {
+    it('will error when .txt file encoding cannot be detected', (done) => {
+      const filePath = path.join(__dirname, 'files', 'unknown-encoding.txt');
+      fromFileWithPath(filePath, (error) => {
         expect(error).to.be.an('object');
         expect(error.message).to.be.a('string');
         expect(error.message).to.eql(
@@ -617,9 +618,9 @@ describe('textract', function () {
       });
     });
 
-    it('will extract text specifically from a .css file', function (done) {
-      var filePath = path.join(__dirname, 'files', 'css.css');
-      fromFileWithPath(filePath, function (error, text) {
+    it('will extract text specifically from a .css file', (done) => {
+      const filePath = path.join(__dirname, 'files', 'css.css');
+      fromFileWithPath(filePath, (error, text) => {
         expect(error).to.be.null;
         expect(text).to.be.a('string');
         expect(text).to.eql('.foo {color:red}');
@@ -627,9 +628,9 @@ describe('textract', function () {
       });
     });
 
-    it('will extract text specifically from a .js file', function (done) {
-      var filePath = path.join(__dirname, 'files', 'js.js');
-      fromFileWithPath(filePath, function (error, text) {
+    it('will extract text specifically from a .js file', (done) => {
+      const filePath = path.join(__dirname, 'files', 'js.js');
+      fromFileWithPath(filePath, (error, text) => {
         expect(error).to.be.null;
         expect(text).to.be.a('string');
         expect(text).to.eql('console.log("javascript is cooler than you")');
@@ -637,9 +638,9 @@ describe('textract', function () {
       });
     });
 
-    it('will remove extraneous white space from a .txt file', function (done) {
-      var filePath = path.join(__dirname, 'files', 'spacey.txt');
-      fromFileWithPath(filePath, function (error, text) {
+    it('will remove extraneous white space from a .txt file', (done) => {
+      const filePath = path.join(__dirname, 'files', 'spacey.txt');
+      fromFileWithPath(filePath, (error, text) => {
         expect(error).to.be.null;
         expect(text).to.be.a('string');
         expect(text).to.eql('this has lots of space');
@@ -647,9 +648,9 @@ describe('textract', function () {
       });
     });
 
-    it('will not remove fancy quotes from a .txt file', function (done) {
-      var filePath = path.join(__dirname, 'files', 'fancyquote.txt');
-      fromFileWithPath(filePath, function (error, text) {
+    it('will not remove fancy quotes from a .txt file', (done) => {
+      const filePath = path.join(__dirname, 'files', 'fancyquote.txt');
+      fromFileWithPath(filePath, (error, text) => {
         expect(error).to.be.null;
         expect(text).to.be.a('string');
         expect(text).to.eql('this has "fancy" quotes');
@@ -658,13 +659,13 @@ describe('textract', function () {
     });
   });
 
-  describe('for .dxf files', function () {
-    it('will extract text from actual dxf files', function (done) {
-      var filePath = path.join(__dirname, 'files', 'dxf.dxf');
-      fromFileWithPath(filePath, function (error, text) {
+  describe('for .dxf files', () => {
+    it('will extract text from actual dxf files', (done) => {
+      const filePath = path.join(__dirname, 'files', 'dxf.dxf');
+      fromFileWithPath(filePath, (error, text) => {
         expect(error).to.be.null;
         expect(text).to.be.an('string');
-        // eslint-disable-next-line no-useless-escape
+         
         expect(text).to.eql(
           ' PART: FILE: {\fTimes New Roman|b0|i0|c0|p18;(800) 433-1119} {\fTimes New Roman|b0|i0|c0|p18;Barium Springs, NC 28010} {\fTimes New Roman|b0|i0|c0|p18;MultiDrain Systems, Inc.} {\fTimes New Roman|b0|i0|c0|p18;Manufacturers of MultiDrain & EconoDrain } to others for manufacturing or for any other purpose except as specifically authorized in writing by MultiDrain Systems, Inc. Proprietary rights of MultiDrain Systems, Inc. are included in the information disclosed herein. The recipient, by accepting this document, agrees that neither this document nor the information disclosed herein nor any part thereof shall be copied, reproduced or transferred 0 2" 4" 6" 8" 12" 16" GRAPHIC SCALE BAR A1;T A1;T A1;T A1;6.1" 155mm A1;T A1;T A1;4.9" 124mm A1;19.6" 497mm FRAME AND GRATE LENGTH A1;5.5" 140mm %%UCROSS SECTIONAL VIEW SOIL SUBGRADE CONCRETE THICKNESS AND REINFORCEMENT PER STRUCTURAL ENGINEER S SPECIFICATION FOR THE APPLICATION FLOOR SLAB THICKNESS, OR 4" MIN. [100mm], OR SPECIFICATION (WHICHEVER IS GREATER) T = MONOLITHIC CONCRETE POUR (ACCEPTABLE) EXPANSION JOINT BOTH SIDES (PREFERRED) LOCK DOWN BOLT LOCK TOGGLE ANCHOR BOLT SEE ABOVE FOR ACTUAL FRAME & GRATE SECTIONS %%UPLAN %%USECTION 512AF %%UPLAN %%USECTION 513AF 514AF %%UPLAN %%USECTION 515AF %%UPLAN %%USECTION ANCHOR RIB INDEPENDENTLY ANCHORED FRAME ALFA CHANNEL A1;502 GRATE 510AF ANCHOR FRAME 503 GRATE 510AF ANCHOR FRAME 504 GRATE 505 GRATE FRAME AND GRATE ADD 1.2" [31mm] TO OVERALL DEPTH OF CHANNEL LNOTE: GRATE WIDTH FRAME WIDTH AC-2510AF-00 2512AF 2513AF 2514AF 2515AF ALFA CHANNEL SYSTEM DUCTILE IRON FRAME & GRATES PRODUCT DRAWING 2006 MultiDrain Systems, Inc. ',
         );
@@ -672,9 +673,9 @@ describe('textract', function () {
       });
     });
 
-    it('will error when input file is not an actual dxf file', function (done) {
-      var filePath = path.join(__dirname, 'files', 'notadxf.dxf');
-      fromFileWithPath(filePath, function (error) {
+    it('will error when input file is not an actual dxf file', (done) => {
+      const filePath = path.join(__dirname, 'files', 'notadxf.dxf');
+      fromFileWithPath(filePath, (error) => {
         expect(error).to.be.an('object');
         expect(error.message).to.be.a('string');
         expect(error.message.substring(0, 40)).to.eql(
@@ -685,10 +686,10 @@ describe('textract', function () {
     });
   });
 
-  describe('for .pptx files', function () {
-    it('will extract text PPTX files', function (done) {
-      var filePath = path.join(__dirname, 'files', 'ppt.pptx');
-      fromFileWithPath(filePath, function (error, text) {
+  describe('for .pptx files', () => {
+    it('will extract text PPTX files', (done) => {
+      const filePath = path.join(__dirname, 'files', 'ppt.pptx');
+      fromFileWithPath(filePath, (error, text) => {
         expect(error).to.be.null;
         expect(text).to.be.an('string');
         expect(text.substring(55, 96)).to.eql(
@@ -698,9 +699,9 @@ describe('textract', function () {
       });
     });
 
-    it('will extract text PPTX files with notes', function (done) {
-      var filePath = path.join(__dirname, 'files', 'PrezoWithNotes.pptx');
-      fromFileWithPath(filePath, function (error, text) {
+    it('will extract text PPTX files with notes', (done) => {
+      const filePath = path.join(__dirname, 'files', 'PrezoWithNotes.pptx');
+      fromFileWithPath(filePath, (error, text) => {
         expect(error).to.be.null;
         expect(text).to.be.an('string');
         expect(text).to.eql('This is a slide These are speaker notes 1 ');
@@ -708,18 +709,16 @@ describe('textract', function () {
       });
     });
 
-    it('will extract slides in the right order', function (done) {
-      var filePath = path.join(__dirname, 'files', 'order.pptx');
+    it('will extract slides in the right order', (done) => {
+      const filePath = path.join(__dirname, 'files', 'order.pptx');
       fromFileWithPath(
         filePath,
         { preserveLineBreaks: true },
-        function (error, text) {
-          var lines, linesAnswer;
+        (error, text) => {
+          let lines, linesAnswer;
           expect(error).to.be.null;
           expect(text).to.be.an('string');
-          lines = text.split('\n').filter(function (line) {
-            return line.match(/^Slide/);
-          });
+          lines = text.split('\n').filter((line) => /^Slide/.exec(line));
 
           linesAnswer = [
             'Slide 1 Title',
@@ -741,12 +740,12 @@ describe('textract', function () {
       );
     });
 
-    it('will keep preserved characters', function (done) {
-      var filePath = path.join(__dirname, 'files', 'order.pptx');
+    it('will keep preserved characters', (done) => {
+      const filePath = path.join(__dirname, 'files', 'order.pptx');
       fromFileWithPath(
         filePath,
         { preserveLineBreaks: true },
-        function (error, text) {
+        (error, text) => {
           expect(error).to.be.null;
           expect(text).to.be.an('string');
           expect(text.indexOf('…')).to.eql(928);
@@ -756,10 +755,10 @@ describe('textract', function () {
     });
   });
 
-  describe('for odt files', function () {
-    it('will extract text from ODT files', function (done) {
-      var filePath = path.join(__dirname, 'files', 'spaced.odt');
-      fromFileWithPath(filePath, function (error, text) {
+  describe('for odt files', () => {
+    it('will extract text from ODT files', (done) => {
+      const filePath = path.join(__dirname, 'files', 'spaced.odt');
+      fromFileWithPath(filePath, (error, text) => {
         expect(error).to.be.null;
         expect(text).to.be.an('string');
         expect(text).to.eql('This Is some text');
@@ -768,10 +767,10 @@ describe('textract', function () {
     });
   });
 
-  describe('for image files', function () {
-    it('will extract text from PNG files', function (done) {
-      var filePath = path.join(__dirname, 'files', 'testphoto.png');
-      fromFileWithPath(filePath, function (error, text) {
+  describe('for image files', () => {
+    it('will extract text from PNG files', (done) => {
+      const filePath = path.join(__dirname, 'files', 'testphoto.png');
+      fromFileWithPath(filePath, (error, text) => {
         expect(error).to.be.null;
         expect(text).to.be.an('string');
         expect(text.substring(0, 100)).to.eql(
@@ -781,9 +780,9 @@ describe('textract', function () {
       });
     });
 
-    it('will extract text from JPG files', function (done) {
-      var filePath = path.join(__dirname, 'files', 'testphoto.jpg');
-      fromFileWithPath(filePath, function (error, text) {
+    it('will extract text from JPG files', (done) => {
+      const filePath = path.join(__dirname, 'files', 'testphoto.jpg');
+      fromFileWithPath(filePath, (error, text) => {
         expect(error).to.be.null;
         expect(text).to.be.an('string');
         expect(text.substring(0, 100)).to.eql(
@@ -793,9 +792,9 @@ describe('textract', function () {
       });
     });
 
-    it('will extract text from GIF files', function (done) {
-      var filePath = path.join(__dirname, 'files', 'testphoto.gif');
-      fromFileWithPath(filePath, function (error, text) {
+    it('will extract text from GIF files', (done) => {
+      const filePath = path.join(__dirname, 'files', 'testphoto.gif');
+      fromFileWithPath(filePath, (error, text) => {
         expect(error).to.be.null;
         expect(text).to.be.an('string');
         expect(text.substring(0, 100)).to.eql(
@@ -809,13 +808,13 @@ describe('textract', function () {
     it(
       'will extract text from language-d files',
       { timeout: 5000 },
-      function (done) {
-        var filePath = path.join(__dirname, 'files', 'chi.png');
+      (done) => {
+        const filePath = path.join(__dirname, 'files', 'chi.png');
 
         fromFileWithPath(
           filePath,
           { tesseract: { lang: 'chi_sim' } },
-          function (error, text) {
+          (error, text) => {
             expect(error).to.be.null;
             expect(text).to.be.an('string');
             expect(text.substring(0, 6)).to.eql('卧虎藏龙，卧');
@@ -826,12 +825,12 @@ describe('textract', function () {
     );
 
     // sudo port install tesseract-eng
-    it('will take tesseract.cmd option', { timeout: 5000 }, function (done) {
-      var filePath = path.join(__dirname, 'files', 'testpng.png');
+    it('will take tesseract.cmd option', { timeout: 5000 }, (done) => {
+      const filePath = path.join(__dirname, 'files', 'testpng.png');
       fromFileWithPath(
         filePath,
         { tesseract: { cmd: '-l eng -psm 3' } },
-        function (error, text) {
+        (error, text) => {
           expect(error).to.be.null;
           expect(text).to.be.an('string');
           expect(text.substring(0, 100)).to.eql(
@@ -844,10 +843,10 @@ describe('textract', function () {
   });
 
   test = function (ext, name, text1, text2) {
-    describe('for ' + ext + ' files', function () {
-      it('will extract text', function (done) {
-        var filePath = path.join(__dirname, 'files', name);
-        fromFileWithPath(filePath, function (error, text) {
+    describe(`for ${  ext  } files`, () => {
+      it('will extract text', (done) => {
+        const filePath = path.join(__dirname, 'files', name);
+        fromFileWithPath(filePath, (error, text) => {
           expect(error).to.be.null;
           expect(text).to.be.an('string');
           expect(text.substring(0, 100)).to.eql(text1);
@@ -855,12 +854,12 @@ describe('textract', function () {
         });
       });
 
-      it('will extract text and preserve line breaks', function (done) {
-        var filePath = path.join(__dirname, 'files', name);
+      it('will extract text and preserve line breaks', (done) => {
+        const filePath = path.join(__dirname, 'files', name);
         fromFileWithPath(
           filePath,
           { preserveLineBreaks: true },
-          function (error, text) {
+          (error, text) => {
             expect(error).to.be.null;
             expect(text).to.be.an('string');
             expect(text.substring(0, 100)).to.eql(text2);

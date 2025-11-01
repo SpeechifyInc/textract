@@ -1,13 +1,14 @@
-const { fromUrl } = require('../lib');
 import { describe, it, expect } from 'vitest';
+
 const nodeUrl = require('node:url');
+const { fromUrl } = require('../lib');
 
-describe('fromUrl tests', { timeout: 3000 }, function () {
-  var test;
+describe('fromUrl tests', { timeout: 3000 }, () => {
+  let test;
 
-  it('will properly extract files from sites with extensions that are misleading', function (done) {
-    var url = 'http://apps.leg.wa.gov/billinfo/summary.aspx?bill=1276';
-    fromUrl(url, function (error, text) {
+  it('will properly extract files from sites with extensions that are misleading', (done) => {
+    const url = 'http://apps.leg.wa.gov/billinfo/summary.aspx?bill=1276';
+    fromUrl(url, (error, text) => {
       expect(error).to.be.null;
       expect(text).to.be.an('string');
       expect(text.substring(0, 100)).to.eql(
@@ -17,11 +18,11 @@ describe('fromUrl tests', { timeout: 3000 }, function () {
     });
   });
 
-  it('take object URL', function (done) {
-    var url =
+  it('take object URL', (done) => {
+    const url =
         'https://cdn.rawgit.com/dbashford/textract/master/test/files/doc.doc?raw=true',
       urlObj = nodeUrl.parse(url);
-    fromUrl(urlObj, function (error, text) {
+    fromUrl(urlObj, (error, text) => {
       expect(error).to.be.null;
       expect(text).to.be.an('string');
       expect(text.substring(0, 100)).to.eql(
@@ -32,12 +33,12 @@ describe('fromUrl tests', { timeout: 3000 }, function () {
   });
 
   test = function (ext, name, _text) {
-    it('will ' + ext + ' files', function (done) {
-      var url =
-        'https://cdn.rawgit.com/dbashford/textract/master/test/files/' +
-        name +
-        '?raw=true';
-      fromUrl(url, function (error, text) {
+    it(`will ${  ext  } files`, (done) => {
+      const url =
+        `https://cdn.rawgit.com/dbashford/textract/master/test/files/${ 
+        name 
+        }?raw=true`;
+      fromUrl(url, (error, text) => {
         expect(error).to.be.null;
         expect(text).to.be.an('string');
         expect(text.substring(0, 100)).to.eql(_text);

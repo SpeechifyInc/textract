@@ -5,6 +5,7 @@
     "target": "ES2022",
     "module": "NodeNext",
     "moduleResolution": "nodenext",
+    "allowJs": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "skipLibCheck": true,
@@ -20,6 +21,8 @@
   },
 
   "include": [
+    "lib/*.ts",
+    "lib/*.js",
     "lib/**/*.ts",
     "bin/**/*.ts",
     "scripts/**/*.ts",

@@ -16,63 +16,63 @@ var test = function () {
 };
 
 var pathTests = function (funct) {
-  it('should return an error 1', function (done) {
+  it('should return an error 1', (done) => {
     funct(test(done));
   });
 
-  it('should return an error 2', function (done) {
+  it('should return an error 2', (done) => {
     funct(false, test(done));
   });
 
-  it('should return an error 3', function (done) {
+  it('should return an error 3', (done) => {
     funct(test(done), false);
   });
 
-  it('should return an error 4', function (done) {
+  it('should return an error 4', (done) => {
     funct('foo', test(done), false);
   });
 
-  it('should return an error 5', function (done) {
+  it('should return an error 5', (done) => {
     funct('foo', {}, false, test(done));
   });
 };
 
 var bufferTests = function (funct) {
-  it('should return an error 1', function (done) {
+  it('should return an error 1', (done) => {
     funct(test(done));
   });
 
-  it('should return an error 2', function (done) {
+  it('should return an error 2', (done) => {
     funct(false, test(done));
   });
 
-  it('should return an error 3', function (done) {
+  it('should return an error 3', (done) => {
     funct(test(done), false);
   });
 
-  it('should return an error 4', function (done) {
+  it('should return an error 4', (done) => {
     funct('foo', test(done), false);
   });
 
-  it('should return an error 5', function (done) {
+  it('should return an error 5', (done) => {
     funct('foo', {}, false, test(done));
   });
 };
 
-describe('when passed incorrect parameters', function () {
-  describe('fromFileWithPath', function () {
+describe('when passed incorrect parameters', () => {
+  describe('fromFileWithPath', () => {
     pathTests(fromFileWithPath);
   });
 
-  describe('fromFileWithMimeAndPath', function () {
+  describe('fromFileWithMimeAndPath', () => {
     pathTests(fromFileWithMimeAndPath);
   });
 
-  describe('fromBufferWithName', function () {
+  describe('fromBufferWithName', () => {
     bufferTests(fromBufferWithName);
   });
 
-  describe('fromBufferWithMime', function () {
+  describe('fromBufferWithMime', () => {
     bufferTests(fromBufferWithMime);
   });
 });

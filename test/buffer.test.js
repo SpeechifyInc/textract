@@ -1,7 +1,8 @@
+import { describe, it, expect } from 'vitest';
+
 const fs = require('node:fs');
 const path = require('node:path');
 const mime = require('mime');
-import { describe, it, expect } from 'vitest';
 const { fromBufferWithName, fromBufferWithMime } = require('../lib');
 
 const TEST_CASES = [
@@ -102,7 +103,7 @@ const TEST_CASES = [
   ],
 ];
 
-describe('textract fromBufferWithName', function () {
+describe('textract fromBufferWithName', () => {
   it.each(TEST_CASES)('will %s files', (ext, name, text) => {
     const docPath = path.join(__dirname, 'files', name);
     const textBuff = fs.readFileSync(docPath);
@@ -114,7 +115,7 @@ describe('textract fromBufferWithName', function () {
   });
 });
 
-describe('textract fromBufferWithMime', function () {
+describe('textract fromBufferWithMime', () => {
   it.each(TEST_CASES)('will %s files', (ext, name, text) => {
     const docPath = path.join(__dirname, 'files', name);
     const textBuff = fs.readFileSync(docPath);
