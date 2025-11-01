@@ -67,20 +67,21 @@
     "yauzl": "2.7.0"
   },
   "devDependencies": {
-    "eslint": "2.11.1",
-    "eslint-config-airbnb": "^9.0.1",
-    "eslint-plugin-import": "^1.7.0 ",
-    "eslint-plugin-jsx-a11y": "^1.2.0",
-    "eslint-plugin-react": "^5.1.1",
+    "@speechifyinc/platform-code-conformity-kit": "^3.0.0",
+    "@types/node": "^22.18.13",
+    "eslint": "^9.21.0",
+    "prettier": "^3.6.2",
     "vitest": "^4.0.6"
   },
   "scripts": {
     "test": "vitest",
-    "lint": "eslint -c .eslintrc.json lib"
+    "lint": "eslint \"{lib,bin,scripts,test}/**/*.{js,ts}\"",
+    "lint:fix": "eslint --fix \"{lib,bin,scripts,test}/**/*.{js,ts}\"",
+    "format": "prettier --write \"{lib,bin,scripts,test}/**/*.{js,ts}\""
   },
   "license": "MIT",
   "engines": {
-    "node": ">=0.8"
+    "node": ">=22"
   },
   "bin": {
     "textract": "./bin/textract"
