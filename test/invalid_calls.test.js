@@ -4,7 +4,6 @@ const {
   fromFileWithMimeAndPath,
   fromBufferWithName,
   fromBufferWithMime,
-  fromUrl,
 } = require("../lib");
 
 var test = function () {

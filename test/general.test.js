@@ -25,16 +25,15 @@ describe("textract", function () {
   });
 
   describe("will error out gracefully", function () {
-    it("when file does not exist", function (done) {
+    it("when file does not exist", function () {
       var filePath = "foo/bar/foo.txt";
       fromFileWithPath(filePath, function (error, text) {
         expect(text).to.be.null;
-        expect(error).to.be.an("object");
-        expect(error.message).to.be.an("string");
+        expect(error).not.toBeNull();
+        expect(error).to.have.property("message");
         expect(error.message).to.eql(
           "File at path [[ " + filePath + " ]] does not exist."
         );
-        done();
       });
     });
 
