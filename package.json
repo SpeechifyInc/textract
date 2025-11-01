@@ -87,5 +87,10 @@
     "textract": "./bin/textract"
   },
   "main": "./lib/index",
-  "types": "./lib/index.d.ts"
+  "types": "./lib/index.d.ts",
+  "volta": {
+    "node": "22.14.0",
+    "pnpm": "10.20.0"
+  },
+  "packageManager": "pnpm@10.20.0"
 }
