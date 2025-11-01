@@ -1,6 +1,6 @@
 {
   "name": "@speechifyinc/textract",
-  "version": "2.5.2",
+  "version": "2.5.3",
   "publishConfig": {
     "access": "restricted",
     "registry": "https://npm.pkg.github.com"
