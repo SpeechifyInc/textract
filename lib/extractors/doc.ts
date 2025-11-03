@@ -22,7 +22,8 @@ async function extractText(
       execOptions,
       (error, stdout /* , stderr */) => {
         if (!error) {
-          resolve(stdout.trim().replaceAll('[pic]', ''));
+          const stdoutString = stdout.toString();
+          resolve(stdoutString.trim().replaceAll('[pic]', ''));
           return;
         }
 
@@ -50,40 +51,39 @@ async function extractText(
 }
 
 /**
- *
+ * Test if antiword is installed
  * @param options
- * @param cb
+ * @returns true if antiword is installed
  */
-function testForBinary(options, cb) {
-  let execOptions;
-
+async function testForBinary(options: Options): Promise<boolean> {
   // just non-osx extractor
   if (os.platform() === 'darwin') {
-    cb(true);
-    return;
+    return true;
   }
 
-  execOptions = util.createExecOptions('doc', options);
+  const execOptions = util.createExecOptions('doc', options);
 
-  exec(
-    `antiword -m UTF-8.txt ${__filename}`,
-    execOptions,
-    (error /* , stdout, stderr */) => {
-      let msg;
-      if (
-        error !== null &&
-        error.message &&
-        error.message.includes('not found')
-      ) {
-        msg =
-          "INFO: 'antiword' does not appear to be installed, " +
-          'so textract will be unable to extract DOCs.';
-        cb(false, msg);
-      } else {
-        cb(true);
-      }
-    },
-  );
+  return new Promise((resolve, reject) => {
+    exec(
+      `antiword -m UTF-8.txt ${__filename}`,
+      execOptions,
+      (error /* , stdout, stderr */) => {
+        let msg = '';
+        if (error?.message?.includes('not found')) {
+          msg =
+            "INFO: 'antiword' does not appear to be installed, " +
+            'so textract will be unable to extract DOCs.';
+        } else if (error) {
+          msg = error.message;
+        }
+        if (msg) {
+          reject(new Error(msg));
+          return;
+        }
+        resolve(true);
+      },
+    );
+  });
 }
 
 export default {

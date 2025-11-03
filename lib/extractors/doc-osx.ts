@@ -68,8 +68,7 @@ async function testForBinary(_options: Options): Promise<boolean> {
       if (error !== null) {
         reject(
           new Error(
-            `INFO: 'textutil' does not appear to be installed, " +
-        'so textract will be unable to extract DOCs.`,
+            `INFO: 'textutil' does not appear to be installed, so textract will be unable to extract DOCs.`,
           ),
         );
         return;
