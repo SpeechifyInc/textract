@@ -1,9 +1,9 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import mime from 'mime';
 import { describe, it, expect } from 'vitest';
-
-const fs = require('node:fs');
-const path = require('node:path');
-const mime = require('mime');
-const { fromBufferWithName, fromBufferWithMime } = require('../lib');
+import { fromBufferWithName, fromBufferWithMime } from '../lib/index.js';
 
 const TEST_CASES = [
   [
@@ -103,26 +103,28 @@ const TEST_CASES = [
   ],
 ];
 
+const DIR = fileURLToPath(path.dirname(import.meta.url));
+
 describe('textract fromBufferWithName', () => {
-  it.each(TEST_CASES)('will %s files', (ext, name, text) => {
-    const docPath = path.join(__dirname, 'files', name);
+  it.each(TEST_CASES)('will %s files', (_ext, name, text) => {
+    const docPath = path.join(DIR, 'files', name);
     const textBuff = fs.readFileSync(docPath);
     fromBufferWithName(docPath, textBuff, (error, _text) => {
-      expect(error).to.be.null;
-      expect(text).to.be.an('string');
-      expect(text.substring(0, 100)).to.eql(text);
+      expect(error).toBeNull();
+      expect(text).toBeInstanceOf(String);
+      expect(text.substring(0, 100)).toEqual(text);
     });
   });
 });
 
 describe('textract fromBufferWithMime', () => {
-  it.each(TEST_CASES)('will %s files', (ext, name, text) => {
-    const docPath = path.join(__dirname, 'files', name);
+  it.each(TEST_CASES)('will %s files', (_ext, name, text) => {
+    const docPath = path.join(DIR, 'files', name);
     const textBuff = fs.readFileSync(docPath);
     fromBufferWithMime(mime.getType(docPath), textBuff, (error, _text) => {
-      expect(error).to.be.null;
-      expect(text).to.be.an('string');
-      expect(text.substring(0, 100)).to.eql(text);
+      expect(error).toBeNull();
+      expect(text).toBeInstanceOf(String);
+      expect(text.substring(0, 100)).toEqual(text);
     });
   });
 });

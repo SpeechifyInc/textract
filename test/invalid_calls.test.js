@@ -1,21 +1,22 @@
 import { describe, it, expect } from 'vitest';
-const {
+import {
   fromFileWithPath,
   fromFileWithMimeAndPath,
   fromBufferWithName,
   fromBufferWithMime,
-} = require('../lib');
+} from '../lib/index.js';
 
-var test = function () {
+function test(done) {
   return function (error, text) {
-    expect(text).to.be.null;
+    expect(text).toBeNull();
     expect(error).not.toBeNull();
-    expect(error).to.have.property('message');
-    expect(error.message).to.eql('Incorrect parameters passed to textract.');
+    expect(error).toHaveProperty('message');
+    expect(error.message).toEqual('Incorrect parameters passed to textract.');
+    done();
   };
-};
+}
 
-var pathTests = function (funct) {
+function pathTests(funct) {
   it('should return an error 1', (done) => {
     funct(test(done));
   });
@@ -35,9 +36,9 @@ var pathTests = function (funct) {
   it('should return an error 5', (done) => {
     funct('foo', {}, false, test(done));
   });
-};
+}
 
-var bufferTests = function (funct) {
+function bufferTests(funct) {
   it('should return an error 1', (done) => {
     funct(test(done));
   });
@@ -57,7 +58,7 @@ var bufferTests = function (funct) {
   it('should return an error 5', (done) => {
     funct('foo', {}, false, test(done));
   });
-};
+}
 
 describe('when passed incorrect parameters', () => {
   describe('fromFileWithPath', () => {

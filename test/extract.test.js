@@ -1,19 +1,16 @@
+import path from 'node:path';
 import { describe, it, expect } from 'vitest';
-
-const path = require('node:path');
-const { fromFileWithPath } = require('../lib');
+import { fromFileWithPath } from '../lib/index.js';
 
 describe('textract', () => {
-  let test;
-
   describe('for .csv files ', () => {
     // is some oddness testing html files, not sure what the deal is
 
     it('from csv files', (done) => {
       const docPath = path.join(__dirname, 'files', 'csv.csv');
       fromFileWithPath(docPath, (error, text) => {
-        expect(error).to.be.null;
-        expect(text).to.be.an('string');
+        expect(error).toBeNull();
+        expect(text).toBeInstanceOf(String);
         expect(text.length).to.eql(18);
         expect(text).to.eql('Foo,Bar Foo2,Bar2 ');
         done();
@@ -22,17 +19,13 @@ describe('textract', () => {
 
     it('it will extract text from csv files and insert newlines in the right places', (done) => {
       const docPath = path.join(__dirname, 'files', 'csv.csv');
-      fromFileWithPath(
-        docPath,
-        { preserveLineBreaks: true },
-        (error, text) => {
-          expect(error).to.be.null;
-          expect(text).to.be.an('string');
-          expect(text.length).to.eql(18);
-          expect(text).to.eql('Foo,Bar\nFoo2,Bar2\n');
-          done();
-        },
-      );
+      fromFileWithPath(docPath, { preserveLineBreaks: true }, (error, text) => {
+        expect(error).toBeNull();
+        expect(text).toBeInstanceOf(String);
+        expect(text.length).toEqual(18);
+        expect(text).toEqual('Foo,Bar\nFoo2,Bar2\n');
+        done();
+      });
     });
   });
 
@@ -41,27 +34,23 @@ describe('textract', () => {
 
     it('will extract text from html files and insert newlines in the right places', (done) => {
       const docPath = path.join(__dirname, 'files', 'test.html');
-      fromFileWithPath(
-        docPath,
-        { preserveLineBreaks: true },
-        (error, text) => {
-          expect(error).to.be.null;
-          expect(text).to.be.an('string');
-          expect(text.length).to.eql(80);
-          expect(text.substring(0, 80)).to.eql(
-            '\nThis is a\nlong string\nof text\nthat should get extracted\nwith new lines inserted',
-          );
-          done();
-        },
-      );
+      fromFileWithPath(docPath, { preserveLineBreaks: true }, (error, text) => {
+        expect(error).toBeNull();
+        expect(text).toBeInstanceOf(String);
+        expect(text.length).toEqual(80);
+        expect(text.substring(0, 80)).toEqual(
+          '\nThis is a\nlong string\nof text\nthat should get extracted\nwith new lines inserted',
+        );
+        done();
+      });
     });
 
     it('will extract text from html files', (done) => {
       const docPath = path.join(__dirname, 'files', 'Google.html');
       fromFileWithPath(docPath, (error, text) => {
-        expect(error).to.be.null;
-        expect(text).to.be.an('string');
-        expect(text.length).to.eql(869);
+        expect(error).toBeNull();
+        expect(text).toBeInstanceOf(String);
+        expect(text.length).toEqual(869);
         expect(text.substring(565, 620)).to.eql(
           'you say next. Learn more No thanks Enable "Ok Google" I',
         );
@@ -71,17 +60,13 @@ describe('textract', () => {
 
     it('will extract text from html files and preserve alt text when asked', (done) => {
       const docPath = path.join(__dirname, 'files', 'test-alt.html');
-      fromFileWithPath(
-        docPath,
-        { includeAltText: true },
-        (error, text) => {
-          expect(error).to.be.null;
-          expect(text).to.be.an('string');
-          expect(text.length).to.eql(46);
-          expect(text).to.eql(' This is a paragraph that has an image inside ');
-          done();
-        },
-      );
+      fromFileWithPath(docPath, { includeAltText: true }, (error, text) => {
+        expect(error).toBeNull();
+        expect(text).toBeInstanceOf(String);
+        expect(text.length).toEqual(46);
+        expect(text).toEqual(' This is a paragraph that has an image inside ');
+        done();
+      });
     });
   });
 
@@ -89,10 +74,10 @@ describe('textract', () => {
     it('will extract text from rss files', (done) => {
       const docPath = path.join(__dirname, 'files', 'rss.rss');
       fromFileWithPath(docPath, (error, text) => {
-        expect(error).to.be.null;
-        expect(text).to.be.an('string');
-        expect(text.length).to.eql(5399);
-        expect(text.substring(0, 100)).to.eql(
+        expect(error).toBeNull();
+        expect(text).toBeInstanceOf(String);
+        expect(text.length).toEqual(5399);
+        expect(text.substring(0, 100)).toEqual(
           ' FeedForAll Sample Feed RSS is a fascinating technology. The uses for RSS are expanding daily. Take ',
         );
         done();
@@ -101,31 +86,31 @@ describe('textract', () => {
 
     it('will extract text from rss files and preserve line breaks', (done) => {
       const docPath = path.join(__dirname, 'files', 'rss.rss');
-      fromFileWithPath(
-        docPath,
-        { preserveLineBreaks: true },
-        (error, text) => {
-          expect(error).to.be.null;
-          expect(text).to.be.an('string');
-          expect(text.length).to.eql(5534);
-          expect(text.substring(0, 100)).to.eql(
-            '\n FeedForAll Sample Feed\n RSS is a fascinating technology. The uses for RSS are expanding daily. Tak',
-          );
-          done();
-        },
-      );
+      fromFileWithPath(docPath, { preserveLineBreaks: true }, (error, text) => {
+        expect(error).toBeNull();
+        expect(text).toBeInstanceOf(String);
+        expect(text.length).toEqual(5534);
+        expect(text.substring(0, 100)).toEqual(
+          '\n FeedForAll Sample Feed\n RSS is a fascinating technology. The uses for RSS are expanding daily. Tak',
+        );
+        done();
+      });
     });
   });
 
   describe('for .epub files', { timeout: 5000 }, () => {
     it('will extract text from epub files', (done) => {
-      const docPath = path.join(__dirname, 'files', 'Metamorphosis-jackson.epub');
+      const docPath = path.join(
+        __dirname,
+        'files',
+        'Metamorphosis-jackson.epub',
+      );
 
       fromFileWithPath(docPath, (error, text) => {
-        expect(error).to.be.null;
-        expect(text).to.be.an('string');
-        expect(text.length).to.eql(119329);
-        expect(text.substring(3000, 3500)).to.eql(
+        expect(error).toBeNull();
+        expect(text).toBeInstanceOf(String);
+        expect(text.length).toEqual(119329);
+        expect(text.substring(3000, 3500)).toEqual(
           'dboard so that he could lift his head better; found where the itch was, and saw that it was covered with lots of little white spots which he didn\'t know what to make of; and when he tried to feel the place with one of his legs he drew it quickly back because as soon as he touched it he was overcome by a cold shudder. He slid back into his former position. "Getting up early all the time", he thought, "it makes you stupid. You\'ve got to get enough sleep. Other travelling salesmen live a life of lu',
         );
         done();
@@ -133,21 +118,21 @@ describe('textract', () => {
     });
 
     it('will extract text from epub files and preserve line breaks', (done) => {
-      const docPath = path.join(__dirname, 'files', 'Metamorphosis-jackson.epub');
-
-      fromFileWithPath(
-        docPath,
-        { preserveLineBreaks: true },
-        (error, text) => {
-          expect(error).to.be.null;
-          expect(text).to.be.an('string');
-          expect(text.length).to.eql(119342);
-          expect(text.substring(3000, 3500)).to.eql(
-            'rds the headboard so that he could lift his head better; found where the itch was, and saw that it was covered with lots of little white spots which he didn\'t know what to make of; and when he tried to feel the place with one of his legs he drew it quickly back because as soon as he touched it he was overcome by a cold shudder.\nHe slid back into his former position. "Getting up early all the time", he thought, "it makes you stupid. You\'ve got to get enough sleep. Other travelling salesmen live a',
-          );
-          done();
-        },
+      const docPath = path.join(
+        __dirname,
+        'files',
+        'Metamorphosis-jackson.epub',
       );
+
+      fromFileWithPath(docPath, { preserveLineBreaks: true }, (error, text) => {
+        expect(error).toBeNull();
+        expect(text).toBeInstanceOf(String);
+        expect(text.length).toEqual(119342);
+        expect(text.substring(3000, 3500)).toEqual(
+          'rds the headboard so that he could lift his head better; found where the itch was, and saw that it was covered with lots of little white spots which he didn\'t know what to make of; and when he tried to feel the place with one of his legs he drew it quickly back because as soon as he touched it he was overcome by a cold shudder.\nHe slid back into his former position. "Getting up early all the time", he thought, "it makes you stupid. You\'ve got to get enough sleep. Other travelling salesmen live a',
+        );
+        done();
+      });
     });
   });
 
@@ -155,10 +140,10 @@ describe('textract', () => {
     it('will extract text from atom files', (done) => {
       const docPath = path.join(__dirname, 'files', 'atom.atom');
       fromFileWithPath(docPath, (error, text) => {
-        expect(error).to.be.null;
-        expect(text).to.be.an('string');
-        expect(text.length).to.eql(26731);
-        expect(text.substring(0, 100)).to.eql(
+        expect(error).toBeNull();
+        expect(text).toBeInstanceOf(String);
+        expect(text.length).toEqual(26731);
+        expect(text.substring(0, 100)).toEqual(
           ' @{}[]tag:theregister.co.uk,2005:feed/theregister.co.uk/data_centre/storage/ The Register - Data Cen',
         );
         done();
@@ -167,19 +152,15 @@ describe('textract', () => {
 
     it('will extract text from atom files and preserve line breaks', (done) => {
       const docPath = path.join(__dirname, 'files', 'atom.atom');
-      fromFileWithPath(
-        docPath,
-        { preserveLineBreaks: true },
-        (error, text) => {
-          expect(error).to.be.null;
-          expect(text).to.be.an('string');
-          expect(text.length).to.eql(27441);
-          expect(text.substring(0, 100)).to.eql(
-            '\n @{}[]tag:theregister.co.uk,2005:feed/theregister.co.uk/data_centre/storage/\n The Register - Data C',
-          );
-          done();
-        },
-      );
+      fromFileWithPath(docPath, { preserveLineBreaks: true }, (error, text) => {
+        expect(error).toBeNull();
+        expect(text).toBeInstanceOf(String);
+        expect(text.length).toEqual(27441);
+        expect(text.substring(0, 100)).toEqual(
+          '\n @{}[]tag:theregister.co.uk,2005:feed/theregister.co.uk/data_centre/storage/\n The Register - Data C',
+        );
+        done();
+      });
     });
   });
 
@@ -187,9 +168,9 @@ describe('textract', () => {
     it('will extract text from rtf files', (done) => {
       const docPath = path.join(__dirname, 'files', 'sample.rtf');
       fromFileWithPath(docPath, (error, text) => {
-        expect(error).to.be.null;
-        expect(text).to.be.an('string');
-        expect(text.substring(144, 220)).to.eql(
+        expect(error).toBeNull();
+        expect(text).toBeInstanceOf(String);
+        expect(text.substring(144, 220)).toEqual(
           "bit of hidden text. So we're going to end this paragraph here and go on to a",
         );
         done();
@@ -199,9 +180,9 @@ describe('textract', () => {
     it('will extract when there are spaces in the name', (done) => {
       const docPath = path.join(__dirname, 'files', 'sample rtf.rtf');
       fromFileWithPath(docPath, (error, text) => {
-        expect(error).to.be.null;
-        expect(text).to.be.an('string');
-        expect(text.substring(144, 220)).to.eql(
+        expect(error).toBeNull();
+        expect(text).toBeInstanceOf(String);
+        expect(text.substring(144, 220)).toEqual(
           "bit of hidden text. So we're going to end this paragraph here and go on to a",
         );
         done();
@@ -210,18 +191,14 @@ describe('textract', () => {
 
     it('will extract text from actual rtf files with lines left in', (done) => {
       const docPath = path.join(__dirname, 'files', 'sample.rtf');
-      fromFileWithPath(
-        docPath,
-        { preserveLineBreaks: true },
-        (error, text) => {
-          expect(error).to.be.null;
-          expect(text).to.be.an('string');
-          expect(text.substring(144, 230)).to.eql(
-            "bit of hidden text. So we're going to end this paragraph here and go on to a nice litt",
-          );
-          done();
-        },
-      );
+      fromFileWithPath(docPath, { preserveLineBreaks: true }, (error, text) => {
+        expect(error).toBeNull();
+        expect(text).toBeInstanceOf(String);
+        expect(text.substring(144, 230)).toEqual(
+          "bit of hidden text. So we're going to end this paragraph here and go on to a nice litt",
+        );
+        done();
+      });
     });
   });
 
@@ -229,9 +206,9 @@ describe('textract', () => {
     it('will extract text from actual doc files', (done) => {
       const docPath = path.join(__dirname, 'files', 'doc.doc');
       fromFileWithPath(docPath, (error, text) => {
-        expect(error).to.be.null;
-        expect(text).to.be.an('string');
-        expect(text.substring(0, 100)).to.eql(
+        expect(error).toBeNull();
+        expect(text).toBeInstanceOf(String);
+        expect(text.substring(0, 100)).toEqual(
           ' Word Specification Sample Working Draft 04, 16 August 2002 Document identifier: wd-spectools-word-s',
         );
         done();
@@ -241,9 +218,9 @@ describe('textract', () => {
     it('will extract text from actual doc files with spaces in the name', (done) => {
       const docPath = path.join(__dirname, 'files', 'doc space.doc');
       fromFileWithPath(docPath, (error, text) => {
-        expect(error).to.be.null;
-        expect(text).to.be.an('string');
-        expect(text.substring(0, 100)).to.eql(
+        expect(error).toBeNull();
+        expect(text).toBeInstanceOf(String);
+        expect(text.substring(0, 100)).toEqual(
           ' Word Specification Sample Working Draft 04, 16 August 2002 Document identifier: wd-spectools-word-s',
         );
         done();
@@ -253,10 +230,10 @@ describe('textract', () => {
     it('will not extract text from text files masquerading as doc files', (done) => {
       const docPath = path.join(__dirname, 'files', 'notadoc.doc');
       fromFileWithPath(docPath, (error, text) => {
-        expect(text).to.be.null;
+        expect(text).toBeNull();
         expect(
           error.toString().indexOf('does not appear to really be a .doc file'),
-        ).to.eql(36);
+        ).toEqual(36);
         done();
       });
     });
@@ -264,9 +241,9 @@ describe('textract', () => {
     it('will extract text from large .doc', (done) => {
       const docPath = path.join(__dirname, 'files', 'sample.doc');
       fromFileWithPath(docPath, (error, text) => {
-        expect(error).to.be.null;
-        expect(text).to.be.an('string');
-        expect(text.length).to.eql(32658);
+        expect(error).toBeNull();
+        expect(text).toBeInstanceOf(String);
+        expect(text.length).toEqual(32658);
         done();
       });
     });
@@ -277,15 +254,11 @@ describe('textract', () => {
         'files',
         'multiple-long-paragraphs.doc',
       );
-      fromFileWithPath(
-        docPath,
-        { preserveLineBreaks: true },
-        (error, text) => {
-          expect(error).to.be.null;
-          expect(text.match(/\r\n|\n/g).length).to.eql(21);
-          done();
-        },
-      );
+      fromFileWithPath(docPath, { preserveLineBreaks: true }, (error, text) => {
+        expect(error).toBeNull();
+        expect(text.match(/\r\n|\n/g).length).toEqual(21);
+        done();
+      });
     });
   });
 
@@ -293,9 +266,9 @@ describe('textract', () => {
     it('will extract text', (done) => {
       const docPath = path.join(__dirname, 'files', 'test.xls');
       fromFileWithPath(docPath, (error, text) => {
-        expect(error).to.be.null;
-        expect(text).to.be.a('string');
-        expect(text.substring(0, 20)).to.eql('This,is,a,spreadshee');
+        expect(error).toBeNull();
+        expect(text).toBeInstanceOf(String);
+        expect(text.substring(0, 20)).toEqual('This,is,a,spreadshee');
         done();
       });
     });
@@ -303,9 +276,9 @@ describe('textract', () => {
     it('will extract text from multi-line files', (done) => {
       const docPath = path.join(__dirname, 'files', 'test-multiline.xls');
       fromFileWithPath(docPath, (error, text) => {
-        expect(error).to.be.null;
-        expect(text).to.be.a('string');
-        expect(text.substring(0, 40)).to.eql(
+        expect(error).toBeNull();
+        expect(text).toBeInstanceOf(String);
+        expect(text.substring(0, 40)).toEqual(
           'This,is,a,spreadsheet,yay! And ,this,is,',
         );
         done();
@@ -314,18 +287,14 @@ describe('textract', () => {
 
     it('will extract text from multi-line files and keep line breaks', (done) => {
       const docPath = path.join(__dirname, 'files', 'test-multiline.xls');
-      fromFileWithPath(
-        docPath,
-        { preserveLineBreaks: true },
-        (error, text) => {
-          expect(error).to.be.null;
-          expect(text).to.be.a('string');
-          expect(text.substring(0, 40)).to.eql(
-            'This,is,a,spreadsheet,yay!\nAnd ,this,is,',
-          );
-          done();
-        },
-      );
+      fromFileWithPath(docPath, { preserveLineBreaks: true }, (error, text) => {
+        expect(error).toBeNull();
+        expect(text).toBeInstanceOf(String);
+        expect(text.substring(0, 40)).toEqual(
+          'This,is,a,spreadsheet,yay!\nAnd ,this,is,',
+        );
+        done();
+      });
     });
   });
 
@@ -333,9 +302,9 @@ describe('textract', () => {
     it('will extract text and numbers from XLSX files', (done) => {
       const filePath = path.join(__dirname, 'files', 'pi.xlsx');
       fromFileWithPath(filePath, (error, text) => {
-        expect(error).to.be.null;
-        expect(text).to.be.an('string');
-        expect(text).to.eql('This is the value of PI:,3.141592 ');
+        expect(error).toBeNull();
+        expect(text).toBeInstanceOf(String);
+        expect(text).toEqual('This is the value of PI:,3.141592 ');
         done();
       });
     });
@@ -343,9 +312,9 @@ describe('textract', () => {
     it('will extract text from XLSX files with multiple sheets', (done) => {
       const filePath = path.join(__dirname, 'files', 'xlsx.xlsx');
       fromFileWithPath(filePath, (error, text) => {
-        expect(error).to.be.null;
-        expect(text).to.be.an('string');
-        expect(text.substring(49, 96)).to.eql(
+        expect(error).toBeNull();
+        expect(text).toBeInstanceOf(String);
+        expect(text.substring(49, 96)).toEqual(
           'Color,Pattern,Sex,GeneralSizePotential,GeneralA',
         );
         done();
@@ -355,9 +324,9 @@ describe('textract', () => {
     it('will error when input file is not an actual xlsx file', (done) => {
       const filePath = path.join(__dirname, 'files', 'notaxlsx.xlsx');
       fromFileWithPath(filePath, (error) => {
-        expect(error).to.be.an('object');
-        expect(error.message).to.be.a('string');
-        expect(error.message.substring(0, 43)).to.eql(
+        expect(error).not.toBeNull();
+        expect(error.message).toBeInstanceOf(String);
+        expect(error.message.substring(0, 43)).toEqual(
           'Could not extract notaxlsx.xlsx, Error: PRN',
         );
         done();
@@ -369,9 +338,9 @@ describe('textract', () => {
     it('will extract text from actual pdf files', (done) => {
       const filePath = path.join(__dirname, 'files', 'pdf.pdf');
       fromFileWithPath(filePath, (error, text) => {
-        expect(error).to.be.null;
-        expect(text).to.be.a('string');
-        expect(text).to.eql('This is a test. Please ignore.');
+        expect(error).toBeNull();
+        expect(text).toBeInstanceOf(String);
+        expect(text).toEqual('This is a test. Please ignore.');
         done();
       });
     });
@@ -382,9 +351,9 @@ describe('textract', () => {
         filePath,
         { preserveLineBreaks: true },
         (error, text) => {
-          expect(error).to.be.null;
-          expect(text).to.be.a('string');
-          expect(text).to.eql(
+          expect(error).toBeNull();
+          expect(text).toBeInstanceOf(String);
+          expect(text).toEqual(
             'This is a test,\nA multi-line test,\nLets hope it works',
           );
           done();
@@ -395,10 +364,10 @@ describe('textract', () => {
     it("will error out when pdf file isn't actually a pdf", (done) => {
       const filePath = path.join(__dirname, 'files', 'notapdf.pdf');
       fromFileWithPath(filePath, (error, text) => {
-        expect(text).to.be.null;
-        expect(error).to.be.an('object');
-        expect(error.message).to.be.a('string');
-        expect(error.message.substring(0, 34)).to.eql(
+        expect(text).toBeNull();
+        expect(error).not.toBeNull();
+        expect(error.message).toBeInstanceOf(String);
+        expect(error.message.substring(0, 34)).toEqual(
           'Error extracting PDF text for file',
         );
         done();
@@ -411,13 +380,13 @@ describe('textract', () => {
         filePath,
         { preserveLineBreaks: true },
         (error, text) => {
-          expect(error).to.be.null;
-          expect(text).to.be.a('string');
+          expect(error).toBeNull();
+          expect(text).toBeInstanceOf(String);
           expect(
             text.indexOf(
               'Abstract— This work deals with a multi-cell topology based\non current-source converters based power cells.',
             ) > 500,
-          ).to.be.true;
+          ).toBe(true);
           done();
         },
       );
@@ -429,13 +398,13 @@ describe('textract', () => {
         filePath,
         { preserveLineBreaks: true },
         (error, text) => {
-          expect(error).to.be.null;
-          expect(text).to.be.a('string');
+          expect(error).toBeNull();
+          expect(text).toBeInstanceOf(String);
           expect(
             text.indexOf(
               'Abstract— This work deals with a multi-cell topology based\non current-source converters based power cells.',
             ) > 500,
-          ).to.be.true;
+          ).toBe(true);
           done();
         },
       );
@@ -451,9 +420,9 @@ describe('textract', () => {
         filePath,
         { pdftotextOptions: { userPassword: 'test' } },
         (error, text) => {
-          expect(error).to.be.null;
-          expect(text).to.be.a('string');
-          expect(text.substring(0, 200)).to.eql(
+          expect(error).toBeNull();
+          expect(text).toBeInstanceOf(String);
+          expect(text.substring(0, 200)).toEqual(
             'Backup4all –backup solution for network environments Starting from version 2 it is easier to install Backup4all in a network environment. Network administrators can install Backup4all on a single comp',
           );
           done();
@@ -464,9 +433,9 @@ describe('textract', () => {
     it('can handle manage PDFS with full-width Japanese characters', (done) => {
       const filePath = path.join(__dirname, 'files', 'full-width-j.pdf');
       fromFileWithPath(filePath, (error, text) => {
-        expect(error).to.be.null;
-        expect(text).to.be.a('string');
-        expect(text.replace(/ /g, '').substring(2685, 2900)).to.eql(
+        expect(error).toBeNull();
+        expect(text).toBeInstanceOf(String);
+        expect(text.replace(/ /g, '').substring(2685, 2900)).toEqual(
           '＄％＆＇（）＊＋，－．／０１２３４５６７８９：；＜＝＞？＠ＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺ［＼］＾＿｀ａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚ｛｜｝～｟｠｡｢｣､･ｦｧｨｩｪｫｬｭｮｯｰｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾖﾗﾘﾙﾚﾛﾜﾝﾞﾟﾡﾢﾣﾤﾥﾦﾧﾨﾩﾪﾫﾬﾭﾮﾯﾰﾱﾲﾳﾴﾵﾶﾷﾸﾹﾺﾻﾼﾽﾾￂￃￄￅￆￇￊￋￌￍￎￏￒￓￔￕￖￗￚￛￜ￠￡￢￣￤￥￦F',
         );
         done();
@@ -488,9 +457,9 @@ describe('textract', () => {
     it('will extract text from actual docx files', (done) => {
       const filePath = path.join(__dirname, 'files', 'docx.docx');
       fromFileWithPath(filePath, (error, text) => {
-        expect(error).to.be.null;
-        expect(text).to.be.a('string');
-        expect(text.substring(0, 20)).to.eql('This is a test Just ');
+        expect(error).toBeNull();
+        expect(text).toBeInstanceOf(String);
+        expect(text.substring(0, 20)).toEqual('This is a test Just ');
         done();
       });
     });
@@ -501,9 +470,9 @@ describe('textract', () => {
         filePath,
         { preserveLineBreaks: true },
         (error, text) => {
-          expect(error).to.be.null;
-          expect(text).to.be.a('string');
-          expect(text.substring(20, 40)).to.eql('so you know:\nLorem i');
+          expect(error).toBeNull();
+          expect(text).toBeInstanceOf(String);
+          expect(text.substring(20, 40)).toEqual('so you know:\nLorem i');
           done();
         },
       );
@@ -515,9 +484,9 @@ describe('textract', () => {
         filePath,
         { preserveLineBreaks: true },
         (error, text) => {
-          expect(error).to.be.null;
-          expect(text).to.be.a('string');
-          expect(text).to.eql(
+          expect(error).toBeNull();
+          expect(text).toBeInstanceOf(String);
+          expect(text).toEqual(
             'Paragraph follows\n\nLine break follows\n\nend\n\n',
           );
           done();
@@ -528,10 +497,10 @@ describe('textract', () => {
     it("will error out when docx file isn't actually a docx", (done) => {
       const filePath = path.join(__dirname, 'files', 'notadocx.docx');
       fromFileWithPath(filePath, (error, text) => {
-        expect(text).to.be.null;
-        expect(error).to.be.an('object');
-        expect(error.message).to.be.a('string');
-        expect(error.message.substring(0, 34)).to.eql(
+        expect(text).toBeNull();
+        expect(error).not.toBeNull();
+        expect(error.message).toBeInstanceOf(String);
+        expect(error.message.substring(0, 34)).toEqual(
           'File not correctly recognized as z',
         );
         done();
@@ -541,9 +510,11 @@ describe('textract', () => {
     it('will not extract smashed together text', (done) => {
       const filePath = path.join(__dirname, 'files', 'testresume.docx');
       fromFileWithPath(filePath, (error, text) => {
-        expect(error).to.be.null;
-        expect(text).to.be.a('string');
-        expect(text.substring(0, 31)).to.eql('Karol Miner 336 W. Chugalug Way');
+        expect(error).toBeNull();
+        expect(text).toBeInstanceOf(String);
+        expect(text.substring(0, 31)).toEqual(
+          'Karol Miner 336 W. Chugalug Way',
+        );
         done();
       });
     });
@@ -551,9 +522,9 @@ describe('textract', () => {
     it('can handle funky formatting', (done) => {
       const filePath = path.join(__dirname, 'files', 'Untitleddocument.docx');
       fromFileWithPath(filePath, (error, text) => {
-        expect(error).to.be.null;
-        expect(text).to.be.a('string');
-        expect(text).to.eql(
+        expect(error).toBeNull();
+        expect(text).toBeInstanceOf(String);
+        expect(text).toEqual(
           "this is a test document that won't be extracted properly. ",
         );
         done();
@@ -563,9 +534,9 @@ describe('textract', () => {
     it('can handle a huge docx', (done) => {
       const filePath = path.join(__dirname, 'files', 'LargeLorem.docx');
       fromFileWithPath(filePath, (error, text) => {
-        expect(error).to.be.null;
-        expect(text).to.be.a('string');
-        expect(text.substring(0, 100)).to.eql(
+        expect(error).toBeNull();
+        expect(text).toBeInstanceOf(String);
+        expect(text.substring(0, 100)).toEqual(
           'Hashtag chambray XOXO PBR&B chia small batch. Before they sold out banh mi raw denim, fap synth hell',
         );
         done();
@@ -575,9 +546,9 @@ describe('textract', () => {
     it('can handle arabic', (done) => {
       const filePath = path.join(__dirname, 'files', 'arabic.docx');
       fromFileWithPath(filePath, (error, text) => {
-        expect(error).to.be.null;
-        expect(text).to.be.a('string');
-        expect(text.substring(0, 100)).to.eql(
+        expect(error).toBeNull();
+        expect(text).toBeInstanceOf(String);
+        expect(text.substring(0, 100)).toEqual(
           ' التعرف الضوئي على الحروف إشعار عدم التمييز (المصدر: مكتب الصحة والخدمات الإنسانية من أجل الحقوق الم',
         );
         done();
@@ -589,8 +560,8 @@ describe('textract', () => {
     it('will extract text from specifically a .txt file', (done) => {
       const filePath = path.join(__dirname, 'files', 'txt.txt');
       fromFileWithPath(filePath, (error, text) => {
-        expect(error).to.be.null;
-        expect(text).to.be.a('string');
+        expect(error).toBeNull();
+        expect(text).toBeInstanceOf(String);
         expect(text).to.eql('This is a plain old text file.');
         done();
       });
@@ -599,8 +570,8 @@ describe('textract', () => {
     it('will extract text from specifically a non utf8 .txt file', (done) => {
       const filePath = path.join(__dirname, 'files', 'non-utf8.txt');
       fromFileWithPath(filePath, (error, text) => {
-        expect(error).to.be.null;
-        expect(text).to.be.a('string');
+        expect(error).toBeNull();
+        expect(text).toBeInstanceOf(String);
         expect(text).to.eql('これは非UTF8 テキストファイルです ');
         done();
       });
@@ -609,9 +580,9 @@ describe('textract', () => {
     it('will error when .txt file encoding cannot be detected', (done) => {
       const filePath = path.join(__dirname, 'files', 'unknown-encoding.txt');
       fromFileWithPath(filePath, (error) => {
-        expect(error).to.be.an('object');
-        expect(error.message).to.be.a('string');
-        expect(error.message).to.eql(
+        expect(error).not.toBeNull();
+        expect(error.message).toBeInstanceOf(String);
+        expect(error.message).toEqual(
           'Could not detect encoding for file named [[ unknown-encoding.txt ]]',
         );
         done();
@@ -621,9 +592,9 @@ describe('textract', () => {
     it('will extract text specifically from a .css file', (done) => {
       const filePath = path.join(__dirname, 'files', 'css.css');
       fromFileWithPath(filePath, (error, text) => {
-        expect(error).to.be.null;
-        expect(text).to.be.a('string');
-        expect(text).to.eql('.foo {color:red}');
+        expect(error).toBeNull();
+        expect(text).toBeInstanceOf(String);
+        expect(text).toEqual('.foo {color:red}');
         done();
       });
     });
@@ -631,9 +602,9 @@ describe('textract', () => {
     it('will extract text specifically from a .js file', (done) => {
       const filePath = path.join(__dirname, 'files', 'js.js');
       fromFileWithPath(filePath, (error, text) => {
-        expect(error).to.be.null;
-        expect(text).to.be.a('string');
-        expect(text).to.eql('console.log("javascript is cooler than you")');
+        expect(error).toBeNull();
+        expect(text).toBeInstanceOf(String);
+        expect(text).toEqual('console.log("javascript is cooler than you")');
         done();
       });
     });
@@ -641,9 +612,9 @@ describe('textract', () => {
     it('will remove extraneous white space from a .txt file', (done) => {
       const filePath = path.join(__dirname, 'files', 'spacey.txt');
       fromFileWithPath(filePath, (error, text) => {
-        expect(error).to.be.null;
-        expect(text).to.be.a('string');
-        expect(text).to.eql('this has lots of space');
+        expect(error).toBeNull();
+        expect(text).toBeInstanceOf(String);
+        expect(text).toEqual('this has lots of space');
         done();
       });
     });
@@ -651,9 +622,9 @@ describe('textract', () => {
     it('will not remove fancy quotes from a .txt file', (done) => {
       const filePath = path.join(__dirname, 'files', 'fancyquote.txt');
       fromFileWithPath(filePath, (error, text) => {
-        expect(error).to.be.null;
-        expect(text).to.be.a('string');
-        expect(text).to.eql('this has "fancy" quotes');
+        expect(error).toBeNull();
+        expect(text).toBeInstanceOf(String);
+        expect(text).toEqual('this has "fancy" quotes');
         done();
       });
     });
@@ -663,10 +634,10 @@ describe('textract', () => {
     it('will extract text from actual dxf files', (done) => {
       const filePath = path.join(__dirname, 'files', 'dxf.dxf');
       fromFileWithPath(filePath, (error, text) => {
-        expect(error).to.be.null;
-        expect(text).to.be.an('string');
-         
-        expect(text).to.eql(
+        expect(error).toBeNull();
+        expect(text).toBeInstanceOf(String);
+
+        expect(text).toEqual(
           ' PART: FILE: {\fTimes New Roman|b0|i0|c0|p18;(800) 433-1119} {\fTimes New Roman|b0|i0|c0|p18;Barium Springs, NC 28010} {\fTimes New Roman|b0|i0|c0|p18;MultiDrain Systems, Inc.} {\fTimes New Roman|b0|i0|c0|p18;Manufacturers of MultiDrain & EconoDrain } to others for manufacturing or for any other purpose except as specifically authorized in writing by MultiDrain Systems, Inc. Proprietary rights of MultiDrain Systems, Inc. are included in the information disclosed herein. The recipient, by accepting this document, agrees that neither this document nor the information disclosed herein nor any part thereof shall be copied, reproduced or transferred 0 2" 4" 6" 8" 12" 16" GRAPHIC SCALE BAR A1;T A1;T A1;T A1;6.1" 155mm A1;T A1;T A1;4.9" 124mm A1;19.6" 497mm FRAME AND GRATE LENGTH A1;5.5" 140mm %%UCROSS SECTIONAL VIEW SOIL SUBGRADE CONCRETE THICKNESS AND REINFORCEMENT PER STRUCTURAL ENGINEER S SPECIFICATION FOR THE APPLICATION FLOOR SLAB THICKNESS, OR 4" MIN. [100mm], OR SPECIFICATION (WHICHEVER IS GREATER) T = MONOLITHIC CONCRETE POUR (ACCEPTABLE) EXPANSION JOINT BOTH SIDES (PREFERRED) LOCK DOWN BOLT LOCK TOGGLE ANCHOR BOLT SEE ABOVE FOR ACTUAL FRAME & GRATE SECTIONS %%UPLAN %%USECTION 512AF %%UPLAN %%USECTION 513AF 514AF %%UPLAN %%USECTION 515AF %%UPLAN %%USECTION ANCHOR RIB INDEPENDENTLY ANCHORED FRAME ALFA CHANNEL A1;502 GRATE 510AF ANCHOR FRAME 503 GRATE 510AF ANCHOR FRAME 504 GRATE 505 GRATE FRAME AND GRATE ADD 1.2" [31mm] TO OVERALL DEPTH OF CHANNEL LNOTE: GRATE WIDTH FRAME WIDTH AC-2510AF-00 2512AF 2513AF 2514AF 2515AF ALFA CHANNEL SYSTEM DUCTILE IRON FRAME & GRATES PRODUCT DRAWING 2006 MultiDrain Systems, Inc. ',
         );
         done();
@@ -676,9 +647,9 @@ describe('textract', () => {
     it('will error when input file is not an actual dxf file', (done) => {
       const filePath = path.join(__dirname, 'files', 'notadxf.dxf');
       fromFileWithPath(filePath, (error) => {
-        expect(error).to.be.an('object');
-        expect(error.message).to.be.a('string');
-        expect(error.message.substring(0, 40)).to.eql(
+        expect(error).not.toBeNull();
+        expect(error.message).toBeInstanceOf(String);
+        expect(error.message.substring(0, 40)).toEqual(
           'Error for type: [[ image/vnd.dxf ]], fil',
         );
         done();
@@ -690,9 +661,9 @@ describe('textract', () => {
     it('will extract text PPTX files', (done) => {
       const filePath = path.join(__dirname, 'files', 'ppt.pptx');
       fromFileWithPath(filePath, (error, text) => {
-        expect(error).to.be.null;
-        expect(text).to.be.an('string');
-        expect(text.substring(55, 96)).to.eql(
+        expect(error).toBeNull();
+        expect(text).toBeInstanceOf(String);
+        expect(text.substring(55, 96)).toEqual(
           'ullet 1 Bullet 2 Bullet 3 Number 1 Number',
         );
         done();
@@ -702,8 +673,8 @@ describe('textract', () => {
     it('will extract text PPTX files with notes', (done) => {
       const filePath = path.join(__dirname, 'files', 'PrezoWithNotes.pptx');
       fromFileWithPath(filePath, (error, text) => {
-        expect(error).to.be.null;
-        expect(text).to.be.an('string');
+        expect(error).toBeNull();
+        expect(text).toBeInstanceOf(String);
         expect(text).to.eql('This is a slide These are speaker notes 1 ');
         done();
       });
@@ -715,12 +686,11 @@ describe('textract', () => {
         filePath,
         { preserveLineBreaks: true },
         (error, text) => {
-          let lines, linesAnswer;
-          expect(error).to.be.null;
+          expect(error).toBeNull();
           expect(text).to.be.an('string');
-          lines = text.split('\n').filter((line) => /^Slide/.exec(line));
+          const lines = text.split('\n').filter((line) => /^Slide/.exec(line));
 
-          linesAnswer = [
+          const linesAnswer = [
             'Slide 1 Title',
             'Slide 1 Subtitle',
             'Slide 2: Title and Content',
@@ -746,9 +716,9 @@ describe('textract', () => {
         filePath,
         { preserveLineBreaks: true },
         (error, text) => {
-          expect(error).to.be.null;
-          expect(text).to.be.an('string');
-          expect(text.indexOf('…')).to.eql(928);
+          expect(error).toBeNull();
+          expect(text).toBeInstanceOf(String);
+          expect(text.indexOf('…')).toEqual(928);
           done();
         },
       );
@@ -759,9 +729,9 @@ describe('textract', () => {
     it('will extract text from ODT files', (done) => {
       const filePath = path.join(__dirname, 'files', 'spaced.odt');
       fromFileWithPath(filePath, (error, text) => {
-        expect(error).to.be.null;
-        expect(text).to.be.an('string');
-        expect(text).to.eql('This Is some text');
+        expect(error).toBeNull();
+        expect(text).toBeInstanceOf(String);
+        expect(text).toEqual('This Is some text');
         done();
       });
     });
@@ -771,9 +741,9 @@ describe('textract', () => {
     it('will extract text from PNG files', (done) => {
       const filePath = path.join(__dirname, 'files', 'testphoto.png');
       fromFileWithPath(filePath, (error, text) => {
-        expect(error).to.be.null;
-        expect(text).to.be.an('string');
-        expect(text.substring(0, 100)).to.eql(
+        expect(error).toBeNull();
+        expect(text).toBeInstanceOf(String);
+        expect(text.substring(0, 100)).toEqual(
           'performance measure against standards and targets is increasingly used in the management of complex ',
         );
         done();
@@ -783,9 +753,9 @@ describe('textract', () => {
     it('will extract text from JPG files', (done) => {
       const filePath = path.join(__dirname, 'files', 'testphoto.jpg');
       fromFileWithPath(filePath, (error, text) => {
-        expect(error).to.be.null;
-        expect(text).to.be.an('string');
-        expect(text.substring(0, 100)).to.eql(
+        expect(error).toBeNull();
+        expect(text).toBeInstanceOf(String);
+        expect(text.substring(0, 100)).toEqual(
           'performance measure against standards and targets is increasingly used in the management of complex ',
         );
         done();
@@ -795,9 +765,9 @@ describe('textract', () => {
     it('will extract text from GIF files', (done) => {
       const filePath = path.join(__dirname, 'files', 'testphoto.gif');
       fromFileWithPath(filePath, (error, text) => {
-        expect(error).to.be.null;
-        expect(text).to.be.an('string');
-        expect(text.substring(0, 100)).to.eql(
+        expect(error).toBeNull();
+        expect(text).toBeInstanceOf(String);
+        expect(text.substring(0, 100)).toEqual(
           'performance measure against standards and targets is increasingly used in the management of complex ',
         );
         done();
@@ -805,24 +775,20 @@ describe('textract', () => {
     });
 
     // sudo port install tesseract-chi-sim
-    it(
-      'will extract text from language-d files',
-      { timeout: 5000 },
-      (done) => {
-        const filePath = path.join(__dirname, 'files', 'chi.png');
+    it('will extract text from language-d files', { timeout: 5000 }, (done) => {
+      const filePath = path.join(__dirname, 'files', 'chi.png');
 
-        fromFileWithPath(
-          filePath,
-          { tesseract: { lang: 'chi_sim' } },
-          (error, text) => {
-            expect(error).to.be.null;
-            expect(text).to.be.an('string');
-            expect(text.substring(0, 6)).to.eql('卧虎藏龙，卧');
-            done();
-          },
-        );
-      },
-    );
+      fromFileWithPath(
+        filePath,
+        { tesseract: { lang: 'chi_sim' } },
+        (error, text) => {
+          expect(error).toBeNull();
+          expect(text).toBeInstanceOf(String);
+          expect(text.substring(0, 6)).toEqual('卧虎藏龙，卧');
+          done();
+        },
+      );
+    });
 
     // sudo port install tesseract-eng
     it('will take tesseract.cmd option', { timeout: 5000 }, (done) => {
@@ -831,9 +797,9 @@ describe('textract', () => {
         filePath,
         { tesseract: { cmd: '-l eng -psm 3' } },
         (error, text) => {
-          expect(error).to.be.null;
-          expect(text).to.be.an('string');
-          expect(text.substring(0, 100)).to.eql(
+          expect(error).toBeNull();
+          expect(text).toBeInstanceOf(String);
+          expect(text.substring(0, 100)).toEqual(
             'The (quick) [brown] {fox} jumps! Over the $43,456.78 <lazy> #90 dog & duck/goose, as 12.5% of E-mail',
           );
           done();
@@ -842,13 +808,13 @@ describe('textract', () => {
     });
   });
 
-  test = function (ext, name, text1, text2) {
-    describe(`for ${  ext  } files`, () => {
+  function test(ext, name, text1, text2) {
+    describe(`for ${ext} files`, () => {
       it('will extract text', (done) => {
         const filePath = path.join(__dirname, 'files', name);
         fromFileWithPath(filePath, (error, text) => {
-          expect(error).to.be.null;
-          expect(text).to.be.an('string');
+          expect(error).toBeNull();
+          expect(text).toBeInstanceOf(String);
           expect(text.substring(0, 100)).to.eql(text1);
           done();
         });
@@ -860,15 +826,15 @@ describe('textract', () => {
           filePath,
           { preserveLineBreaks: true },
           (error, text) => {
-            expect(error).to.be.null;
-            expect(text).to.be.an('string');
-            expect(text.substring(0, 100)).to.eql(text2);
+            expect(error).toBeNull();
+            expect(text).toBeInstanceOf(String);
+            expect(text.substring(0, 100)).toEqual(text2);
             done();
           },
         );
       });
     });
-  };
+  }
 
   test(
     'markdown',

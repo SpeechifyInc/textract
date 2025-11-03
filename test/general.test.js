@@ -1,21 +1,15 @@
 import { describe, it, expect } from 'vitest';
-const fs = require('node:fs');
-const path = require('node:path');
-const textract = require('../lib');
-
-const {
+import fs from 'node:fs';
+import path from 'node:path';
+import {
   fromFileWithPath,
   fromFileWithMimeAndPath,
   fromBufferWithName,
   fromBufferWithMime,
   fromUrl,
-} = textract;
+} from '../lib/index.js';
 
 describe('textract', () => {
-  it('should be an object', () => {
-    expect(textract).to.be.an.instanceof(Object);
-  });
-
   it('properties should be functions', () => {
     expect(typeof fromFileWithPath).to.eql('function');
     expect(typeof fromFileWithMimeAndPath).to.eql('function');
@@ -28,11 +22,11 @@ describe('textract', () => {
     it('when file does not exist', () => {
       const filePath = 'foo/bar/foo.txt';
       fromFileWithPath(filePath, (error, text) => {
-        expect(text).to.be.null;
+        expect(text).toBeNull();
         expect(error).not.toBeNull();
         expect(error).to.have.property('message');
         expect(error.message).to.eql(
-          `File at path [[ ${  filePath  } ]] does not exist.`,
+          `File at path [[ ${filePath} ]] does not exist.`,
         );
       });
     });
@@ -40,10 +34,10 @@ describe('textract', () => {
     it('when file has unregistered mime type', (done) => {
       const filePath = path.join(__dirname, 'files', 'MxAgCrProd.ppt');
       fromFileWithPath(filePath, (error, text) => {
-        expect(text).to.be.null;
+        expect(text).toBeNull();
         expect(error).to.be.an('object');
-        expect(error.message).to.be.an('string');
-        expect(error.typeNotFound).to.be.true;
+        expect(error.message).toBeInstanceOf(String);
+        expect(error.typeNotFound).toBe(true);
         expect(error.message.substring(0, 61)).to.eql(
           'Error for type: [[ application/vnd.ms-powerpoint ]], file: [[',
         );
@@ -58,7 +52,7 @@ describe('textract', () => {
       'appLication/vnd.openXMLformats-Officedocument.WordProcessingml.Document',
       filePath,
       (error, text) => {
-        expect(error).to.be.null;
+        expect(error).toBeNull();
         expect(text).to.be.a('string');
         expect(text.substring(0, 38)).to.eql(
           'This is a test Just so you know: Lorem',
@@ -71,9 +65,9 @@ describe('textract', () => {
   it('can handle a text file with parens', (done) => {
     const filePath = path.join(__dirname, 'files', 'new doc(1).txt');
     fromFileWithPath(filePath, (error, text) => {
-      expect(error).to.be.null;
-      expect(text).to.be.a('string');
-      expect(text).to.eql('text!!!');
+      expect(error).toBeNull();
+      expect(text).toBeInstanceOf(String);
+      expect(text).toEqual('text!!!');
       done();
     });
   });
@@ -81,8 +75,8 @@ describe('textract', () => {
   it('can handle a docx file with parens', (done) => {
     const filePath = path.join(__dirname, 'files', 'new docx(1).docx');
     fromFileWithPath(filePath, (error, text) => {
-      expect(error).to.be.null;
-      expect(text).to.be.a('string');
+      expect(error).toBeNull();
+      expect(text).toBeInstanceOf(String);
       expect(text.substring(0, 20)).to.eql('This is a test Just ');
       done();
     });
@@ -91,8 +85,8 @@ describe('textract', () => {
   it('can handle cyrillic', (done) => {
     const filePath = path.join(__dirname, 'files', 'cyrillic.docx');
     fromFileWithPath(filePath, (error, text) => {
-      expect(error).to.be.null;
-      expect(text).to.be.a('string');
+      expect(error).toBeNull();
+      expect(text).toBeInstanceOf(String);
       expect(text.substring(0, 100)).to.eql(
         'Актуальность диссертационного исследования определяется необходимостью развития методологического об',
       );
@@ -103,8 +97,8 @@ describe('textract', () => {
   it('can handle special chinese characters', (done) => {
     const filePath = path.join(__dirname, 'files', 'chi.txt');
     fromFileWithPath(filePath, (error, text) => {
-      expect(error).to.be.null;
-      expect(text).to.be.a('string');
+      expect(error).toBeNull();
+      expect(text).toBeInstanceOf(String);
       expect(text.substring(0, 100)).to.eql('，卧虎藏龙卧');
       done();
     });
@@ -114,8 +108,8 @@ describe('textract', () => {
     it('strips line breaks', (done) => {
       const filePath = path.join(__dirname, 'files', 'multi-line.txt');
       fromFileWithPath(filePath, (error, text) => {
-        expect(error).to.be.null;
-        expect(text).to.be.a('string');
+        expect(error).toBeNull();
+        expect(text).toBeInstanceOf(String);
         expect(text).to.eql(
           'This file has a bunch of line breaks in it, and it also has some useful punctuation.',
         );
@@ -129,8 +123,8 @@ describe('textract', () => {
         filePath,
         { preserveLineBreaks: true },
         (error, text) => {
-          expect(error).to.be.null;
-          expect(text).to.be.a('string');
+          expect(error).toBeNull();
+          expect(text).toBeInstanceOf(String);
           expect(text).to.eql(
             'This file\nhas a bunch\nof line breaks\nin it, and it also\nhas some useful\npunctuation.',
           );
@@ -145,8 +139,8 @@ describe('textract', () => {
         filePath,
         { preserveOnlyMultipleLineBreaks: true },
         (error, text) => {
-          expect(error).to.be.null;
-          expect(text).to.be.a('string');
+          expect(error).toBeNull();
+          expect(text).toBeInstanceOf(String);
           expect(text).to.eql(
             'This is a text file\n\nthat has a combination of multiple\n\n\n\nand single line breaks, for use when testing the preserveOnlyMultipleLineBreaks option that keeps only\n\n\nmultiple line breaks.',
           );
@@ -157,14 +151,14 @@ describe('textract', () => {
   });
 
   describe('can handle all the different API variations', () => {
-    const test = function (done) {
+    function test(done) {
       return function (error, text) {
-        expect(error).to.be.null;
-        expect(text).to.be.a('string');
+        expect(error).toBeNull();
+        expect(text).toBeInstanceOf(String);
         expect(text.substring(0, 20)).to.eql('This is a test Just ');
         done();
       };
-    };
+    }
 
     it('fromFileWithPath(filePath, callback) ', (done) => {
       const filePath = path.join(__dirname, 'files', 'new docx(1).docx');

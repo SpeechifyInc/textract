@@ -54,6 +54,9 @@ importers:
       '@speechifyinc/platform-code-conformity-kit':
         specifier: ^3.0.0
         version: 3.0.0(@typescript-eslint/eslint-plugin@8.46.2(@typescript-eslint/parser@8.46.2(eslint@9.21.0)(typescript@5.9.3))(eslint@9.21.0)(typescript@5.9.3))(@typescript-eslint/parser@8.46.2(eslint@9.21.0)(typescript@5.9.3))(@typescript-eslint/utils@8.46.2(eslint@9.21.0)(typescript@5.9.3))(class-validator@0.14.2)(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.46.2(eslint@9.21.0)(typescript@5.9.3))(eslint-import-resolver-typescript@3.10.1)(eslint@9.21.0))(eslint@9.21.0)(next@15.5.6(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(prettier@3.6.2)(typescript@5.9.3)
+      '@types/meow':
+        specifier: ^6.0.0
+        version: 6.0.0
       '@types/node':
         specifier: ^22.18.13
         version: 22.18.13
@@ -718,6 +721,10 @@ packages:
 
   '@types/mdast@4.0.4':
     resolution: {integrity: sha512-kGaNbPh1k7AFzgpud/gMdvIm5xuECykRR+JnWKQno9TAXVa6WIVCGTPvYGekIDL4uwCZQSYbUxNBSb1aUo79oA==}
+
+  '@types/meow@6.0.0':
+    resolution: {integrity: sha512-RzAdIcBCzg6A61SjQGmQHsJ6nEIsGdd2cAw/MAdBwwI0SZg4iGbtpto44BkY6Vq8SDsiqcCV2DowmHj8v+K1gw==}
+    deprecated: This is a stub types definition. meow provides its own type definitions, so you do not need this installed.
 
   '@types/ms@2.1.0':
     resolution: {integrity: sha512-GsCCIZDE/p3i96vtEqx+7dBUGXrc7zeSK3wwPHIaRThS+9OhWIXRqzs4d6k1SVU8g91DrNRWxWUGhp5KXQb2VA==}
@@ -3679,6 +3686,10 @@ snapshots:
   '@types/mdast@4.0.4':
     dependencies:
       '@types/unist': 3.0.3
+
+  '@types/meow@6.0.0':
+    dependencies:
+      meow: 3.7.0
 
   '@types/ms@2.1.0': {}
 
