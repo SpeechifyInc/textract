@@ -6,13 +6,12 @@ import {
   fromBufferWithMime,
 } from '../lib/index.js';
 
-function test(done) {
+function test() {
   return function (error, text) {
     expect(text).toBeNull();
     expect(error).not.toBeNull();
     expect(error).toHaveProperty('message');
     expect(error.message).toEqual('Incorrect parameters passed to textract.');
-    done();
   };
 }
 
