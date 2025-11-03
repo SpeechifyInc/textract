@@ -1,42 +1,52 @@
 import { exec } from 'node:child_process';
 import os from 'node:os';
 import path from 'node:path';
+import type { Options } from '../types.js';
 import util from '../util.js';
 
 /**
- *
- * @param filePath
- * @param options
- * @param cb
+ * Extract text from a DOC file using antiword
+ * @param filePath path to file
+ * @param options options
+ * @returns text from file
  */
-function extractText(filePath, options, cb) {
+async function extractText(
+  filePath: string,
+  options: Options,
+): Promise<string> {
   const execOptions = util.createExecOptions('doc', options);
 
-  exec(
-    `antiword -m UTF-8.txt "${filePath}"`,
-    execOptions,
-    (error, stdout /* , stderr */) => {
-      let err;
-      if (error) {
+  return new Promise((resolve, reject) => {
+    exec(
+      `antiword -m UTF-8.txt "${filePath}"`,
+      execOptions,
+      (error, stdout /* , stderr */) => {
+        if (!error) {
+          resolve(stdout.trim().replaceAll('[pic]', ''));
+          return;
+        }
+
         if (error.toString().indexOf('is not a Word Document') > 0) {
-          err = new Error(
-            `file named [[ ${path.basename(
-              filePath,
-            )} ]] does not appear to really be a .doc file`,
+          reject(
+            new Error(
+              `file named [[ ${path.basename(
+                filePath,
+              )} ]] does not appear to really be a .doc file`,
+            ),
           );
-        } else {
-          err = new Error(
+          return;
+        }
+
+        reject(
+          new Error(
             `antiword read of file named [[ ${path.basename(
               filePath,
-            )} ]] failed: ${error}`,
-          );
-        }
-        cb(err, null);
-      } else {
-        cb(null, stdout.trim().replace(/\[pic\]/g, ''));
-      }
-    },
-  );
+            )} ]] failed: ${error.message}`,
+          ),
+        );
+      },
+    );
+  });
 }
 
 /**

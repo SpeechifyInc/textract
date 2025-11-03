@@ -45,6 +45,7 @@
     "@speechifyinc/platform-code-conformity-kit": "^3.0.0",
     "@types/meow": "^6.0.0",
     "@types/node": "^22.18.13",
+    "@types/yauzl": "^2.10.3",
     "eslint": "^9.21.0",
     "prettier": "^3.6.2",
     "vitest": "^4.0.6"
