@@ -1,3 +1,7 @@
+### 2.5.3
+
+- Stop creating the temp dir when utils module is imported
+
 ### 2.5.2
 
 - Add types
