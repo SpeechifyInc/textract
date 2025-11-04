@@ -1,7 +1,7 @@
 import { DOMParser as Dom } from 'xmldom';
 import xpath from 'xpath';
-import yauzl from 'yauzl';
-import { Options } from '../types.js';
+import type yauzl from 'yauzl';
+import type { Options } from '../types.js';
 import util from '../util.js';
 
 const includeRegex = /.xml$/;
@@ -54,58 +54,53 @@ async function extractText(
   filePath: string,
   options: Options,
 ): Promise<string> {
+  const zipfile = await util.unpackZipFile(filePath);
+
   let result = '';
 
   return new Promise((resolve, reject) => {
-    yauzl.open(filePath, (err, zipfile) => {
-      if (err) {
-        reject(util.yauzlError(err));
-        return;
-      }
+    zipfile.on('error', (errInner: Error) => {
+      reject(errInner);
+    });
 
-      let processedEntries = 0;
+    let processedEntries = 0;
 
-      const processEnd = () => {
-        if (zipfile.entryCount === ++processedEntries) {
-          if (!result.length) {
-            reject(
-              new Error(
-                'Extraction could not find content in file, are you sure it is the mime type it says it is?',
-              ),
-            );
-            return;
-          }
-
-          resolve(
-            calculateExtractedText(result, options.preserveLineBreaks ?? false),
+    const processEnd = () => {
+      if (zipfile.entryCount === ++processedEntries) {
+        if (!result.length) {
+          reject(
+            new Error(
+              'Extraction could not find content in file, are you sure it is the mime type it says it is?',
+            ),
           );
+          return;
         }
-      };
 
-      const processEntry = async (entry: yauzl.Entry) => {
-        if (
-          includeRegex.test(entry.fileName) &&
-          !excludeRegex.test(entry.fileName)
-        ) {
-          try {
-            const entryText = await util.getTextFromZipFile(zipfile, entry);
-            result += `${entryText}\n`;
-            processEnd();
-          } catch (errInner) {
-            reject(errInner as Error);
-          }
-        } else {
+        resolve(
+          calculateExtractedText(result, options.preserveLineBreaks ?? false),
+        );
+      }
+    };
+
+    const processEntry = async (entry: yauzl.Entry) => {
+      if (
+        includeRegex.test(entry.fileName) &&
+        !excludeRegex.test(entry.fileName)
+      ) {
+        try {
+          const entryText = await util.getTextFromZipFile(zipfile, entry);
+          result += `${entryText}\n`;
           processEnd();
+        } catch (errInner) {
+          reject(errInner as Error);
         }
-      };
+      } else {
+        processEnd();
+      }
+    };
 
-      zipfile.on('entry', (entry: yauzl.Entry) => {
-        void processEntry(entry);
-      });
-
-      zipfile.on('error', (errInner) => {
-        reject(errInner as Error);
-      });
+    zipfile.on('entry', (entry: yauzl.Entry) => {
+      void processEntry(entry);
     });
   });
 }

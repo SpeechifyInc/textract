@@ -2,6 +2,7 @@ import { exec, type ExecOptions } from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import yauzl from 'yauzl';
 import type { Entry, ZipFile } from 'yauzl';
 import type { Options } from './types.js';
 
@@ -212,6 +213,23 @@ async function runExecIntoFile(
   return text;
 }
 
+/**
+ * Unpack a zip file
+ * @param filePath path to zip file
+ * @returns zip file
+ */
+async function unpackZipFile(filePath: string): Promise<yauzl.ZipFile> {
+  return new Promise((resolve, reject) => {
+    yauzl.open(filePath, (err, zipfile) => {
+      if (err) {
+        reject(yauzlError(err));
+        return;
+      }
+      resolve(zipfile);
+    });
+  });
+}
+
 export default {
   createExecOptions,
   unzipCheck,
@@ -219,4 +237,5 @@ export default {
   yauzlError,
   runExecIntoFile,
   replaceBadCharacters,
+  unpackZipFile,
 };

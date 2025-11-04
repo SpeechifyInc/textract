@@ -1,5 +1,5 @@
 import * as cheerio from 'cheerio';
-import yauzl from 'yauzl';
+import type yauzl from 'yauzl';
 import type { Options } from '../types.js';
 import util from '../util.js';
 
@@ -13,10 +13,16 @@ async function extractText(
   filePath: string,
   _options: Options,
 ): Promise<string> {
+  const zipfile = await util.unpackZipFile(filePath);
+
   return new Promise((resolve, reject) => {
+    zipfile.on('error', (errInner: Error) => {
+      reject(errInner);
+    });
+
     let textOnTheWay = false;
 
-    const processEntry = async (zipfile: yauzl.ZipFile, entry: yauzl.Entry) => {
+    const processEntry = async (entry: yauzl.Entry) => {
       if (entry.fileName !== 'content.xml') {
         return;
       }
@@ -48,30 +54,18 @@ async function extractText(
       }
     };
 
-    yauzl.open(filePath, (err, zipfile) => {
-      if (err) {
-        reject(util.yauzlError(err));
-        return;
+    zipfile.on('end', () => {
+      if (!textOnTheWay) {
+        reject(
+          new Error(
+            'Extraction could not find content.xml in file, are you sure it is the mime type it says it is?',
+          ),
+        );
       }
+    });
 
-      zipfile.on('end', () => {
-        if (!textOnTheWay) {
-          reject(
-            new Error(
-              'Extraction could not find content.xml in file, ' +
-                'are you sure it is the mime type it says it is?',
-            ),
-          );
-        }
-      });
-
-      zipfile.on('entry', (entry: yauzl.Entry) => {
-        void processEntry(zipfile, entry);
-      });
-
-      zipfile.on('error', (errInner: Error) => {
-        reject(errInner);
-      });
+    zipfile.on('entry', (entry: yauzl.Entry) => {
+      void processEntry(entry);
     });
   });
 }
