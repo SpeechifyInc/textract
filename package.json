@@ -43,6 +43,7 @@
   },
   "devDependencies": {
     "@speechifyinc/platform-code-conformity-kit": "^3.0.0",
+    "@types/marked": "^6.0.0",
     "@types/meow": "^6.0.0",
     "@types/node": "^22.18.13",
     "@types/yauzl": "^2.10.3",

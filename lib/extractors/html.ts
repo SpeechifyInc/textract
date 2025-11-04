@@ -57,9 +57,8 @@ function getTextWithAlt<T extends AnyNode>(
  * @param options options
  * @returns extracted text
  */
-function extractFromText(data: Buffer, options: Options): string {
+export function extractFromText(data: string, options: Options): string {
   const text = data
-    .toString()
     .replace(
       /< *(br|p|div|section|aside|button|header|footer|li|article|blockquote|cite|code|h1|h2|h3|h4|h5|h6|legend|nav)((.*?)>)/g,
       '<$1$2|||||',
@@ -111,7 +110,7 @@ async function extractText(
   options: Options,
 ): Promise<string> {
   const data = await fs.promises.readFile(filePath);
-  return extractFromText(data, options);
+  return extractFromText(data.toString(), options);
 }
 
 export default {
