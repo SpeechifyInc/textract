@@ -1,30 +1,32 @@
 import path from 'node:path';
 import J from 'j';
+import type { Options } from '../types.js';
 
 /**
- *
- * @param filePath
- * @param options
- * @param cb
+ * Extract text from a XLS file
+ * @param filePath path to file
+ * @param _options options (not used)
+ * @returns extracted text
  */
-function extractText(filePath, options, cb) {
-  let CSVs, wb, result, error;
+function extractText(filePath: string, _options: Options): string {
+  let wb: any;
+  let CSVs: any;
 
   try {
     wb = J.readFile(filePath);
     CSVs = J.utils.to_csv(wb);
   } catch (err) {
-    error = new Error(`Could not extract ${path.basename(filePath)}, ${err}`);
-    cb(error, null);
-    return;
+    throw new Error(
+      `Could not extract ${path.basename(filePath)}, ${(err as Error).message}`,
+    );
   }
 
-  result = '';
-  Object.keys(CSVs).forEach((key) => {
+  let result = '';
+  for (const key of Object.keys(CSVs)) {
     result += CSVs[key];
-  });
+  }
 
-  cb(null, result);
+  return result;
 }
 
 export default {
