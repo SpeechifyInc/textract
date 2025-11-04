@@ -14,7 +14,7 @@ import rtf from './rtf.js';
 import text from './text.js';
 import xls from './xls.js';
 
-interface Extractor {
+export interface Extractor {
   types: (string | RegExp)[];
   extract: (filePath: string, options: Options) => string | Promise<string>;
   test?: (options: Options) => Promise<boolean>;

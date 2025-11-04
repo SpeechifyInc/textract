@@ -1,11 +1,10 @@
 import { XmlEntities } from 'html-entities';
+import extractors, { type Extractor } from './extractors/index.js';
 import util from './util.js';
-import extractors from './extractors/index.js';
+import type { Options } from './types.js';
 
 const entities = new XmlEntities();
-const typeExtractors = {};
-const regexExtractors = [];
-const failedExtractorTypes = {};
+
 let totalExtractors = 0;
 let satisfiedExtractors = 0;
 let hasInitialized = false;
@@ -15,51 +14,59 @@ const WHITELIST_PRESERVE_LINEBREAKS =
 const WHITELIST_STRIP_LINEBREAKS =
   /[^A-Za-z\x80-\xFF\x24\u20AC\xA3\xA5 0-9 \u2015\u2116\u2018\u2019\u201C|\u201D\u2026 \uFF0C \u2013 \u2014 \u00C0-\u1FFF \u2C00-\uD7FF \uFB50–\uFDFF \uFE70–\uFEFF \uFF01-\uFFE6 .,?""!@#$%^&*()-_=+;:<>/\\|}{[\]`~'-\w]*/g;
 
+const typeExtractors: Record<
+  string,
+  (filePath: string, options: Options) => string | Promise<string>
+> = {};
+
+const regexExtractors: {
+  reg: RegExp;
+  extractor: (filePath: string, options: Options) => string | Promise<string>;
+}[] = [];
+
+const failedExtractorTypes: Record<string, string> = {};
+
 /**
- *
- * @param extractor
+ * Register an extractor
+ * @param extractor extractor to register
  */
-function registerExtractor(extractor) {
-  if (extractor.types) {
-    extractor.types.forEach((type) => {
-      if (typeof type === 'string') {
-        type = type.toLowerCase();
-        typeExtractors[type] = extractor.extract;
-      } else if (type instanceof RegExp) {
-        regexExtractors.push({ reg: type, extractor: extractor.extract });
-      }
-    });
+function registerExtractor(extractor: Extractor) {
+  for (const type of extractor.types) {
+    if (typeof type === 'string') {
+      const normalizedType = type.toLowerCase();
+      typeExtractors[normalizedType] = extractor.extract;
+    } else if (type instanceof RegExp) {
+      regexExtractors.push({ reg: type, extractor: extractor.extract });
+    }
   }
 }
 
 /**
- *
- * @param extractor
- * @param failedMessage
+ * Register a failed extractor
+ * @param extractor extractor that failed to initialize
+ * @param failedMessage message to register
  */
-function registerFailedExtractor(extractor, failedMessage) {
-  if (extractor.types) {
-    extractor.types.forEach((type) => {
-      failedExtractorTypes[type.toLowerCase()] = failedMessage;
-    });
+function registerFailedExtractor(extractor: Extractor, failedMessage: string) {
+  for (const type of extractor.types) {
+    failedExtractorTypes[type.toString().toLowerCase()] = failedMessage;
   }
 }
 
 /**
- *
- * @param extractor
- * @param options
+ * Try to register an extractor
+ * @param extractor extractor to try to register
+ * @param options options to pass to the extractor
  */
-async function tryRegisterExtractor(extractor, options) {
+async function tryRegisterExtractor(extractor: Extractor, options: Options) {
   try {
-    const passedTest = await extractor.test(options);
+    const passedTest = (await extractor.test?.(options)) ?? true;
     if (passedTest) {
       registerExtractor(extractor);
     } else {
       registerFailedExtractor(extractor, 'Extractor failed to initialize');
     }
   } catch (error) {
-    registerFailedExtractor(extractor, error.message);
+    registerFailedExtractor(extractor, (error as Error).message);
   }
 }
 
