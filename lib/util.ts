@@ -55,7 +55,7 @@ function yauzlError(err: Error) {
  * @returns exec options
  */
 function createExecOptions(
-  type: 'doc' | 'dxf' | 'images',
+  type: 'doc' | 'dxf' | 'images' | 'rtf',
   options: Options,
 ): ExecOptions {
   let execOptions: ExecOptions = {};
