@@ -1,3 +1,4 @@
+import { Options } from '../types.js';
 import docOSX from './doc-osx.js';
 import doc from './doc.js';
 import docx from './docx.js';
@@ -13,7 +14,13 @@ import rtf from './rtf.js';
 import text from './text.js';
 import xls from './xls.js';
 
-export default [
+interface Extractor {
+  types: (string | RegExp)[];
+  extract: (filePath: string, options: Options) => string | Promise<string>;
+  test?: (options: Options) => Promise<boolean>;
+}
+
+const extractors: Extractor[] = [
   docOSX,
   doc,
   docx,
@@ -29,3 +36,5 @@ export default [
   text,
   xls,
 ];
+
+export default extractors;
