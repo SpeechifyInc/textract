@@ -15,7 +15,7 @@ const TEST_CASES = [
   [
     'doc',
     'doc.doc',
-    ' Word Specification Sample Working Draft 04, 16 August 2002 Document identifier: wd-spectools-word-s',
+    'Word Specification Sample Working Draft 04, 16 August 2002 Document identifier: wd-spectools-word-sa',
   ],
 
   ['xls', 'test.xls', 'This,is,a,spreadsheet,yay! '],

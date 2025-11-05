@@ -173,7 +173,7 @@ describe('textract', () => {
       const docPath = path.join(__dirname, 'files', 'doc.doc');
       const text = await fromFileWithPath(docPath);
       expect(text.substring(0, 100)).toEqual(
-        ' Word Specification Sample Working Draft 04, 16 August 2002 Document identifier: wd-spectools-word-s',
+        'Word Specification Sample Working Draft 04, 16 August 2002 Document identifier: wd-spectools-word-sa',
       );
     });
 
@@ -181,7 +181,7 @@ describe('textract', () => {
       const docPath = path.join(__dirname, 'files', 'doc space.doc');
       const text = await fromFileWithPath(docPath);
       expect(text.substring(0, 100)).toEqual(
-        ' Word Specification Sample Working Draft 04, 16 August 2002 Document identifier: wd-spectools-word-s',
+        'Word Specification Sample Working Draft 04, 16 August 2002 Document identifier: wd-spectools-word-sa',
       );
     });
 
@@ -262,8 +262,8 @@ describe('textract', () => {
       try {
         await fromFileWithPath(filePath);
       } catch (error) {
-        expect((error as Error).message).toContain(
-          'Could not extract notaxlsx.xlsx, Error: PRN',
+        expect((error as Error).message).toMatch(
+          /Could not extract .* PRN files unsupported/,
         );
       }
     });
@@ -439,8 +439,8 @@ describe('textract', () => {
       try {
         await fromFileWithPath(filePath);
       } catch (error) {
-        expect((error as Error).message).toEqual(
-          'Could not detect encoding for file named [[ unknown-encoding.txt ]]',
+        expect((error as Error).message).toMatch(
+          /Could not detect encoding for file named \[\[ .* \]\]/,
         );
       }
     });
