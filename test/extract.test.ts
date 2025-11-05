@@ -6,7 +6,7 @@ import { extract } from '../lib/index.js';
 import type { Options } from '../lib/types.js';
 
 async function fromFileWithPath(filePath: string, options?: Options) {
-  const mimeType = mime.getType(filePath);
+  const mimeType = mime.getType(filePath) ?? '';
   const fileContent = fs.readFileSync(filePath);
   const text = await extract(mimeType, fileContent, options);
   return text;
