@@ -1,12 +1,10 @@
 import { XmlEntities } from 'html-entities';
 import extractors, { type Extractor } from './extractors/index.js';
-import util from './util.js';
 import type { Options } from './types.js';
+import util from './util.js';
 
 const entities = new XmlEntities();
 
-let totalExtractors = 0;
-let satisfiedExtractors = 0;
 let hasInitialized = false;
 const STRIP_ONLY_SINGLE_LINEBREAKS = /(^|[^\n])\n(?!\n)/g;
 const WHITELIST_PRESERVE_LINEBREAKS =
@@ -14,14 +12,16 @@ const WHITELIST_PRESERVE_LINEBREAKS =
 const WHITELIST_STRIP_LINEBREAKS =
   /[^A-Za-z\x80-\xFF\x24\u20AC\xA3\xA5 0-9 \u2015\u2116\u2018\u2019\u201C|\u201D\u2026 \uFF0C \u2013 \u2014 \u00C0-\u1FFF \u2C00-\uD7FF \uFB50–\uFDFF \uFE70–\uFEFF \uFF01-\uFFE6 .,?""!@#$%^&*()-_=+;:<>/\\|}{[\]`~'-\w]*/g;
 
-const typeExtractors: Record<
-  string,
-  (filePath: string, options: Options) => string | Promise<string>
-> = {};
+type ExtractorFunction = (
+  filePath: string,
+  options: Options,
+) => string | Promise<string>;
+
+const typeExtractors: Record<string, ExtractorFunction> = {};
 
 const regexExtractors: {
   reg: RegExp;
-  extractor: (filePath: string, options: Options) => string | Promise<string>;
+  extractor: ExtractorFunction;
 }[] = [];
 
 const failedExtractorTypes: Record<string, string> = {};
@@ -72,124 +72,106 @@ async function tryRegisterExtractor(extractor: Extractor, options: Options) {
 
 // global, all file type, content cleansing
 /**
- *
- * @param options
- * @param cb
+ * Clean up text
+ * @param inputText input text
+ * @param options options
+ * @returns cleaned text
  */
-function cleanseText(options, cb) {
-  return function (error, text) {
-    if (!error) {
-      // clean up text
-      text = util.replaceBadCharacters(text);
+function cleanseText(inputText: string, options: Options): string {
+  // clean up text
+  let text = util.replaceBadCharacters(inputText);
 
-      if (
-        options.preserveLineBreaks ||
-        options.preserveOnlyMultipleLineBreaks
-      ) {
-        if (options.preserveOnlyMultipleLineBreaks) {
-          text = text.replace(STRIP_ONLY_SINGLE_LINEBREAKS, '$1 ').trim();
-        }
-        text = text.replace(WHITELIST_PRESERVE_LINEBREAKS, ' ');
-      } else {
-        text = text.replace(WHITELIST_STRIP_LINEBREAKS, ' ');
-      }
-
-      // multiple spaces, tabs, vertical tabs, non-breaking space]
-      text = text.replace(/ (?! )/g, '').replace(/[ \t\v\u00A0]{2,}/g, ' ');
-
-      text = entities.decode(text);
+  if (options.preserveLineBreaks || options.preserveOnlyMultipleLineBreaks) {
+    if (options.preserveOnlyMultipleLineBreaks) {
+      text = text.replace(STRIP_ONLY_SINGLE_LINEBREAKS, '$1 ').trim();
     }
-    cb(error, text);
-  };
+    text = text.replace(WHITELIST_PRESERVE_LINEBREAKS, ' ');
+  } else {
+    text = text.replace(WHITELIST_STRIP_LINEBREAKS, ' ');
+  }
+
+  // multiple spaces, tabs, vertical tabs, non-breaking space]
+  text = text.replace(/ (?! )/g, '').replace(/[ \t\v\u00A0]{2,}/g, ' ');
+
+  text = entities.decode(text);
+
+  return text;
 }
 
 /**
- *
- * @param options
+ * Initialize extractors
+ * @param options options
+ * @returns void
  */
-function initializeExtractors(options) {
+async function initializeExtractors(options: Options) {
   hasInitialized = true;
 
   // perform any binary tests to ensure extractor is possible
   // given execution environment
   for (const extractor of extractors) {
     if (extractor.test) {
-      tryRegisterExtractor(extractor, options);
+      await tryRegisterExtractor(extractor, options);
     } else {
-      satisfiedExtractors++;
       registerExtractor(extractor);
     }
   }
-
-  // need to keep track of how many extractors we have in total
-  totalExtractors = extractors.length;
 }
 
 /**
- *
- * @param type
+ * Find an extractor by mime type
+ * @param mimeType mime type
+ * @returns extractor
  */
-function findExtractor(type) {
-  let i,
-    iLen = regexExtractors.length,
-    extractor,
-    regexExtractor;
+function findExtractor(mimeType: string): ExtractorFunction | undefined {
+  const normalizedFileType = mimeType.toLowerCase();
+  if (typeExtractors[normalizedFileType]) {
+    return typeExtractors[normalizedFileType];
+  }
 
-  type = type.toLowerCase();
-  if (typeExtractors[type]) {
-    extractor = typeExtractors[type];
-  } else {
-    for (i = 0; i < iLen; i++) {
-      regexExtractor = regexExtractors[i];
-      if (type.match(regexExtractor.reg)) {
-        extractor = regexExtractor.extractor;
-      }
+  for (const regexExtractor of regexExtractors) {
+    if (normalizedFileType.match(regexExtractor.reg)) {
+      return regexExtractor.extractor;
     }
   }
-  return extractor;
+
+  return undefined;
 }
 
 /**
- *
- * @param type
- * @param filePath
- * @param options
- * @param cb
+ * Extract text from a file
+ * @param mimeType mime type
+ * @param filePath path to file
+ * @param options options
+ * @returns extracted text
  */
-export default function extract(type, filePath, options, cb) {
-  let error, msg, theExtractor;
-
+export default async function extract(
+  mimeType: string,
+  filePath: string,
+  options: Options,
+): Promise<string> {
   if (!hasInitialized) {
-    initializeExtractors(options);
+    await initializeExtractors(options);
   }
 
-  // registration of extractors complete?
-  if (totalExtractors === satisfiedExtractors) {
-    theExtractor = findExtractor(type);
+  const extractor = findExtractor(mimeType);
 
-    if (theExtractor) {
-      cb = cleanseText(options, cb);
-      theExtractor(filePath, options, cb);
-    } else {
-      // cannot extract this file type
-      msg = `Error for type: [[ ${type} ]], file: [[ ${filePath} ]]`;
+  if (!extractor) {
+    // cannot extract this file type
+    let msg = `Error for type: [[ ${mimeType} ]], file: [[ ${filePath} ]]`;
 
-      // update error message if type is supported but just not configured/installed properly
-      if (failedExtractorTypes[type]) {
-        msg +=
-          `, extractor for type exists, but failed to initialize.` +
-          ` Message: ${failedExtractorTypes[type]}`;
-      }
-
-      error = new Error(msg);
-      error.typeNotFound = true;
-      cb(error, null);
+    // update error message if type is supported but just not configured/installed properly
+    if (failedExtractorTypes[mimeType]) {
+      msg +=
+        `, extractor for type exists, but failed to initialize.` +
+        ` Message: ${failedExtractorTypes[mimeType]}`;
     }
-  } else {
-    // async registration has not wrapped up
-    // try again later
-    setTimeout(() => {
-      extract(type, filePath, options, cb);
-    }, 100);
+
+    const error = new Error(msg);
+    (error as Error & { typeNotFound: boolean }).typeNotFound = true;
+    throw error;
   }
+
+  const text = await extractor(filePath, options);
+
+  return cleanseText(text, options);
 }
