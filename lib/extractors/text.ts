@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import iconv from 'iconv-lite';
-import jschardet from 'jschardet';
+import { detect } from 'jschardet';
 import type { Options } from '../types.js';
 
 /**
@@ -16,7 +16,7 @@ async function extractText(
 ): Promise<string> {
   const data = await fs.promises.readFile(filePath);
 
-  const detectedEncoding = jschardet.detect(data).encoding;
+  const { encoding: detectedEncoding } = detect(data);
   if (!detectedEncoding) {
     throw new Error(
       `Could not detect encoding for file named [[ ${path.basename(
