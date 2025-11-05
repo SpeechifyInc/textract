@@ -41,7 +41,7 @@ function replaceBadCharacters(text: string): string {
  */
 function yauzlError(err: Error) {
   let msg = err.message;
-  if (msg === 'end of central directory record signature not found') {
+  if (msg.includes('End of central directory record signature not found')) {
     msg = `File not correctly recognized as zip file, ${msg}`;
   }
   return new Error(msg);
