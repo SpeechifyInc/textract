@@ -30,8 +30,8 @@ importers:
         specifier: ^16.4.1
         version: 16.4.1
       pdf-text-extract:
-        specifier: 1.3.1
-        version: 1.3.1
+        specifier: 1.4.0
+        version: 1.4.0
       xmldom:
         specifier: 0.1.27
         version: 0.1.27
@@ -2365,8 +2365,8 @@ packages:
   pathe@2.0.3:
     resolution: {integrity: sha512-WUjGcAqP1gQacoQe+OBJsFA7Ld4DyXuUIjZ5cc75cLHvJ7dtNsTugphxIADwspS+AraAUePCKrSVtPLFj/F88w==}
 
-  pdf-text-extract@1.3.1:
-    resolution: {integrity: sha512-SFOPNOajIvJTkbdsTXuaO2Dh0x1h1sdak4W4nt6qY7pW2mV9Q8EavRQXTt/3xGZnYyhwq99KifcSYF+w9KBk8w==}
+  pdf-text-extract@1.4.0:
+    resolution: {integrity: sha512-Zo4Mi2IcOaSe0HQrRoa0lonfnfmE3n2Rt9lj1vFHf1pBCokVJbeoi04QSWz6TivwxCjkqlHgMbuYQKFb6ObYrQ==}
     hasBin: true
 
   pend@1.2.0:
@@ -5605,7 +5605,7 @@ snapshots:
 
   pathe@2.0.3: {}
 
-  pdf-text-extract@1.3.1:
+  pdf-text-extract@1.4.0:
     dependencies:
       yargs: 1.3.3
 
