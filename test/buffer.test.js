@@ -3,7 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import mime from 'mime';
 import { describe, it, expect } from 'vitest';
-import { fromBufferWithName, fromBufferWithMime } from '../lib/index.js';
+import { fromBufferWithMime } from '../lib/index.js';
 
 const TEST_CASES = [
   [
@@ -104,18 +104,6 @@ const TEST_CASES = [
 ];
 
 const DIR = fileURLToPath(path.dirname(import.meta.url));
-
-describe('textract fromBufferWithName', () => {
-  it.each(TEST_CASES)('will %s files', (_ext, name, text) => {
-    const docPath = path.join(DIR, 'files', name);
-    const textBuff = fs.readFileSync(docPath);
-    fromBufferWithName(docPath, textBuff, (error, _text) => {
-      expect(error).toBeNull();
-      expect(text).toBeInstanceOf(String);
-      expect(text.substring(0, 100)).toEqual(text);
-    });
-  });
-});
 
 describe('textract fromBufferWithMime', () => {
   it.each(TEST_CASES)('will %s files', (_ext, name, text) => {

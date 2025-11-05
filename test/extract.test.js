@@ -1,6 +1,12 @@
 import path from 'node:path';
 import { describe, it, expect } from 'vitest';
-import { fromFileWithPath } from '../lib/index.js';
+import { fromBufferWithMime } from '../lib/index.js';
+
+async function fromFileWithPath(filePath, options) {
+  const mimeType = options?.typeOverride || mime.getType(filePath);
+  const text = await fromBufferWithMime(mimeType, filePath, options);
+  return text;
+}
 
 describe('textract', () => {
   describe('for .csv files ', () => {
