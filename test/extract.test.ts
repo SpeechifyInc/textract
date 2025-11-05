@@ -145,7 +145,7 @@ describe('textract', () => {
       const docPath = path.join(__dirname, 'files', 'sample.rtf');
       const text = await fromFileWithPath(docPath);
       expect(text.substring(144, 220)).toEqual(
-        "bit of hidden text. So we're going to end this paragraph here and go on to a",
+        "So we're going to end this paragraph here and go on to a nice little list: I",
       );
     });
 
@@ -153,7 +153,7 @@ describe('textract', () => {
       const docPath = path.join(__dirname, 'files', 'sample rtf.rtf');
       const text = await fromFileWithPath(docPath);
       expect(text.substring(144, 220)).toEqual(
-        "bit of hidden text. So we're going to end this paragraph here and go on to a",
+        "So we're going to end this paragraph here and go on to a nice little list: I",
       );
     });
 
@@ -162,8 +162,8 @@ describe('textract', () => {
       const text = await fromFileWithPath(docPath, {
         preserveLineBreaks: true,
       });
-      expect(text.substring(144, 230)).toEqual(
-        "bit of hidden text. So we're going to end this paragraph here and go on to a nice litt",
+      expect(text.substring(144, 227)).toEqual(
+        "So we're going to end this paragraph here and go on to a nice little list:\n\n Item 1",
       );
     });
   });
