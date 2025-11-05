@@ -1,10 +1,16 @@
-import path from 'node:path';
 import fs from 'node:fs';
+import path from 'node:path';
 import mime from 'mime';
 import { describe, it, expect } from 'vitest';
 import { extract } from '../lib/index.js';
 import type { Options } from '../lib/types.js';
 
+/**
+ * Extract text from a file with a path
+ * @param filePath path to file
+ * @param options options
+ * @returns text from file
+ */
 async function fromFileWithPath(filePath: string, options?: Options) {
   const mimeType = mime.getType(filePath) ?? '';
   const fileContent = fs.readFileSync(filePath);
