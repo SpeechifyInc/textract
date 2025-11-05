@@ -21,6 +21,7 @@ async function extractText(
     extract(
       filePath,
       pdftotextOptions,
+      'pdftotext', // command name, when not passed the library goes bonkers
       (error: Error | null, pages: string[]) => {
         if (error) {
           reject(
