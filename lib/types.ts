@@ -1,4 +1,5 @@
 import type { ExecOptions } from 'node:child_process';
+import type { Options as PdfTextExtractOptions } from './pdf-text-extract/index.js';
 
 export interface ExtractorExecOptions {
   exec: ExecOptions;
@@ -69,44 +70,7 @@ export interface Options {
    * It is not suggested you modify this without understanding what trouble that might get you in.
    * See [this GH issue](https://github.com/dbashford/textract/issues/75) for why textract overrides that library's default.
    */
-  pdftotextOptions?:
-    | {
-        firstPage?: number | undefined;
-        lastPage?: number | undefined;
-        resolution?: number | undefined;
-        crop?:
-          | {
-              x: number;
-              y: number;
-              w: number;
-              h: number;
-            }
-          | undefined;
-        /**
-         * Do not change unless you know what you are doing!
-         * @default "raw"
-         */
-        layout?: 'layout' | 'raw' | 'htmlmeta' | undefined;
-        /**
-         * @default "UTF-8"
-         */
-        encoding?:
-          | 'UCS-2'
-          | 'ASCII7'
-          | 'Latin1'
-          | 'UTF-8'
-          | 'ZapfDingbats'
-          | 'Symbol'
-          | undefined;
-        eol?: 'unix' | 'dos' | 'mac' | undefined;
-        ownerPassword?: string | undefined;
-        userPassword?: string | undefined;
-        /**
-         * @default true
-         */
-        splitPages?: boolean | undefined;
-      }
-    | undefined;
+  pdftotextOptions?: PdfTextExtractOptions | undefined;
   /**
    * When extracting HTML, whether or not to include `alt` text with the extracted text.
    * @default false

@@ -30,7 +30,6 @@
     "j": "0.4.3",
     "jschardet": "1.4.1",
     "marked": "^16.4.1",
-    "pdf-text-extract": "^1.5.0",
     "xmldom": "0.1.27",
     "xpath": "0.0.23",
     "yauzl": "^3.2.0"

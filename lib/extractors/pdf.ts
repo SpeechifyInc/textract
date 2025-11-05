@@ -1,6 +1,6 @@
 import { exec } from 'node:child_process';
 import path from 'node:path';
-import extract from 'pdf-text-extract';
+import { pdfTextExtract } from '../pdf-text-extract/index.js';
 import type { Options } from '../types.js';
 
 /**
@@ -17,27 +17,16 @@ async function extractText(
   // what is happening here
   const pdftotextOptions = options.pdftotextOptions ?? { layout: 'raw' };
 
-  return new Promise((resolve, reject) => {
-    extract(
-      filePath,
-      pdftotextOptions,
-      'pdftotext', // command name, when not passed the library goes bonkers
-      (error: Error | null, pages: string[]) => {
-        if (error) {
-          reject(
-            new Error(
-              `Error extracting PDF text for file at [[ ${path.basename(
-                filePath,
-              )} ]], error: ${error.message}`,
-            ),
-          );
-          return;
-        }
-
-        resolve(pages.join(' ').trim());
-      },
+  try {
+    const pages = await pdfTextExtract(filePath, pdftotextOptions);
+    return pages.join(' ').trim();
+  } catch (error) {
+    throw new Error(
+      `Error extracting PDF text for file at [[ ${path.basename(
+        filePath,
+      )} ]], error: ${error instanceof Error ? error.message : 'Unknown error'}`,
     );
-  });
+  }
 }
 
 /**
