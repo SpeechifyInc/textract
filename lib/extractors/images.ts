@@ -4,9 +4,9 @@ import util from '../util.js';
 
 /**
  * Generate tesseract extraction command
- * @param options options
  * @param inputFile input file
  * @param outputFile output file
+ * @param options options
  * @returns tesseract extraction command
  */
 function tesseractExtractionCommand(
