@@ -22,14 +22,10 @@
 
   "include": [
     "lib/*.ts",
-    "lib/*.js",
     "lib/**/*.ts",
     "bin/**/*.ts",
-    "scripts/**/*.ts",
     "test/**/*.ts",
-    "lib/**/*.js",
     "bin/**/*.js",
-    "scripts/**/*.js",
     "test/**/*.js"
   ],
   "exclude": ["node_modules", "dist"]

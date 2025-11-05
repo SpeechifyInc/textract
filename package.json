@@ -6,9 +6,6 @@
     "access": "restricted",
     "registry": "https://npm.pkg.github.com"
   },
-  "bin": {
-    "textract": "./bin/textract"
-  },
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "scripts": {
