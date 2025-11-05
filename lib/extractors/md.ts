@@ -11,7 +11,7 @@ import htmlExtract from './html.js';
  */
 async function extractText(
   filePath: string,
-  options: Options,
+  options?: Options,
 ): Promise<string> {
   const data = await fs.promises.readFile(filePath);
 

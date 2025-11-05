@@ -57,7 +57,7 @@ function getTextWithAlt<T extends AnyNode>(
  * @param options options
  * @returns extracted text
  */
-export function extractFromText(data: string, options: Options): string {
+export function extractFromText(data: string, options?: Options): string {
   const text = data
     .replace(
       /< *(br|p|div|section|aside|button|header|footer|li|article|blockquote|cite|code|h1|h2|h3|h4|h5|h6|legend|nav)((.*?)>)/g,
@@ -82,7 +82,7 @@ export function extractFromText(data: string, options: Options): string {
 
   let extractedText: string;
 
-  if (options.includeAltText) {
+  if (options?.includeAltText) {
     extractedText = getTextWithAlt($, $docElement);
   } else {
     extractedText = $docElement.text();
@@ -107,7 +107,7 @@ export function extractFromText(data: string, options: Options): string {
  */
 async function extractText(
   filePath: string,
-  options: Options,
+  options?: Options,
 ): Promise<string> {
   const data = await fs.promises.readFile(filePath);
   return extractFromText(data.toString(), options);

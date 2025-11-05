@@ -10,7 +10,7 @@ import htmlExtract from './html.js';
  */
 async function extractText(
   filePath: string,
-  options: Options,
+  options?: Options,
 ): Promise<string> {
   const epub = new EPub(filePath);
   let allText = '';

@@ -63,7 +63,7 @@ function calculateExtractedText(slideText: string) {
  */
 async function extractText(
   filePath: string,
-  _options: Options,
+  _options?: Options,
 ): Promise<string> {
   const slides: { slide: number; text: string }[] = [];
 

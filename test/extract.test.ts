@@ -1,5 +1,6 @@
 import path from 'node:path';
 import fs from 'node:fs';
+import mime from 'mime';
 import { describe, it, expect } from 'vitest';
 import { extract } from '../lib/index.js';
 import type { Options } from '../lib/types.js';
@@ -453,7 +454,7 @@ describe('textract', () => {
     it('will extract text specifically from a .js file', async () => {
       const filePath = path.join(__dirname, 'files', 'js.js');
       const text = await fromFileWithPath(filePath);
-      expect(text).toEqual('console.log("javascript is cooler than you")');
+      expect(text).toEqual("console.log('javascript is cooler than you')");
     });
 
     it('will remove extraneous white space from a .txt file', async () => {

@@ -2,8 +2,7 @@ import { exec, type ExecOptions } from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import yauzl from 'yauzl';
-import type { Entry, ZipFile } from 'yauzl';
+import yauzl, { type Entry, type ZipFile } from 'yauzl';
 import type { Options } from './types.js';
 
 const outDirPrefix = path.join(os.tmpdir(), 'textract-');
@@ -56,12 +55,12 @@ function yauzlError(err: Error) {
  */
 function createExecOptions(
   type: 'doc' | 'dxf' | 'images' | 'rtf',
-  options: Options,
+  options?: Options,
 ): ExecOptions {
   let execOptions: ExecOptions = {};
-  if (options[type]?.exec) {
+  if (options?.[type]?.exec) {
     return options[type].exec;
-  } else if (options.exec) {
+  } else if (options?.exec) {
     execOptions = options.exec;
   }
   return execOptions;
@@ -142,12 +141,12 @@ async function getTextFromZipFile(
 async function runExecIntoFile(
   label: string,
   filePath: string,
-  options: Options,
+  options: Options | undefined,
   execOptions: ExecOptions,
   genCommand: (
-    options: Options,
     escapedFilePath: string,
     escapedFileTempOutPath: string,
+    options?: Options,
   ) => string,
 ) {
   const outDir = await makeTemporaryDirectory();
@@ -160,7 +159,7 @@ async function runExecIntoFile(
   const outFilePath = `${fileTempOutPath}.txt`;
   const escapedFilePath = filePath.replace(/\s/g, '\\ ');
   const escapedFileTempOutPath = fileTempOutPath.replace(/\s/g, '\\ ');
-  const cmd = genCommand(options, escapedFilePath, escapedFileTempOutPath);
+  const cmd = genCommand(escapedFilePath, escapedFileTempOutPath, options);
 
   await new Promise<void>((resolve, reject) => {
     exec(cmd, execOptions, (error /* , stdout, stderr */) => {
