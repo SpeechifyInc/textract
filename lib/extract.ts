@@ -1,9 +1,7 @@
-import { XmlEntities } from 'html-entities';
+import { decode } from 'html-entities';
 import extractors, { type Extractor } from './extractors/index.js';
 import type { Options } from './types.js';
 import util from './util.js';
-
-const entities = new XmlEntities();
 
 let hasInitialized = false;
 const STRIP_ONLY_SINGLE_LINEBREAKS = /(^|[^\n])\n(?!\n)/g;
@@ -93,9 +91,7 @@ function cleanText(inputText: string, options?: Options): string {
   // multiple spaces, tabs, vertical tabs, non-breaking space]
   text = text.replace(/ (?! )/g, '').replace(/[ \t\v\u00A0]{2,}/g, ' ');
 
-  text = entities.decode(text);
-
-  return text;
+  return decode(text);
 }
 
 /**
