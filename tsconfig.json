@@ -25,7 +25,6 @@
     "lib/**/*.ts",
     "bin/**/*.ts",
     "test/**/*.ts",
-    "bin/**/*.js",
     "test/**/*.js"
   ],
   "exclude": ["node_modules", "dist"]

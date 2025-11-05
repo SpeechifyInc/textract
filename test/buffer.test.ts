@@ -3,7 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import mime from 'mime';
 import { describe, it, expect } from 'vitest';
-import { fromBufferWithMime } from '../lib/index.js';
+import { extract } from '../lib/index.js';
 
 const TEST_CASES = [
   [
@@ -101,18 +101,15 @@ const TEST_CASES = [
     'otp.otp',
     'This is a template title Template page text 2nd prezo text',
   ],
-];
+] as const;
 
 const DIR = fileURLToPath(path.dirname(import.meta.url));
 
 describe('textract fromBufferWithMime', () => {
-  it.each(TEST_CASES)('will %s files', (_ext, name, text) => {
+  it.each(TEST_CASES)('will %s files', async (_ext, name, expectedText) => {
     const docPath = path.join(DIR, 'files', name);
     const textBuff = fs.readFileSync(docPath);
-    fromBufferWithMime(mime.getType(docPath), textBuff, (error, _text) => {
-      expect(error).toBeNull();
-      expect(text).toBeInstanceOf(String);
-      expect(text.substring(0, 100)).toEqual(text);
-    });
+    const text = await extract(mime.getType(docPath), textBuff);
+    expect(text.substring(0, 100)).toEqual(expectedText);
   });
 });

@@ -1,4 +1,4 @@
-import { Options } from '../types.js';
+import type { Options } from '../types.js';
 import docOSX from './doc-osx.js';
 import doc from './doc.js';
 import docx from './docx.js';
@@ -17,7 +17,7 @@ import xls from './xls.js';
 export interface Extractor {
   types: (string | RegExp)[];
   extract: (filePath: string, options: Options) => string | Promise<string>;
-  test?: (options: Options) => Promise<boolean>;
+  test?: (options?: Options) => Promise<boolean>;
 }
 
 const extractors: Extractor[] = [
