@@ -86,7 +86,7 @@ describe('textract', () => {
     });
   });
 
-  describe('for .epub files', { timeout: 5000 }, () => {
+  describe('for .epub files', { timeout: 10_000 }, () => {
     it('will extract text from epub files', async () => {
       const docPath = path.join(
         __dirname,

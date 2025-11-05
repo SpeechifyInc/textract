@@ -1,6 +1,8 @@
-import EPub from 'epub2/node';
+import { EPub } from 'epub2';
 import type { Options } from '../types.js';
 import htmlExtract from './html.js';
+
+EPub.libPromise = Promise;
 
 /**
  * Extract text from an EPUB file
@@ -12,43 +14,28 @@ async function extractText(
   filePath: string,
   options?: Options,
 ): Promise<string> {
-  const epub = new EPub(filePath);
-  let allText = '';
-  let chapterCount = 0;
+  const epub = await EPub.createAsync(filePath);
 
-  return new Promise((resolve, reject) => {
-    const onTextExtract = (htmlExtractError: Error | null, outText: string) => {
-      if (htmlExtractError) {
-        reject(htmlExtractError);
-        return;
-      }
-
-      allText += outText;
-      chapterCount++;
-      if (chapterCount === epub.flow.length) {
-        resolve(allText);
-      }
-    };
-
-    epub.on('end', () => {
-      for (const chapter of epub.flow) {
-        epub.getChapterRaw(
-          chapter.id,
-          (rawChaperError: Error | null, text: string) => {
-            if (rawChaperError) {
-              reject(rawChaperError);
-              return;
-            }
-
-            // Extract the raw text from the chapter text (it's html)
-            htmlExtract.extractFromText(text, options, onTextExtract);
-          },
-        );
-      }
+  const getChapter = (chapterId: string) =>
+    new Promise((resolve, reject) => {
+      epub.getChapterRaw(chapterId, (error: Error | null, text: string) => {
+        if (error) {
+          reject(error);
+          return;
+        }
+        resolve(text);
+      });
     });
 
-    epub.parse();
-  });
+  let allText = '';
+
+  for (const chapter of epub.flow) {
+    const html = await getChapter(chapter.id);
+    const text = htmlExtract.extractFromText(html, options);
+    allText += text;
+  }
+
+  return allText;
 }
 
 export default {
