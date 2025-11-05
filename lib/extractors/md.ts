@@ -1,5 +1,5 @@
 import fs from 'node:fs';
-import marked from 'marked';
+import { marked } from 'marked';
 import type { Options } from '../types.js';
 import htmlExtract from './html.js';
 
@@ -14,22 +14,8 @@ async function extractText(
   options?: Options,
 ): Promise<string> {
   const data = await fs.promises.readFile(filePath);
-
-  return new Promise((resolve, reject) => {
-    marked(data.toString(), (err: Error | null, content: string) => {
-      if (err) {
-        reject(err);
-        return;
-      }
-
-      try {
-        const extractedText = htmlExtract.extractFromText(content, options);
-        resolve(extractedText);
-      } catch (errInner) {
-        reject(errInner as Error);
-      }
-    });
-  });
+  const parsed = await marked(data.toString());
+  return htmlExtract.extractFromString(parsed, options);
 }
 
 export default {

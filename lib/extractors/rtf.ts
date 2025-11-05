@@ -45,7 +45,10 @@ async function extractText(
           return;
         }
 
-        const text = htmlExtract.extractFromText(stdout.toString().trim(), {});
+        const text = htmlExtract.extractFromString(
+          stdout.toString().trim(),
+          options,
+        );
         resolve(text);
       },
     );

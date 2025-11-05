@@ -31,7 +31,7 @@ async function extractText(
 
   for (const chapter of epub.flow) {
     const html = await getChapter(chapter.id);
-    const text = htmlExtract.extractFromText(html, options);
+    const text = htmlExtract.extractFromString(html, options);
     allText += text;
   }
 
