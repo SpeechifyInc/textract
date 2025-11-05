@@ -11,11 +11,11 @@ import type { Options } from '../types.js';
  */
 async function extractText(
   filePath: string,
-  options?: Options,
+  options: Options,
 ): Promise<string> {
   // See https://github.com/dbashford/textract/issues/75 for description of
   // what is happening here
-  const pdftotextOptions = options?.pdftotextOptions ?? { layout: 'raw' };
+  const pdftotextOptions = options.pdftotextOptions ?? { layout: 'raw' };
 
   return new Promise((resolve, reject) => {
     extract(
@@ -44,7 +44,7 @@ async function extractText(
  * @param _options options (not used)
  * @returns true if pdftotext is installed
  */
-async function testForBinary(_options?: Options): Promise<boolean> {
+async function testForBinary(_options: Options): Promise<boolean> {
   return new Promise((resolve, reject) => {
     exec('pdftotext -v', (error, _stdout, stderr) => {
       if (error) {

@@ -55,12 +55,12 @@ function yauzlError(err: Error) {
  */
 function createExecOptions(
   type: 'doc' | 'dxf' | 'images' | 'rtf',
-  options?: Options,
+  options: Options,
 ): ExecOptions {
   let execOptions: ExecOptions = {};
-  if (options?.[type]?.exec) {
+  if (options[type]?.exec) {
     return options[type].exec;
-  } else if (options?.exec) {
+  } else if (options.exec) {
     execOptions = options.exec;
   }
   return execOptions;
@@ -141,12 +141,12 @@ async function getTextFromZipFile(
 async function runExecIntoFile(
   label: string,
   filePath: string,
-  options: Options | undefined,
+  options: Options,
   execOptions: ExecOptions,
   genCommand: (
     escapedFilePath: string,
     escapedFileTempOutPath: string,
-    options?: Options,
+    options: Options,
   ) => string,
 ) {
   const outDir = await makeTemporaryDirectory();

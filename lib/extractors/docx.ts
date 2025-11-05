@@ -52,7 +52,7 @@ function calculateExtractedText(inText: string, preserveLineBreaks: boolean) {
  */
 async function extractText(
   filePath: string,
-  options?: Options,
+  options: Options,
 ): Promise<string> {
   const zipfile = await util.unpackZipFile(filePath);
 
@@ -77,7 +77,7 @@ async function extractText(
         }
 
         resolve(
-          calculateExtractedText(result, options?.preserveLineBreaks ?? false),
+          calculateExtractedText(result, options.preserveLineBreaks ?? false),
         );
       }
     };

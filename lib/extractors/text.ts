@@ -12,7 +12,7 @@ import type { Options } from '../types.js';
  */
 async function extractText(
   filePath: string,
-  _options?: Options,
+  _options: Options,
 ): Promise<string> {
   const data = await fs.promises.readFile(filePath);
 

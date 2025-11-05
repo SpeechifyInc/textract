@@ -8,7 +8,7 @@ import type { Options } from '../types.js';
  * @param _options options (not used)
  * @returns extracted text
  */
-function extractText(filePath: string, _options?: Options): string {
+function extractText(filePath: string, _options: Options): string {
   let wb: any;
   let CSVs: any;
 

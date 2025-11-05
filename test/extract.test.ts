@@ -11,7 +11,7 @@ import type { Options } from '../lib/types.js';
  * @param options options
  * @returns text from file
  */
-async function fromFileWithPath(filePath: string, options?: Options) {
+async function fromFileWithPath(filePath: string, options: Options = {}) {
   const mimeType = mime.getType(filePath) ?? '';
   const fileContent = fs.readFileSync(filePath);
   const text = await extract(mimeType, fileContent, options);

@@ -12,7 +12,7 @@ import util from '../util.js';
  */
 async function extractText(
   filePath: string,
-  options?: Options,
+  options: Options,
 ): Promise<string> {
   const execOptions = util.createExecOptions('doc', options);
 
@@ -55,7 +55,7 @@ async function extractText(
  * @param options options
  * @returns true if antiword is installed
  */
-async function testForBinary(options?: Options): Promise<boolean> {
+async function testForBinary(options: Options): Promise<boolean> {
   // just non-osx extractor
   if (os.platform() === 'darwin') {
     return true;

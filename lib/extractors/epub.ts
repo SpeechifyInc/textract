@@ -12,7 +12,7 @@ EPub.libPromise = Promise;
  */
 async function extractText(
   filePath: string,
-  options?: Options,
+  options: Options,
 ): Promise<string> {
   const epub = (await EPub.createAsync(filePath)) as EPub;
 

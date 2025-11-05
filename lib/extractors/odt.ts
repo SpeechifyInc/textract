@@ -11,7 +11,7 @@ import util from '../util.js';
  */
 async function extractText(
   filePath: string,
-  _options?: Options,
+  _options: Options,
 ): Promise<string> {
   const zipfile = await util.unpackZipFile(filePath);
 

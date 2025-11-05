@@ -11,7 +11,7 @@ import util from '../util.js';
  */
 async function extractText(
   filePath: string,
-  options?: Options,
+  options: Options,
 ): Promise<string> {
   const execOptions = util.createExecOptions('dxf', options);
   const escapedPath = filePath.replace(/\s/g, '\\ ');
@@ -47,7 +47,7 @@ async function extractText(
  * @param _options options (not used)
  * @returns true if drawingtotext is installed
  */
-async function testForBinary(_options?: Options): Promise<boolean> {
+async function testForBinary(_options: Options): Promise<boolean> {
   return new Promise((resolve, reject) => {
     exec('drawingtotext notalegalfile', (_error, _stdout, stderr) => {
       if (stderr?.includes("I couldn't make sense of your input")) {

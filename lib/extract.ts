@@ -12,7 +12,7 @@ const WHITELIST_STRIP_LINEBREAKS =
 
 type ExtractorFunction = (
   filePath: string,
-  options?: Options,
+  options: Options,
 ) => string | Promise<string>;
 
 const typeExtractors: Record<string, ExtractorFunction> = {};
@@ -55,7 +55,7 @@ function registerFailedExtractor(extractor: Extractor, failedMessage: string) {
  * @param extractor extractor to try to register
  * @param options options to pass to the extractor
  */
-async function tryRegisterExtractor(extractor: Extractor, options?: Options) {
+async function tryRegisterExtractor(extractor: Extractor, options: Options) {
   try {
     const passedTest = (await extractor.test?.(options)) ?? true;
     if (passedTest) {
@@ -75,12 +75,12 @@ async function tryRegisterExtractor(extractor: Extractor, options?: Options) {
  * @param options options
  * @returns cleaned text
  */
-function cleanText(inputText: string, options?: Options): string {
+function cleanText(inputText: string, options: Options): string {
   // clean up text
   let text = util.replaceBadCharacters(inputText);
 
-  if (options?.preserveLineBreaks || options?.preserveOnlyMultipleLineBreaks) {
-    if (options?.preserveOnlyMultipleLineBreaks) {
+  if (options.preserveLineBreaks || options.preserveOnlyMultipleLineBreaks) {
+    if (options.preserveOnlyMultipleLineBreaks) {
       text = text.replace(STRIP_ONLY_SINGLE_LINEBREAKS, '$1 ').trim();
     }
     text = text.replace(WHITELIST_PRESERVE_LINEBREAKS, ' ');
@@ -99,7 +99,7 @@ function cleanText(inputText: string, options?: Options): string {
  * @param options options
  * @returns void
  */
-async function initializeExtractors(options?: Options) {
+async function initializeExtractors(options: Options) {
   hasInitialized = true;
 
   // perform any binary tests to ensure extractor is possible
@@ -143,7 +143,7 @@ function findExtractor(mimeType: string): ExtractorFunction | undefined {
 export default async function extract(
   mimeType: string,
   filePath: string,
-  options?: Options,
+  options: Options,
 ): Promise<string> {
   if (!hasInitialized) {
     await initializeExtractors(options);

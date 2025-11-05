@@ -14,7 +14,7 @@ import htmlExtract from './html.js';
  */
 async function extractText(
   filePath: string,
-  options?: Options,
+  options: Options,
 ): Promise<string> {
   const execOptions = util.createExecOptions('rtf', options);
   const escapedPath = filePath.replace(/\s/g, '\\ ');
@@ -60,7 +60,7 @@ async function extractText(
  * @param _options options (not used)
  * @returns true if unrtf is installed
  */
-async function testForBinary(_options?: Options): Promise<boolean> {
+async function testForBinary(_options: Options): Promise<boolean> {
   // just non-osx extractor
   if (os.platform() === 'darwin') {
     return true;

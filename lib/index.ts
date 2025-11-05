@@ -24,7 +24,7 @@ function genRandom() {
 export async function extract(
   mimeType: string,
   buffer: Buffer,
-  options?: Options,
+  options: Options = {},
 ): Promise<string> {
   const fullPath = path.join(tmpDir, `textract_file_${genRandom()}`);
   await fs.promises.writeFile(fullPath, buffer);

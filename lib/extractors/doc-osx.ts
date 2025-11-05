@@ -12,7 +12,7 @@ import type { Options } from '../types.ts';
  */
 async function extractText(
   filePath: string,
-  _options?: Options,
+  _options: Options,
 ): Promise<string> {
   let result = '';
   let error = '';
@@ -54,7 +54,7 @@ async function extractText(
  * @param _options options (not used)
  * @returns true if textutil is installed
  */
-async function testForBinary(_options?: Options): Promise<boolean> {
+async function testForBinary(_options: Options): Promise<boolean> {
   // just osx extractor, so don't bother checking on osx
   if (os.platform() !== 'darwin') {
     return true;

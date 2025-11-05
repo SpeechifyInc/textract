@@ -16,8 +16,8 @@ import xls from './xls.js';
 
 export interface Extractor {
   types: (string | RegExp)[];
-  extract: (filePath: string, options?: Options) => string | Promise<string>;
-  test?: (options?: Options) => Promise<boolean>;
+  extract: (filePath: string, options: Options) => string | Promise<string>;
+  test?: (options: Options) => Promise<boolean>;
 }
 
 const extractors: Extractor[] = [
