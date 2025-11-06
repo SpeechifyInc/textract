@@ -30,7 +30,7 @@ jobs:
       - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y poppler-utils antiword unrtf tesseract-ocr
+          sudo apt-get install -y poppler-utils antiword unrtf tesseract-ocr tesseract-ocr-chi-sim
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
