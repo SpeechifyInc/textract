@@ -25,19 +25,18 @@
   "dependencies": {
     "cheerio": "^1.1.2",
     "epub2": "^3.0.2",
+    "fast-xml-parser": "^5.3.1",
     "html-entities": "^2.6.0",
     "iconv-lite": "^0.7.0",
-    "j": "0.4.3",
     "jschardet": "^3.1.4",
+    "jszip": "^3.10.1",
+    "mammoth": "^1.11.0",
     "marked": "^16.4.1",
-    "xmldom": "0.1.27",
-    "xpath": "0.0.23",
-    "yauzl": "^3.2.0"
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@speechifyinc/platform-code-conformity-kit": "^3.0.0",
     "@types/node": "^22.19.0",
-    "@types/yauzl": "^2.10.3",
     "domhandler": "^5.0.3",
     "eslint": "^9.39.1",
     "mime": "^4.1.0",
