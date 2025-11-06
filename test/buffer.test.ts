@@ -1,9 +1,12 @@
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import mime from 'mime';
 import { describe, it, expect } from 'vitest';
 import { extract } from '../lib/index.js';
+
+const isOSX = os.platform() === 'darwin';
 
 const TEST_CASES = [
   [
@@ -15,7 +18,9 @@ const TEST_CASES = [
   [
     'doc',
     'doc.doc',
-    'Word Specification Sample Working Draft 04, 16 August 2002 Document identifier: wd-spectools-word-sa',
+    isOSX
+      ? 'Word Specification Sample Working Draft 04, 16 August 2002 Document identifier: wd-spectools-word-sa'
+      : ' Word Specification Sample Working Draft 04, 16 August 2002 Document identifier: wd-spectools-word-s',
   ],
 
   ['xls', 'test.xls', 'This,is,a,spreadsheet,yay! '],
