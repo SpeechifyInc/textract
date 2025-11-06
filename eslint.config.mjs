@@ -13,8 +13,10 @@ export default [
   },
   ...prettierConfig,
   {
+    files: ['**/*.test.ts'],
     rules: {
-      'jest/no-deprecated-functions': 'off',
+      'n/no-unpublished-import': 'off',
     },
   },
+  { ignores: ['dist/**', 'test/files/**'] },
 ];
