@@ -1,9 +1,5 @@
 # textract
 
-A fork of text extraction node module with additional fixes.
-
-**NB! This Readme is outdated!**
-
 ## Currently Extracts...
 
 - HTML, HTM
@@ -64,110 +60,16 @@ Ex: `textract image.png --tesseract.lang=deu`
 
 ## Usage
 
-### Commmand Line
-
-If textract is installed gloablly, via `npm install -g textract`, then the following command will write the extracted text to the console for a file on the file system.
-
-```
-$ textract pathToFile
-```
-
-#### Flags
-
-Configuration flags can be passed into textract via the command line.
-
-```
-textract pathToFile --preserveLineBreaks false
-```
-
-Parameters like `exec.maxBuffer` can be passed as you'd expect.
-
-```
-textract pathToFile --exec.maxBuffer 500000
-```
-
-And multiple flags can be used together.
-
-```
-textract pathToFile --preserveLineBreaks false --exec.maxBuffer 500000
-```
-
-### Node
-
-#### Import
-
 ```javascript
-import textract from 'textract';
-```
+import {extract} from 'textract';
 
-#### APIs
-
-There are several ways to extract text. For all methods, the extracted text and an error object are passed to a callback.
-
-`error` will contain informative text about why the extraction failed. If textract does not currently extract files of the type provided, a `typeNotFound` flag will be tossed on the error object.
-
-##### File
-
-```javascript
-textract.fromFileWithPath(filePath, function (error, text) {});
-```
-
-```javascript
-textract.fromFileWithPath(filePath, config, function (error, text) {});
-```
-
-##### File + mime type
-
-```javascript
-textract.fromFileWithMimeAndPath(type, filePath, function (error, text) {});
-```
-
-```javascript
-textract.fromFileWithMimeAndPath(
-  type,
-  filePath,
-  config,
-  function (error, text) {},
-);
-```
-
-##### Buffer + mime type
-
-```javascript
-textract.fromBufferWithMime(type, buffer, function (error, text) {});
-```
-
-```javascript
-textract.fromBufferWithMime(type, buffer, config, function (error, text) {});
-```
-
-##### Buffer + file name/path
-
-```javascript
-textract.fromBufferWithName(name, buffer, function (error, text) {});
-```
-
-```javascript
-textract.fromBufferWithName(name, buffer, config, function (error, text) {});
-```
-
-##### URL
-
-When passing a URL, the URL can either be a string, or a [node.js URL object](https://nodejs.org/api/url.html). Using the URL object allows fine grained control over the URL being used.
-
-```javascript
-textract.fromUrl(url, function (error, text) {});
-```
-
-```javascript
-textract.fromUrl(url, config, function (error, text) {});
+extract(mimeType, contentBuffer, options?);
 ```
 
 ## Testing Notes
 
-### Running Tests on a Mac?
+### Running on a Mac
 
-- `sudo port install tesseract-chi-sim`
-- `sudo port install tesseract-eng`
-- You will also want to disable textract's usage of textutil as the tests are based on output from antiword.
-  - Go into `/lib/extractors/{doc|doc-osx|rtf}` and modify the code under `if ( os.platform() === 'darwin' ) {`. Uncommented the commented lines in these sections.
+- `brew install tesseract tesseract-lang`
+
+NOTE! The Word processing results are inconsistent between OSX and Linux (different utils are used), so the test themselves are relaxed to accomodate for both cases.
