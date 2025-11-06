@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "outDir": "${configDir}/dist",
+    "noEmit": true,
     "lib": ["ES2023"],
     "target": "ES2022",
     "module": "NodeNext",
@@ -19,13 +19,6 @@
     "noImplicitReturns": true,
     "isolatedModules": true
   },
-
-  "include": [
-    "lib/*.ts",
-    "lib/**/*.ts",
-    "bin/**/*.ts",
-    "test/**/*.ts",
-    "test/**/*.js"
-  ],
+  "include": ["lib/**/*.ts", "test/**/*.ts"],
   "exclude": ["node_modules", "dist"]
 }

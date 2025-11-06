@@ -12,7 +12,9 @@
     "test": "vitest",
     "lint": "eslint \"{lib,bin,scripts,test}/**/*.{js,ts}\"",
     "lint:fix": "eslint --fix \"{lib,bin,scripts,test}/**/*.{js,ts}\"",
-    "format": "prettier --write \"{lib,bin,scripts,test}/**/*.{js,ts}\""
+    "format": "prettier --write \"{lib,bin,scripts,test}/**/*.{js,ts}\"",
+    "build": "rimraf dist && tsc -p tsconfig.build.json",
+    "prepublishOnly": "pnpm build"
   },
   "author": "David Bashford",
   "description": "Extracting text from files of various type including html, pdf, doc, docx, xls, xlsx, csv, pptx, png, jpg, gif, rtf, text/*, and various open office.",
@@ -41,6 +43,7 @@
     "eslint": "^9.39.1",
     "mime": "^4.1.0",
     "prettier": "^3.6.2",
+    "rimraf": "^6.1.0",
     "vitest": "^4.0.7"
   },
   "license": "MIT",
