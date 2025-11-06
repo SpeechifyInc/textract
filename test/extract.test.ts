@@ -249,7 +249,7 @@ describe('textract', () => {
     it('will extract text and numbers from XLSX files', async () => {
       const filePath = path.join(DIR, 'files', 'pi.xlsx');
       const text = await fromFileWithPath(filePath);
-      expect(text).toEqual('This is the value of PI:,3.141592 ');
+      expect(text).toEqual('This is the value of PI:,3.141592');
     });
 
     it('will extract text from XLSX files with multiple sheets', async () => {
@@ -591,8 +591,8 @@ const TEST_CASES = [
   [
     'ods',
     'ods.ods',
-    'This,is,a,ods Really,it,is, I,promise,, ',
-    'This,is,a,ods\nReally,it,is,\nI,promise,,\n',
+    'This,is,a,ods Really,it,is, I,promise,,',
+    'This,is,a,ods\nReally,it,is,\nI,promise,,',
   ],
 
   [
@@ -633,8 +633,8 @@ const TEST_CASES = [
   [
     'ots',
     'ots.ots',
-    "This,is , template, an,open,office,template isn't,it,awesome?, you,know,it,is ",
-    "This,is , template,\nan,open,office,template\nisn't,it,awesome?,\nyou,know,it,is\n",
+    "This,is, template, an,open,office,template isn't,it,awesome?, you,know,it,is",
+    "This,is, template,\nan,open,office,template\nisn't,it,awesome?,\nyou,know,it,is",
   ],
 
   [
