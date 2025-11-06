@@ -36,7 +36,6 @@
   },
   "devDependencies": {
     "@speechifyinc/platform-code-conformity-kit": "^3.0.0",
-    "@types/jszip": "^3.4.1",
     "@types/node": "^22.19.0",
     "domhandler": "^5.0.3",
     "eslint": "^9.39.1",
