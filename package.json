@@ -25,7 +25,7 @@
   "dependencies": {
     "cheerio": "^1.1.2",
     "epub2": "^3.0.2",
-    "fast-xml-parser": "^4.4.1",
+    "fast-xml-parser": "^5.3.1",
     "html-entities": "^2.6.0",
     "iconv-lite": "^0.7.0",
     "jschardet": "^3.1.4",
