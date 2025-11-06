@@ -1,6 +1,14 @@
 import type { ExecOptions } from 'node:child_process';
 import type { Options as PdfTextExtractOptions } from './pdf-text-extract/index.js';
 
+export type Input =
+  | {
+      buffer: Buffer;
+    }
+  | {
+      filePath: string;
+    };
+
 export interface ExtractorExecOptions {
   exec: ExecOptions;
 }

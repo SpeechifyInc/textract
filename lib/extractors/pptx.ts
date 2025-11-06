@@ -1,4 +1,3 @@
-import fs from 'node:fs/promises';
 import { XMLParser } from 'fast-xml-parser';
 import JSZip from 'jszip';
 import type { Options } from '../types.js';
@@ -132,15 +131,11 @@ function extractTextFromSlideXml(xml: string, includeBlank: boolean): string {
 
 /**
  * Extract text from a PPTX file
- * @param filePath path to file
+ * @param buffer buffer
  * @param options options
  * @returns extracted text
  */
-async function extractText(
-  filePath: string,
-  options: Options,
-): Promise<string> {
-  const buffer = await fs.readFile(filePath);
+async function extractText(buffer: Buffer, options: Options): Promise<string> {
   let zip: JSZip;
   try {
     zip = await JSZip.loadAsync(buffer);
@@ -215,6 +210,7 @@ async function extractText(
 }
 
 export default {
+  inputKind: 'buffer' as const,
   types: [
     'application/vnd.openxmlformats-officedocument.presentationml.presentation',
     'application/vnd.openxmlformats-officedocument.presentationml.template',

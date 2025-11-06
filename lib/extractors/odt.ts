@@ -59,6 +59,7 @@ async function extractText(
 }
 
 export default {
+  inputKind: 'filePath' as const,
   types: [
     'application/vnd.oasis.opendocument.text',
     'application/vnd.oasis.opendocument.text-template',

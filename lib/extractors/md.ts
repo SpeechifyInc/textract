@@ -1,24 +1,20 @@
-import fs from 'node:fs';
 import { marked } from 'marked';
 import type { Options } from '../types.js';
 import htmlExtract from './html.js';
 
 /**
  * Extract text from a Markdown file
- * @param filePath path to file
+ * @param buffer buffer
  * @param options options
  * @returns extracted text
  */
-async function extractText(
-  filePath: string,
-  options: Options,
-): Promise<string> {
-  const data = await fs.promises.readFile(filePath);
-  const parsed = await marked(data.toString());
+async function extractText(buffer: Buffer, options: Options): Promise<string> {
+  const parsed = await marked(buffer.toString());
   return htmlExtract.extractFromString(parsed, options);
 }
 
 export default {
+  inputKind: 'buffer' as const,
   types: ['text/x-markdown', 'text/markdown'],
   extract: extractText,
 };

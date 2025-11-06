@@ -29,6 +29,7 @@ function extractText(filePath: string, _options: Options): string {
 }
 
 export default {
+  inputKind: 'filePath' as const,
   types: [
     'application/vnd.ms-excel',
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',

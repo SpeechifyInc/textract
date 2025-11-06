@@ -2,7 +2,7 @@ import { exec } from 'node:child_process';
 import os from 'node:os';
 import path from 'node:path';
 import type { Options } from '../types.js';
-import util from '../util.js';
+import { createExecOptions } from '../util.js';
 
 /**
  * Extract text from a DOC file using antiword
@@ -14,7 +14,7 @@ async function extractText(
   filePath: string,
   options: Options,
 ): Promise<string> {
-  const execOptions = util.createExecOptions('doc', options);
+  const execOptions = createExecOptions('doc', options);
 
   return new Promise((resolve, reject) => {
     exec(
@@ -61,7 +61,7 @@ async function testForBinary(options: Options): Promise<boolean> {
     return true;
   }
 
-  const execOptions = util.createExecOptions('doc', options);
+  const execOptions = createExecOptions('doc', options);
 
   return new Promise((resolve, reject) => {
     exec(`antiword -h`, execOptions, (error /* , stdout, stderr */) => {
@@ -82,6 +82,7 @@ async function testForBinary(options: Options): Promise<boolean> {
 }
 
 export default {
+  inputKind: 'filePath' as const,
   // let textutil handle .doc on osx
   types: os.platform() === 'darwin' ? [] : ['application/msword'],
   extract: extractText,

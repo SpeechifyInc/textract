@@ -42,6 +42,7 @@ async function extractText(
 }
 
 export default {
+  inputKind: 'filePath' as const,
   types: ['application/epub+zip'],
   extract: extractText,
 };

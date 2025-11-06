@@ -77,6 +77,7 @@ async function testForBinary(_options: Options): Promise<boolean> {
 }
 
 export default {
+  inputKind: 'filePath' as const,
   types:
     os.platform() === 'darwin'
       ? ['application/msword', 'application/rtf', 'text/rtf']

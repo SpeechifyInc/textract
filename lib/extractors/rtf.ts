@@ -3,7 +3,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { Options } from '../types.js';
-import util from '../util.js';
+import { createExecOptions } from '../util.js';
 import htmlExtract from './html.js';
 
 /**
@@ -16,7 +16,7 @@ async function extractText(
   filePath: string,
   options: Options,
 ): Promise<string> {
-  const execOptions = util.createExecOptions('rtf', options);
+  const execOptions = createExecOptions('rtf', options);
   const escapedPath = filePath.replace(/\s/g, '\\ ');
   // Going to output html from unrtf because unrtf does a great job of
   // going to html, but does a crap job of going to text. It leaves sections
@@ -73,8 +73,7 @@ async function testForBinary(_options: Options): Promise<boolean> {
       if (error?.message?.includes('not found')) {
         reject(
           new Error(
-            "INFO: 'unrtf' does not appear to be installed, " +
-              'so textract will be unable to extract RTFs.',
+            "INFO: 'unrtf' does not appear to be installed, so textract will be unable to extract RTFs.",
           ),
         );
         return;
@@ -86,6 +85,7 @@ async function testForBinary(_options: Options): Promise<boolean> {
 }
 
 export default {
+  inputKind: 'filePath' as const,
   // rely on native tools on osx
   types: os.platform() === 'darwin' ? [] : ['application/rtf', 'text/rtf'],
   extract: extractText,

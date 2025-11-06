@@ -1,35 +1,25 @@
-import fs from 'node:fs';
-import path from 'node:path';
-import iconv from 'iconv-lite';
+import { decode } from 'iconv-lite';
 import { detect } from 'jschardet';
 import type { Options } from '../types.js';
 
 /**
  * Extract text from a text file
- * @param filePath path to file
+ * @param buffer buffer
  * @param _options options (not used)
  * @returns extracted text
  */
-async function extractText(
-  filePath: string,
-  _options: Options,
-): Promise<string> {
-  const data = await fs.promises.readFile(filePath);
-
-  const { encoding: detectedEncoding } = detect(data);
+function extractText(buffer: Buffer, _options: Options): string {
+  const { encoding: detectedEncoding } = detect(buffer);
   if (!detectedEncoding) {
-    throw new Error(
-      `Could not detect encoding for file named [[ ${path.basename(
-        filePath,
-      )} ]]`,
-    );
+    throw new Error(`Could not detect encoding`);
   }
   const encoding = detectedEncoding.toLowerCase();
 
-  return iconv.decode(data, encoding);
+  return decode(buffer, encoding);
 }
 
 export default {
+  inputKind: 'buffer' as const,
   types: [/text\//, 'application/csv', 'application/javascript'],
   extract: extractText,
 };

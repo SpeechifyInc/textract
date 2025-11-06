@@ -30,6 +30,7 @@ async function extractText(
 }
 
 export default {
+  inputKind: 'filePath' as const,
   types: [
     'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
   ],

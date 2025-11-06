@@ -57,6 +57,7 @@ async function testForBinary(_options: Options): Promise<boolean> {
 }
 
 export default {
+  inputKind: 'filePath' as const,
   types: ['application/pdf'],
   extract: extractText,
   test: testForBinary,

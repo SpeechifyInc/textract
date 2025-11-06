@@ -1,4 +1,3 @@
-import fs from 'node:fs';
 import { load, type CheerioAPI, type Cheerio } from 'cheerio';
 // eslint-disable-next-line n/no-unpublished-import
 import type { AnyNode } from 'domhandler';
@@ -101,19 +100,16 @@ export function extractFromString(data: string, options: Options): string {
 
 /**
  * Extract text from HTML file
- * @param filePath path to file
+ * @param buffer buffer
  * @param options options
  * @returns extracted text
  */
-async function extractText(
-  filePath: string,
-  options: Options,
-): Promise<string> {
-  const data = await fs.promises.readFile(filePath);
-  return extractFromString(data.toString(), options);
+function extractText(buffer: Buffer, options: Options): string {
+  return extractFromString(buffer.toString(), options);
 }
 
 export default {
+  inputKind: 'buffer' as const,
   types: [
     'text/html',
     'text/xml',

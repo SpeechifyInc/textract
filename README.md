@@ -63,7 +63,11 @@ Ex: `textract image.png --tesseract.lang=deu`
 ```javascript
 import {extract} from 'textract';
 
-extract(mimeType, contentBuffer, options?);
+extract(mimeType, {buffer: contentBuffer}, options?);
+
+// or
+
+extract(mimeType, {filePath: "/path/to/file.docx"}, options?);
 ```
 
 ## Testing Notes

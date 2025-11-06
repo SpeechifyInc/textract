@@ -1,4 +1,3 @@
-import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -18,8 +17,7 @@ const isOSX = os.platform() === 'darwin';
  */
 async function fromFileWithPath(filePath: string, options: Options = {}) {
   const mimeType = mime.getType(filePath) ?? '';
-  const fileContent = fs.readFileSync(filePath);
-  const text = await extract(mimeType, fileContent, options);
+  const text = await extract(mimeType, { filePath }, options);
   return text;
 }
 
@@ -440,9 +438,7 @@ describe('textract', () => {
       try {
         await fromFileWithPath(filePath);
       } catch (error) {
-        expect((error as Error).message).toMatch(
-          /Could not detect encoding for file named \[\[ .* \]\]/,
-        );
+        expect((error as Error).message).toContain('Could not detect encoding');
       }
     });
 

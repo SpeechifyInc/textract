@@ -9,7 +9,7 @@ describe('textract', () => {
     const textBuff = fs.readFileSync(filePath);
     const text = await extract(
       'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-      textBuff,
+      { buffer: textBuff },
       {},
     );
     expect(text.substring(0, 20)).toEqual('This is a test Just ');
@@ -20,7 +20,7 @@ describe('textract', () => {
     const textBuff = fs.readFileSync(filePath);
     const text = await extract(
       'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-      textBuff,
+      { buffer: textBuff },
     );
     expect(text.substring(0, 20)).toEqual('This is a test Just ');
   });

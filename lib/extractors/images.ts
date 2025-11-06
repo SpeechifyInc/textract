@@ -1,6 +1,6 @@
 import { exec } from 'node:child_process';
 import type { Options } from '../types.js';
-import util from '../util.js';
+import { createExecOptions, runExecIntoFile } from '../util.js';
 
 /**
  * Generate tesseract extraction command
@@ -37,8 +37,8 @@ async function extractText(
   filePath: string,
   options: Options,
 ): Promise<string> {
-  const execOptions = util.createExecOptions('images', options);
-  return util.runExecIntoFile(
+  const execOptions = createExecOptions('images', options);
+  return runExecIntoFile(
     'tesseract',
     filePath,
     options,
@@ -72,6 +72,7 @@ async function testForBinary(_options: Options): Promise<boolean> {
 }
 
 export default {
+  inputKind: 'filePath' as const,
   types: ['image/png', 'image/jpeg', 'image/gif'],
   extract: extractText,
   test: testForBinary,

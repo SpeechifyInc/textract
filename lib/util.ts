@@ -2,7 +2,7 @@ import { exec, type ExecOptions } from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import type { Options } from './types.js';
+import type { Input, Options } from './types.js';
 
 const outDirPrefix = path.join(os.tmpdir(), 'textract-');
 const replacements = [
@@ -25,7 +25,7 @@ async function makeTemporaryDirectory(): Promise<string> {
  * @param text text to replace bad characters in
  * @returns text with bad characters replaced
  */
-function replaceBadCharacters(text: string): string {
+export function replaceBadCharacters(text: string): string {
   let result = text;
   for (const [from, to] of replacements) {
     result = result.replace(from, to);
@@ -39,7 +39,7 @@ function replaceBadCharacters(text: string): string {
  * @param options options
  * @returns exec options
  */
-function createExecOptions(
+export function createExecOptions(
   type: 'doc' | 'images' | 'rtf',
   options: Options,
 ): ExecOptions {
@@ -66,7 +66,7 @@ function createExecOptions(
  * @param genCommand function used to generate the command to be executed
  * @returns text from the file
  */
-async function runExecIntoFile(
+export async function runExecIntoFile(
   label: string,
   filePath: string,
   options: Options,
@@ -140,8 +140,52 @@ async function runExecIntoFile(
   return text;
 }
 
-export default {
-  createExecOptions,
-  runExecIntoFile,
-  replaceBadCharacters,
-};
+/**
+ * Generate a random seed for the temporary file name
+ * @returns random seed
+ */
+function genRandom() {
+  return Math.floor(Math.random() * 100000000000 + 1).toString();
+}
+
+const tmpDir = os.tmpdir();
+
+/**
+ * Get the buffer from the input
+ * @param input input
+ * @returns buffer
+ */
+export async function getBufferInput(input: Input): Promise<Buffer> {
+  if ('buffer' in input) {
+    return input.buffer;
+  }
+  if ('filePath' in input) {
+    const buffer = await fs.promises.readFile(input.filePath);
+    return buffer;
+  }
+  throw new Error('Invalid input');
+}
+
+/**
+ * Get the file path from the input
+ * @param input input
+ * @returns file path
+ */
+export async function getFilePathInput(
+  input: Input,
+): Promise<{ filePath: string; cleanup: () => Promise<void> }> {
+  if ('filePath' in input) {
+    return { filePath: input.filePath, cleanup: async () => {} };
+  }
+  if ('buffer' in input) {
+    const filePath = path.join(tmpDir, `textract_file_${genRandom()}`);
+    await fs.promises.writeFile(filePath, input.buffer);
+    return {
+      filePath,
+      cleanup: async () => {
+        await fs.promises.unlink(filePath);
+      },
+    };
+  }
+  throw new Error('Invalid input');
+}
