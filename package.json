@@ -6,8 +6,8 @@
     "access": "restricted",
     "registry": "https://npm.pkg.github.com"
   },
-  "main": "./lib/index.js",
-  "types": "./lib/index.d.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "scripts": {
     "test": "vitest",
     "lint": "eslint \"{lib,bin,scripts,test}/**/*.{js,ts}\"",
@@ -23,6 +23,10 @@
     {
       "name": "David Bashford",
       "email": "dbashford@hotmail.com"
+    },
+    {
+      "name": "Eugene Mirotin",
+      "email": "eugene.mirotin@speechify.com"
     }
   ],
   "dependencies": {
@@ -35,6 +39,7 @@
     "jszip": "^3.10.1",
     "mammoth": "^1.11.0",
     "marked": "^16.4.1",
+    "mime": "^4.1.0",
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
@@ -42,7 +47,6 @@
     "@types/node": "^22.19.0",
     "domhandler": "^5.0.3",
     "eslint": "^9.39.1",
-    "mime": "^4.1.0",
     "prettier": "^3.6.2",
     "rimraf": "^6.1.0",
     "vitest": "^4.0.7"

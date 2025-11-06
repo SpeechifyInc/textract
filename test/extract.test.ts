@@ -1,25 +1,11 @@
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import mime from 'mime';
 import { describe, it, expect } from 'vitest';
-import { extract } from '../lib/index.js';
-import type { Options } from '../lib/types.js';
+import { extractFromFile } from '../lib/index.js';
 
 const DIR = fileURLToPath(path.dirname(import.meta.url));
 const isOSX = os.platform() === 'darwin';
-
-/**
- * Extract text from a file with a path
- * @param filePath path to file
- * @param options options
- * @returns text from file
- */
-async function fromFileWithPath(filePath: string, options: Options = {}) {
-  const mimeType = mime.getType(filePath) ?? '';
-  const text = await extract(mimeType, { filePath }, options);
-  return text;
-}
 
 describe('textract', () => {
   describe('for .csv files ', () => {
@@ -27,14 +13,14 @@ describe('textract', () => {
 
     it('from csv files', async () => {
       const docPath = path.join(DIR, 'files', 'csv.csv');
-      const text = await fromFileWithPath(docPath);
+      const text = await extractFromFile(docPath);
       expect(text.length).toEqual(18);
       expect(text).toEqual('Foo,Bar Foo2,Bar2 ');
     });
 
     it('it will extract text from csv files and insert newlines in the right places', async () => {
       const docPath = path.join(DIR, 'files', 'csv.csv');
-      const text = await fromFileWithPath(docPath, {
+      const text = await extractFromFile(docPath, undefined, {
         preserveLineBreaks: true,
       });
       expect(text.length).toEqual(18);
@@ -47,7 +33,7 @@ describe('textract', () => {
 
     it('will extract text from html files and insert newlines in the right places', async () => {
       const docPath = path.join(DIR, 'files', 'test.html');
-      const text = await fromFileWithPath(docPath, {
+      const text = await extractFromFile(docPath, undefined, {
         preserveLineBreaks: true,
       });
       expect(text.length).toEqual(80);
@@ -58,7 +44,7 @@ describe('textract', () => {
 
     it('will extract text from html files', async () => {
       const docPath = path.join(DIR, 'files', 'Google.html');
-      const text = await fromFileWithPath(docPath);
+      const text = await extractFromFile(docPath);
       expect(text.length).toEqual(869);
       expect(text.substring(565, 620)).toEqual(
         'you say next. Learn more No thanks Enable "Ok Google" I',
@@ -67,7 +53,9 @@ describe('textract', () => {
 
     it('will extract text from html files and preserve alt text when asked', async () => {
       const docPath = path.join(DIR, 'files', 'test-alt.html');
-      const text = await fromFileWithPath(docPath, { includeAltText: true });
+      const text = await extractFromFile(docPath, undefined, {
+        includeAltText: true,
+      });
       expect(text.length).toEqual(46);
       expect(text).toEqual(' This is a paragraph that has an image inside ');
     });
@@ -76,7 +64,7 @@ describe('textract', () => {
   describe('for .rss files', () => {
     it('will extract text from rss files', async () => {
       const docPath = path.join(DIR, 'files', 'rss.rss');
-      const text = await fromFileWithPath(docPath);
+      const text = await extractFromFile(docPath);
       expect(text.length).toEqual(5399);
       expect(text.substring(0, 100)).toEqual(
         ' FeedForAll Sample Feed RSS is a fascinating technology. The uses for RSS are expanding daily. Take ',
@@ -85,7 +73,7 @@ describe('textract', () => {
 
     it('will extract text from rss files and preserve line breaks', async () => {
       const docPath = path.join(DIR, 'files', 'rss.rss');
-      const text = await fromFileWithPath(docPath, {
+      const text = await extractFromFile(docPath, undefined, {
         preserveLineBreaks: true,
       });
       expect(text.length).toEqual(5534);
@@ -99,7 +87,7 @@ describe('textract', () => {
     it('will extract text from epub files', async () => {
       const docPath = path.join(DIR, 'files', 'Metamorphosis-jackson.epub');
 
-      const text = await fromFileWithPath(docPath);
+      const text = await extractFromFile(docPath);
       expect(text.length).toEqual(119329);
       expect(text.substring(3000, 3500)).toEqual(
         'dboard so that he could lift his head better; found where the itch was, and saw that it was covered with lots of little white spots which he didn\'t know what to make of; and when he tried to feel the place with one of his legs he drew it quickly back because as soon as he touched it he was overcome by a cold shudder. He slid back into his former position. "Getting up early all the time", he thought, "it makes you stupid. You\'ve got to get enough sleep. Other travelling salesmen live a life of lu',
@@ -109,7 +97,7 @@ describe('textract', () => {
     it('will extract text from epub files and preserve line breaks', async () => {
       const docPath = path.join(DIR, 'files', 'Metamorphosis-jackson.epub');
 
-      const text = await fromFileWithPath(docPath, {
+      const text = await extractFromFile(docPath, undefined, {
         preserveLineBreaks: true,
       });
       expect(text.length).toEqual(119342);
@@ -122,7 +110,7 @@ describe('textract', () => {
   describe('for .atom files', () => {
     it('will extract text from atom files', async () => {
       const docPath = path.join(DIR, 'files', 'atom.atom');
-      const text = await fromFileWithPath(docPath);
+      const text = await extractFromFile(docPath);
       expect(text.length).toEqual(26731);
       expect(text.substring(0, 100)).toEqual(
         ' @{}[]tag:theregister.co.uk,2005:feed/theregister.co.uk/data_centre/storage/ The Register - Data Cen',
@@ -131,7 +119,7 @@ describe('textract', () => {
 
     it('will extract text from atom files and preserve line breaks', async () => {
       const docPath = path.join(DIR, 'files', 'atom.atom');
-      const text = await fromFileWithPath(docPath, {
+      const text = await extractFromFile(docPath, undefined, {
         preserveLineBreaks: true,
       });
       expect(text.length).toEqual(27441);
@@ -144,7 +132,7 @@ describe('textract', () => {
   describe('for .rtf files', () => {
     it('will extract text from rtf files', async () => {
       const docPath = path.join(DIR, 'files', 'sample.rtf');
-      const text = await fromFileWithPath(docPath);
+      const text = await extractFromFile(docPath);
       expect(text.substring(144, 220)).toContain(
         "So we're going to end this paragraph here and go on",
       );
@@ -152,7 +140,7 @@ describe('textract', () => {
 
     it('will extract when there are spaces in the name', async () => {
       const docPath = path.join(DIR, 'files', 'sample rtf.rtf');
-      const text = await fromFileWithPath(docPath);
+      const text = await extractFromFile(docPath);
       expect(text.substring(144, 220)).toContain(
         "So we're going to end this paragraph here and go on",
       );
@@ -160,7 +148,7 @@ describe('textract', () => {
 
     it('will extract text from actual rtf files with lines left in', async () => {
       const docPath = path.join(DIR, 'files', 'sample.rtf');
-      const text = await fromFileWithPath(docPath, {
+      const text = await extractFromFile(docPath, undefined, {
         preserveLineBreaks: true,
       });
       expect(text.substring(144, 227)).toContain(
@@ -172,7 +160,7 @@ describe('textract', () => {
   describe('for .doc files', () => {
     it('will extract text from actual doc files', async () => {
       const docPath = path.join(DIR, 'files', 'doc.doc');
-      const text = await fromFileWithPath(docPath);
+      const text = await extractFromFile(docPath);
       expect(text.substring(0, 100)).toEqual(
         isOSX
           ? 'Word Specification Sample Working Draft 04, 16 August 2002 Document identifier: wd-spectools-word-sa'
@@ -182,7 +170,7 @@ describe('textract', () => {
 
     it('will extract text from actual doc files with spaces in the name', async () => {
       const docPath = path.join(DIR, 'files', 'doc space.doc');
-      const text = await fromFileWithPath(docPath);
+      const text = await extractFromFile(docPath);
       expect(text.substring(0, 100)).toEqual(
         isOSX
           ? 'Word Specification Sample Working Draft 04, 16 August 2002 Document identifier: wd-spectools-word-sa'
@@ -193,7 +181,7 @@ describe('textract', () => {
     it('will not extract text from text files masquerading as doc files', async () => {
       try {
         const docPath = path.join(DIR, 'files', 'notadoc.doc');
-        await fromFileWithPath(docPath);
+        await extractFromFile(docPath);
       } catch (error) {
         expect(error).toBeInstanceOf(Error);
         expect((error as Error).message).toContain(
@@ -204,13 +192,13 @@ describe('textract', () => {
 
     it('will extract text from large .doc', async () => {
       const docPath = path.join(DIR, 'files', 'sample.doc');
-      const text = await fromFileWithPath(docPath);
+      const text = await extractFromFile(docPath);
       expect(text.length).toBeGreaterThan(30_000);
     });
 
     it('will extract text preserving line breaks without word wrap', async () => {
       const docPath = path.join(DIR, 'files', 'multiple-long-paragraphs.doc');
-      const text = await fromFileWithPath(docPath, {
+      const text = await extractFromFile(docPath, undefined, {
         preserveLineBreaks: true,
       });
       expect(text.split(/[\r\n]+/g).length).toEqual(isOSX ? 3 : 21);
@@ -220,13 +208,13 @@ describe('textract', () => {
   describe('for .xls files', () => {
     it('will extract text', async () => {
       const docPath = path.join(DIR, 'files', 'test.xls');
-      const text = await fromFileWithPath(docPath);
+      const text = await extractFromFile(docPath);
       expect(text.substring(0, 20)).toEqual('This,is,a,spreadshee');
     });
 
     it('will extract text from multi-line files', async () => {
       const docPath = path.join(DIR, 'files', 'test-multiline.xls');
-      const text = await fromFileWithPath(docPath);
+      const text = await extractFromFile(docPath);
       expect(text.substring(0, 40)).toEqual(
         'This,is,a,spreadsheet,yay! And ,this,is,',
       );
@@ -234,7 +222,7 @@ describe('textract', () => {
 
     it('will extract text from multi-line files and keep line breaks', async () => {
       const docPath = path.join(DIR, 'files', 'test-multiline.xls');
-      const text = await fromFileWithPath(docPath, {
+      const text = await extractFromFile(docPath, undefined, {
         preserveLineBreaks: true,
       });
       expect(text.substring(0, 40)).toEqual(
@@ -246,13 +234,13 @@ describe('textract', () => {
   describe('for .xlsx files', () => {
     it('will extract text and numbers from XLSX files', async () => {
       const filePath = path.join(DIR, 'files', 'pi.xlsx');
-      const text = await fromFileWithPath(filePath);
+      const text = await extractFromFile(filePath);
       expect(text).toEqual('This is the value of PI:,3.141592');
     });
 
     it('will extract text from XLSX files with multiple sheets', async () => {
       const filePath = path.join(DIR, 'files', 'xlsx.xlsx');
-      const text = await fromFileWithPath(filePath);
+      const text = await extractFromFile(filePath);
       expect(text.substring(49, 96)).toEqual(
         'Color,Pattern,Sex,GeneralSizePotential,GeneralA',
       );
@@ -261,7 +249,7 @@ describe('textract', () => {
     it('will error when input file is not an actual xlsx file', async () => {
       const filePath = path.join(DIR, 'files', 'notaxlsx.xlsx');
       try {
-        await fromFileWithPath(filePath);
+        await extractFromFile(filePath);
       } catch (error) {
         expect((error as Error).message).toMatch(
           /Could not extract .* PRN files unsupported/,
@@ -273,13 +261,13 @@ describe('textract', () => {
   describe('for .pdf files', () => {
     it('will extract text from actual pdf files', async () => {
       const filePath = path.join(DIR, 'files', 'pdf.pdf');
-      const text = await fromFileWithPath(filePath);
+      const text = await extractFromFile(filePath);
       expect(text).toEqual('This is a test. Please ignore.');
     });
 
     it('will extract pdf text and preserve multiple lines', async () => {
       const filePath = path.join(DIR, 'files', 'testpdf-multiline.pdf');
-      const text = await fromFileWithPath(filePath, {
+      const text = await extractFromFile(filePath, undefined, {
         preserveLineBreaks: true,
       });
       expect(text).toEqual(
@@ -290,7 +278,7 @@ describe('textract', () => {
     it("will error out when pdf file isn't actually a pdf", async () => {
       const filePath = path.join(DIR, 'files', 'notapdf.pdf');
       try {
-        await fromFileWithPath(filePath);
+        await extractFromFile(filePath);
       } catch (error) {
         expect((error as Error).message).toContain(
           'Error extracting PDF text for file',
@@ -300,7 +288,7 @@ describe('textract', () => {
 
     it('will properly handle multiple columns', async () => {
       const filePath = path.join(DIR, 'files', 'two_columns.pdf');
-      const text = await fromFileWithPath(filePath, {
+      const text = await extractFromFile(filePath, undefined, {
         preserveLineBreaks: true,
       });
       expect(
@@ -312,7 +300,7 @@ describe('textract', () => {
 
     it('can handle files with spaces in the name', async () => {
       const filePath = path.join(DIR, 'files', 'two columns.pdf');
-      const text = await fromFileWithPath(filePath, {
+      const text = await extractFromFile(filePath, undefined, {
         preserveLineBreaks: true,
       });
       expect(
@@ -328,7 +316,7 @@ describe('textract', () => {
         'files',
         'pdf-example-password.original.pdf',
       );
-      const text = await fromFileWithPath(filePath, {
+      const text = await extractFromFile(filePath, undefined, {
         pdftotextOptions: { userPassword: 'test' },
       });
       expect(text.substring(0, 200)).toEqual(
@@ -338,7 +326,7 @@ describe('textract', () => {
 
     it('can handle PDFs with full-width Japanese characters', async () => {
       const filePath = path.join(DIR, 'files', 'full-width-j.pdf');
-      const text = await fromFileWithPath(filePath);
+      const text = await extractFromFile(filePath);
       expect(text.replace(/ /g, '').substring(2685, 2900)).toEqual(
         '＄％＆＇（）＊＋，－．／０１２３４５６７８９：；＜＝＞？＠ＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺ［＼］＾＿｀ａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚ｛｜｝～｟｠｡｢｣､･ｦｧｨｩｪｫｬｭｮｯｰｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾖﾗﾘﾙﾚﾛﾜﾝﾞﾟﾡﾢﾣﾤﾥﾦﾧﾨﾩﾪﾫﾬﾭﾮﾯﾰﾱﾲﾳﾴﾵﾶﾷﾸﾹﾺﾻﾼﾽﾾￂￃￄￅￆￇￊￋￌￍￎￏￒￓￔￕￖￗￚￛￜ￠￡￢￣￤￥￦F',
       );
@@ -346,7 +334,7 @@ describe('textract', () => {
 
     // it( 'can handle arabic', function( done ) {
     //   var filePath = path.join( DIR, 'files', 'arabic.pdf' );
-    //   fromFileWithPath( filePath, function( error, text ) {
+    //   extractFromFile( filePath, function( error, text ) {
     //     expect( error ).to.be.null;
     //     expect( text ).to.be.a( 'string' );
     //     expect( text.substring( 0, 200 ) ).to.eql( '' );
@@ -358,13 +346,13 @@ describe('textract', () => {
   describe('for .docx files', () => {
     it('will extract text from actual docx files', async () => {
       const filePath = path.join(DIR, 'files', 'docx.docx');
-      const text = await fromFileWithPath(filePath);
+      const text = await extractFromFile(filePath);
       expect(text.substring(0, 20)).toEqual('This is a test Just ');
     });
 
     it('will extract text from actual docx files and preserve line breaks', async () => {
       const filePath = path.join(DIR, 'files', 'docx.docx');
-      const text = await fromFileWithPath(filePath, {
+      const text = await extractFromFile(filePath, undefined, {
         preserveLineBreaks: true,
       });
       expect(text.substring(20, 40)).toContain('so you know:\nLorem');
@@ -372,7 +360,7 @@ describe('textract', () => {
 
     it('will extract text from actual docx files and preserve line breaks [line-breaks.docx]', async () => {
       const filePath = path.join(DIR, 'files', 'line-breaks.docx');
-      const text = await fromFileWithPath(filePath, {
+      const text = await extractFromFile(filePath, undefined, {
         preserveLineBreaks: true,
       });
       expect(text).toEqual('Paragraph follows\nLine break follows\nend');
@@ -381,7 +369,7 @@ describe('textract', () => {
     it("will error out when docx file isn't actually a docx", async () => {
       const filePath = path.join(DIR, 'files', 'notadocx.docx');
       try {
-        await fromFileWithPath(filePath);
+        await extractFromFile(filePath);
       } catch (error) {
         expect((error as Error).message).toContain(
           'File not correctly recognized as zip file',
@@ -391,13 +379,13 @@ describe('textract', () => {
 
     it('will not extract smashed together text', async () => {
       const filePath = path.join(DIR, 'files', 'testresume.docx');
-      const text = await fromFileWithPath(filePath);
+      const text = await extractFromFile(filePath);
       expect(text.substring(0, 31)).toEqual('Karol Miner 336 W. Chugalug Way');
     });
 
     it('can handle funky formatting', async () => {
       const filePath = path.join(DIR, 'files', 'Untitleddocument.docx');
-      const text = await fromFileWithPath(filePath);
+      const text = await extractFromFile(filePath);
       expect(text).toEqual(
         "this is a test document that won't be extracted properly.",
       );
@@ -405,7 +393,7 @@ describe('textract', () => {
 
     it('can handle a huge docx', async () => {
       const filePath = path.join(DIR, 'files', 'LargeLorem.docx');
-      const text = await fromFileWithPath(filePath);
+      const text = await extractFromFile(filePath);
       expect(text.substring(0, 100)).toEqual(
         'Hashtag chambray XOXO PBR&B chia small batch. Before they sold out banh mi raw denim, fap synth hell',
       );
@@ -413,7 +401,7 @@ describe('textract', () => {
 
     it('can handle arabic', async () => {
       const filePath = path.join(DIR, 'files', 'arabic.docx');
-      const text = await fromFileWithPath(filePath);
+      const text = await extractFromFile(filePath);
       expect(text.substring(0, 100)).toEqual(
         'التعرف الضوئي على الحروف إشعار عدم التمييز (المصدر: مكتب الصحة والخدمات الإنسانية من أجل الحقوق المد',
       );
@@ -423,20 +411,20 @@ describe('textract', () => {
   describe('for text/* files', () => {
     it('will extract text from specifically a .txt file', async () => {
       const filePath = path.join(DIR, 'files', 'txt.txt');
-      const text = await fromFileWithPath(filePath);
+      const text = await extractFromFile(filePath);
       expect(text).toEqual('This is a plain old text file.');
     });
 
     it('will extract text from specifically a non utf8 .txt file', async () => {
       const filePath = path.join(DIR, 'files', 'non-utf8.txt');
-      const text = await fromFileWithPath(filePath);
+      const text = await extractFromFile(filePath);
       expect(text).toEqual('これは非UTF8 テキストファイルです ');
     });
 
     it('will error when .txt file encoding cannot be detected', async () => {
       const filePath = path.join(DIR, 'files', 'unknown-encoding.txt');
       try {
-        await fromFileWithPath(filePath);
+        await extractFromFile(filePath);
       } catch (error) {
         expect((error as Error).message).toContain('Could not detect encoding');
       }
@@ -444,25 +432,25 @@ describe('textract', () => {
 
     it('will extract text specifically from a .css file', async () => {
       const filePath = path.join(DIR, 'files', 'css.css');
-      const text = await fromFileWithPath(filePath);
+      const text = await extractFromFile(filePath);
       expect(text).toEqual('.foo {color:red}');
     });
 
     it('will extract text specifically from a .js file', async () => {
       const filePath = path.join(DIR, 'files', 'js.js');
-      const text = await fromFileWithPath(filePath);
+      const text = await extractFromFile(filePath);
       expect(text).toEqual("console.log('javascript is cooler than you'); ");
     });
 
     it('will remove extraneous white space from a .txt file', async () => {
       const filePath = path.join(DIR, 'files', 'spacey.txt');
-      const text = await fromFileWithPath(filePath);
+      const text = await extractFromFile(filePath);
       expect(text).toEqual('this has lots of space');
     });
 
     it('will not remove fancy quotes from a .txt file', async () => {
       const filePath = path.join(DIR, 'files', 'fancyquote.txt');
-      const text = await fromFileWithPath(filePath);
+      const text = await extractFromFile(filePath);
       expect(text).toEqual('this has "fancy" quotes');
     });
   });
@@ -470,7 +458,7 @@ describe('textract', () => {
   describe('for .pptx files', () => {
     it('will extract text PPTX files', async () => {
       const filePath = path.join(DIR, 'files', 'ppt.pptx');
-      const text = await fromFileWithPath(filePath);
+      const text = await extractFromFile(filePath);
       expect(text.substring(55, 96)).toEqual(
         'ullet 1 Bullet 2 Bullet 3 Number 1 Number',
       );
@@ -478,13 +466,13 @@ describe('textract', () => {
 
     it('will extract text PPTX files with notes', async () => {
       const filePath = path.join(DIR, 'files', 'PrezoWithNotes.pptx');
-      const text = await fromFileWithPath(filePath);
+      const text = await extractFromFile(filePath);
       expect(text).toEqual('This is a slide These are speaker notes 1 ');
     });
 
     it('will extract slides in the right order', async () => {
       const filePath = path.join(DIR, 'files', 'order.pptx');
-      const text = await fromFileWithPath(filePath, {
+      const text = await extractFromFile(filePath, undefined, {
         preserveLineBreaks: true,
       });
 
@@ -508,7 +496,7 @@ describe('textract', () => {
 
     it('will keep preserved characters', async () => {
       const filePath = path.join(DIR, 'files', 'order.pptx');
-      const text = await fromFileWithPath(filePath, {
+      const text = await extractFromFile(filePath, undefined, {
         preserveLineBreaks: true,
       });
       expect(text.indexOf('…')).toBeGreaterThan(900);
@@ -518,7 +506,7 @@ describe('textract', () => {
   describe('for odt files', () => {
     it('will extract text from ODT files', async () => {
       const filePath = path.join(DIR, 'files', 'spaced.odt');
-      const text = await fromFileWithPath(filePath);
+      const text = await extractFromFile(filePath);
       expect(text).toEqual('This Is some text');
     });
   });
@@ -526,7 +514,7 @@ describe('textract', () => {
   describe('for image files', () => {
     it('will extract text from PNG files', async () => {
       const filePath = path.join(DIR, 'files', 'testphoto.png');
-      const text = await fromFileWithPath(filePath);
+      const text = await extractFromFile(filePath);
       expect(text.substring(0, 100)).toEqual(
         'performance measure against standards and targets is increasingly used in the management of complex ',
       );
@@ -534,7 +522,7 @@ describe('textract', () => {
 
     it('will extract text from JPG files', async () => {
       const filePath = path.join(DIR, 'files', 'testphoto.jpg');
-      const text = await fromFileWithPath(filePath);
+      const text = await extractFromFile(filePath);
       expect(text.substring(0, 100)).toEqual(
         'performance measure against standards and targets is increasingly used in the management of complex ',
       );
@@ -542,7 +530,7 @@ describe('textract', () => {
 
     it('will extract text from GIF files', async () => {
       const filePath = path.join(DIR, 'files', 'testphoto.gif');
-      const text = await fromFileWithPath(filePath);
+      const text = await extractFromFile(filePath);
       expect(text.substring(0, 100)).toEqual(
         'performance measure against standards and targets is increasingly used in the management of complex ',
       );
@@ -554,7 +542,7 @@ describe('textract', () => {
       { timeout: 5000 },
       async () => {
         const filePath = path.join(DIR, 'files', 'chi.png');
-        const text = await fromFileWithPath(filePath, {
+        const text = await extractFromFile(filePath, undefined, {
           tesseract: { lang: 'chi_sim' },
         });
         expect(text.substring(0, 6)).toEqual('卧虎藏龙，卧');
@@ -564,7 +552,7 @@ describe('textract', () => {
     // sudo port install tesseract-eng
     it('will take tesseract.cmd option', { timeout: 5000 }, async () => {
       const filePath = path.join(DIR, 'files', 'testpng.png');
-      const text = await fromFileWithPath(filePath, {
+      const text = await extractFromFile(filePath, undefined, {
         tesseract: { cmd: '-l eng --psm 3' },
       });
       expect(text.substring(0, 100)).toEqual(
@@ -665,7 +653,7 @@ describe('textract', () => {
     'for %s files will extract text',
     async (_ext, name, expectedText) => {
       const docPath = path.join(DIR, 'files', name);
-      const text = await fromFileWithPath(docPath);
+      const text = await extractFromFile(docPath);
       expect(text.substring(0, 100)).toEqual(expectedText);
     },
   );
@@ -674,7 +662,7 @@ describe('textract', () => {
     'for %s files will extract text and preserve line breaks',
     async (_ext, name, _expectedText, expectedTextWithLineBreaks) => {
       const docPath = path.join(DIR, 'files', name);
-      const text = await fromFileWithPath(docPath, {
+      const text = await extractFromFile(docPath, undefined, {
         preserveLineBreaks: true,
       });
       expect(text.substring(0, 100)).toEqual(expectedTextWithLineBreaks);

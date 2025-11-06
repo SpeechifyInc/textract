@@ -4,7 +4,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import mime from 'mime';
 import { describe, it, expect } from 'vitest';
-import { extract } from '../lib/index.js';
+import { extractFromBuffer } from '../lib/index.js';
 
 const isOSX = os.platform() === 'darwin';
 
@@ -114,9 +114,7 @@ describe('textract fromBufferWithMime', () => {
   it.each(TEST_CASES)('will %s files', async (_ext, name, expectedText) => {
     const docPath = path.join(DIR, 'files', name);
     const textBuff = fs.readFileSync(docPath);
-    const text = await extract(mime.getType(docPath) ?? '', {
-      buffer: textBuff,
-    });
+    const text = await extractFromBuffer(textBuff, mime.getType(docPath) ?? '');
     expect(text.substring(0, 100)).toEqual(expectedText);
   });
 });
