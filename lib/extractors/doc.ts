@@ -64,25 +64,20 @@ async function testForBinary(options: Options): Promise<boolean> {
   const execOptions = util.createExecOptions('doc', options);
 
   return new Promise((resolve, reject) => {
-    exec(
-      `antiword -m UTF-8.txt ${__filename}`,
-      execOptions,
-      (error /* , stdout, stderr */) => {
-        let msg = '';
-        if (error?.message?.includes('not found')) {
-          msg =
-            "INFO: 'antiword' does not appear to be installed, " +
-            'so textract will be unable to extract DOCs.';
-        } else if (error) {
-          msg = error.message;
-        }
-        if (msg) {
-          reject(new Error(msg));
-          return;
-        }
-        resolve(true);
-      },
-    );
+    exec(`antiword -h`, execOptions, (error /* , stdout, stderr */) => {
+      let msg = '';
+      if (error?.message?.includes('not found')) {
+        msg =
+          "INFO: 'antiword' does not appear to be installed, so textract will be unable to extract DOCs.";
+      } else if (error) {
+        msg = error.message;
+      }
+      if (msg) {
+        reject(new Error(msg));
+        return;
+      }
+      resolve(true);
+    });
   });
 }
 
