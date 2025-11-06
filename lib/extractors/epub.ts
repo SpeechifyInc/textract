@@ -14,18 +14,7 @@ async function extractText(
   filePath: string,
   options: Options,
 ): Promise<string> {
-  const epub = (await EPub.createAsync(filePath)) as EPub;
-
-  const getChapter = (chapterId: string) =>
-    new Promise<string>((resolve, reject) => {
-      epub.getChapterRaw(chapterId, (error, text) => {
-        if (error) {
-          reject(error);
-          return;
-        }
-        resolve(text ?? '');
-      });
-    });
+  const epub = await EPub.createAsync(filePath);
 
   let allText = '';
 
@@ -33,7 +22,7 @@ async function extractText(
     if (!chapter.id) {
       continue;
     }
-    const html = await getChapter(chapter.id);
+    const html = await epub.getChapterRawAsync(chapter.id);
     const text = htmlExtract.extractFromString(html, options);
     allText += text;
   }
