@@ -2,7 +2,6 @@ import { exec, type ExecOptions } from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import yauzl, { type Entry, type ZipFile } from 'yauzl';
 import type { Options } from './types.js';
 
 const outDirPrefix = path.join(os.tmpdir(), 'textract-');
@@ -35,19 +34,6 @@ function replaceBadCharacters(text: string): string {
 }
 
 /**
- * Create an error for a Yauzl error message
- * @param err error
- * @returns error with message
- */
-function yauzlError(err: Error) {
-  let msg = err.message;
-  if (msg.includes('End of central directory record signature not found')) {
-    msg = `File not correctly recognized as zip file, ${msg}`;
-  }
-  return new Error(msg);
-}
-
-/**
  * Create exec options for an extractor
  * @param type extractor type
  * @param options options
@@ -64,64 +50,6 @@ function createExecOptions(
     execOptions = options.exec;
   }
   return execOptions;
-}
-
-/**
- * Check if unzip is installed
- * @param type extractor type
- * @returns true if unzip is installed
- */
-async function unzipCheck(type: string): Promise<boolean> {
-  return new Promise<boolean>((resolve) => {
-    exec('unzip', (error /* , stdout, stderr */) => {
-      if (error) {
-        console.error(
-          `textract: 'unzip' does not appear to be installed, ` +
-            `so textract will be unable to extract ${type}.`,
-        );
-      }
-      resolve(error === null);
-    });
-  });
-}
-
-/**
- * Get text from a zip file entry
- * @param zipfile zip file
- * @param entry zip file entry
- * @returns text from the entry
- */
-async function getTextFromZipFile(
-  zipfile: ZipFile,
-  entry: Entry,
-): Promise<string> {
-  return new Promise<string>((resolve, reject) => {
-    zipfile.openReadStream(entry, (err, readStream) => {
-      if (err) {
-        reject(err);
-        return;
-      }
-
-      let text = '';
-      let error = '';
-
-      readStream.on('data', (chunk: string) => {
-        text += chunk;
-      });
-
-      readStream.on('error', (streamError: Error) => {
-        error += streamError.message;
-      });
-
-      readStream.on('end', () => {
-        if (error.length > 0) {
-          reject(new Error(error));
-        } else {
-          resolve(text);
-        }
-      });
-    });
-  });
 }
 
 /**
@@ -212,29 +140,8 @@ async function runExecIntoFile(
   return text;
 }
 
-/**
- * Unpack a zip file
- * @param filePath path to zip file
- * @returns zip file
- */
-async function unpackZipFile(filePath: string): Promise<yauzl.ZipFile> {
-  return new Promise((resolve, reject) => {
-    yauzl.open(filePath, (err, zipfile) => {
-      if (err) {
-        reject(yauzlError(err));
-        return;
-      }
-      resolve(zipfile);
-    });
-  });
-}
-
 export default {
   createExecOptions,
-  unzipCheck,
-  getTextFromZipFile,
-  yauzlError,
   runExecIntoFile,
   replaceBadCharacters,
-  unpackZipFile,
 };

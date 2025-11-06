@@ -141,9 +141,10 @@ function splitPages(content: string) {
 }
 
 /**
- * spawns pdftotext and returns its output
+ * Spawns pdftotext and returns its output
  * @param command - The command to use to extract the text
  * @param args - The arguments to use to extract the text
+ * @param options - The options to use to extract the text
  * @param cb - The callback to use to handle the output
  */
 function streamResults(

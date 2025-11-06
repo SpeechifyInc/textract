@@ -23,9 +23,9 @@ const TEST_CASES = [
       : ' Word Specification Sample Working Draft 04, 16 August 2002 Document identifier: wd-spectools-word-s',
   ],
 
-  ['xls', 'test.xls', 'This,is,a,spreadsheet,yay! '],
+  ['xls', 'test.xls', 'This,is,a,spreadsheet,yay!'],
 
-  ['xlsx', 'pi.xlsx', 'This is the value of PI:,3.141592 '],
+  ['xlsx', 'pi.xlsx', 'This is the value of PI:,3.141592'],
 
   ['pdf', 'pdf.pdf', 'This is a test. Please ignore.'],
 
@@ -49,7 +49,7 @@ const TEST_CASES = [
     ' This is an h1 This is an h2 This text has been bolded and italicized ',
   ],
 
-  ['ods', 'ods.ods', 'This,is,a,ods Really,it,is, I,promise,, '],
+  ['ods', 'ods.ods', 'This,is,a,ods Really,it,is, I,promise,,'],
 
   [
     'xml',
@@ -80,7 +80,7 @@ const TEST_CASES = [
   [
     'ots',
     'ots.ots',
-    "This,is , template, an,open,office,template isn't,it,awesome?, you,know,it,is ",
+    "This,is, template, an,open,office,template isn't,it,awesome?, you,know,it,is",
   ],
 
   [
