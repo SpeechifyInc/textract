@@ -19,7 +19,7 @@ export interface Options {
    */
   preserveOnlyMultipleLineBreaks?: boolean | undefined;
   /**
-   * Some extractors (dxf) use node's exec functionality.
+   * Some extractors (doc) use node's exec functionality.
    * This setting allows for providing config to exec execution.
    * One reason you might want to provide this config is if you are dealing with very large files.
    * You might want to increase the exec maxBuffer setting.
@@ -30,11 +30,6 @@ export interface Options {
    * See `drawingtotext` manual for available options
    */
   doc?: ExtractorExecOptions | undefined;
-  /**
-   * DXF extractor options.
-   * See `antiword` manual for available options
-   */
-  dxf?: ExtractorExecOptions | undefined;
   /**
    * Images (png, jpg, gif) extractor options.
    * See `tesseract` manual for available options

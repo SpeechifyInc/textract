@@ -2,7 +2,6 @@ import type { Options } from '../types.js';
 import docOSX from './doc-osx.js';
 import doc from './doc.js';
 import docx from './docx.js';
-import dxf from './dxf.js';
 import epub from './epub.js';
 import html from './html.js';
 import images from './images.js';
@@ -24,7 +23,6 @@ const extractors: Extractor[] = [
   docOSX,
   doc,
   docx,
-  dxf,
   epub,
   html,
   images,

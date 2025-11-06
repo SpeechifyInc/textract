@@ -114,7 +114,7 @@ describe('textract fromBufferWithMime', () => {
   it.each(TEST_CASES)('will %s files', async (_ext, name, expectedText) => {
     const docPath = path.join(DIR, 'files', name);
     const textBuff = fs.readFileSync(docPath);
-    const text = await extract(mime.getType(docPath), textBuff);
+    const text = await extract(mime.getType(docPath) ?? '', textBuff);
     expect(text.substring(0, 100)).toEqual(expectedText);
   });
 });
