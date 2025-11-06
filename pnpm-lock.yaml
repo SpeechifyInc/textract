@@ -38,15 +38,6 @@ importers:
       xlsx:
         specifier: ^0.18.5
         version: 0.18.5
-      xmldom:
-        specifier: 0.1.27
-        version: 0.1.27
-      xpath:
-        specifier: 0.0.23
-        version: 0.0.23
-      yauzl:
-        specifier: ^3.2.0
-        version: 3.2.0
     devDependencies:
       '@speechifyinc/platform-code-conformity-kit':
         specifier: ^3.0.0
@@ -57,9 +48,6 @@ importers:
       '@types/node':
         specifier: ^22.19.0
         version: 22.19.0
-      '@types/yauzl':
-        specifier: ^2.10.3
-        version: 2.10.3
       domhandler:
         specifier: ^5.0.3
         version: 5.0.3
@@ -740,9 +728,6 @@ packages:
   '@types/validator@13.15.4':
     resolution: {integrity: sha512-LSFfpSnJJY9wbC0LQxgvfb+ynbHftFo0tMsFOl/J4wexLnYMmDSPaj2ZyDv3TkfL1UePxPrxOWJfbiRS8mQv7A==}
 
-  '@types/yauzl@2.10.3':
-    resolution: {integrity: sha512-oJoftv0LSuaDZE3Le4DbKX+KS9G36NzOeSap90UIK0yMA/NhKJhqlSGtNDORNRaIbQfzjXDrQa0ytJ6mNRGz/Q==}
-
   '@typescript-eslint/eslint-plugin@8.46.3':
     resolution: {integrity: sha512-sbaQ27XBUopBkRiuY/P9sWGOWUW4rl8fDoHIUmLpZd8uldsTyB4/Zg6bWTegPoTLnKj9Hqgn3QD6cjPNB32Odw==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
@@ -1072,9 +1057,6 @@ packages:
     resolution: {integrity: sha512-AXVQwdhot1eqLihwasPElhX2tAZiBjWdJ9i/Zcj2S6QYIjkx62OKSfnobkriB81C3l4w0rVy3Nt4jaTBltYEpw==}
     engines: {node: ^6 || ^7 || ^8 || ^9 || ^10 || ^11 || ^12 || >=13.7}
     hasBin: true
-
-  buffer-crc32@0.2.13:
-    resolution: {integrity: sha512-VO9Ht/+p3SN7SKWqcrgEzjGbRSJYTx+Q1pTQC0wrWqHx0vpJraQ6GtHx8tvcg1rlK1byhU5gccxgOgj7B0TDkQ==}
 
   builtin-modules@3.3.0:
     resolution: {integrity: sha512-zhaCDicdLuWN5UbN5IMnFqNMhNfo919sH85y2/ea+5Yg9TsTkeZxpL+JLbp6cgYFS4sRLp3YV4S6yDuqVWHYOw==}
@@ -2385,9 +2367,6 @@ packages:
   pathe@2.0.3:
     resolution: {integrity: sha512-WUjGcAqP1gQacoQe+OBJsFA7Ld4DyXuUIjZ5cc75cLHvJ7dtNsTugphxIADwspS+AraAUePCKrSVtPLFj/F88w==}
 
-  pend@1.2.0:
-    resolution: {integrity: sha512-F3asv42UuXchdzt+xXqfW1OGlVBe+mxa2mqI0pg5yAHZPvFmY3Y6drSf/GQ1A86WgWEN9Kzh/WrgKa6iGcHXLg==}
-
   picocolors@1.1.1:
     resolution: {integrity: sha512-xceH2snhtb5M9liqDsmEw56le376mTZkEX/jEb/RxNFyegNul7eNslCXP9FDj/Lcu0X8KEyMceP2ntpaHrDEVA==}
 
@@ -3018,19 +2997,6 @@ packages:
     resolution: {integrity: sha512-fDlsI/kFEx7gLvbecc0/ohLG50fugQp8ryHzMTuW9vSa1GJ0XYWKnhsUx7oie3G98+r56aTQIUB4kht42R3JvA==}
     engines: {node: '>=4.0'}
 
-  xmldom@0.1.27:
-    resolution: {integrity: sha512-7WpJBYwyhvsddFJA51SOIU0Be9W44sbGGjc6Z3ly8Wx/Wl7nriMPZ5xf6Np9ASlJ6gACfXcTLukm4DtX372lFw==}
-    engines: {node: '>=0.1'}
-    deprecated: Deprecated due to CVE-2021-21366 resolved in 0.5.0
-
-  xpath@0.0.23:
-    resolution: {integrity: sha512-WHBD7+PebdFl+vGmhl/TnFLHDCTytivkerph52SF+2IUtil+lbOEK0BHHAoL+z4JOHIaF5R7Dh9VgrpnzVOFRA==}
-    engines: {node: '>=0.6.0'}
-
-  yauzl@3.2.0:
-    resolution: {integrity: sha512-Ow9nuGZE+qp1u4JIPvg+uCiUr7xGQWdff7JQSk5VGYTAZMDe2q8lxJ10ygv10qmSj031Ty/6FNJpLO4o1Sgc+w==}
-    engines: {node: '>=12'}
-
   yocto-queue@0.1.0:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
@@ -3579,10 +3545,6 @@ snapshots:
 
   '@types/validator@13.15.4': {}
 
-  '@types/yauzl@2.10.3':
-    dependencies:
-      '@types/node': 22.19.0
-
   '@typescript-eslint/eslint-plugin@8.46.3(@typescript-eslint/parser@8.46.3(eslint@9.39.1)(typescript@5.9.3))(eslint@9.39.1)(typescript@5.9.3)':
     dependencies:
       '@eslint-community/regexpp': 4.12.2
@@ -3931,8 +3893,6 @@ snapshots:
       electron-to-chromium: 1.5.245
       node-releases: 2.0.27
       update-browserslist-db: 1.1.4(browserslist@4.27.0)
-
-  buffer-crc32@0.2.13: {}
 
   builtin-modules@3.3.0: {}
 
@@ -5648,8 +5608,6 @@ snapshots:
 
   pathe@2.0.3: {}
 
-  pend@1.2.0: {}
-
   picocolors@1.1.1: {}
 
   picomatch@2.3.1: {}
@@ -6395,15 +6353,6 @@ snapshots:
   xmlbuilder@10.1.1: {}
 
   xmlbuilder@11.0.1: {}
-
-  xmldom@0.1.27: {}
-
-  xpath@0.0.23: {}
-
-  yauzl@3.2.0:
-    dependencies:
-      buffer-crc32: 0.2.13
-      pend: 1.2.0
 
   yocto-queue@0.1.0: {}
 
