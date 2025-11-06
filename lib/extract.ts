@@ -7,64 +7,111 @@ import {
   replaceBadCharacters,
 } from './util.js';
 
-let hasInitialized = false;
 const STRIP_ONLY_SINGLE_LINEBREAKS = /(^|[^\n])\n(?!\n)/g;
 const WHITELIST_PRESERVE_LINEBREAKS =
   /[^A-Za-z\x80-\xFF\x24\u20AC\xA3\xA5 0-9 \u2015\u2116\u2018\u2019\u201C|\u201D\u2026 \uFF0C \u2013 \u2014 \u00C0-\u1FFF \u2C00-\uD7FF \uFB50–\uFDFF \uFE70–\uFEFF \uFF01-\uFFE6 .,?""!@#$%^&*()-_=+;:<>/\\|}{[\]`~'-\w\n\r]*/g;
 const WHITELIST_STRIP_LINEBREAKS =
   /[^A-Za-z\x80-\xFF\x24\u20AC\xA3\xA5 0-9 \u2015\u2116\u2018\u2019\u201C|\u201D\u2026 \uFF0C \u2013 \u2014 \u00C0-\u1FFF \u2C00-\uD7FF \uFB50–\uFDFF \uFE70–\uFEFF \uFF01-\uFFE6 .,?""!@#$%^&*()-_=+;:<>/\\|}{[\]`~'-\w]*/g;
 
-const typeExtractors: Record<string, Extractor> = {};
-
-const regexExtractors: {
-  regexp: RegExp;
-  extractor: Extractor;
-}[] = [];
-
-const failedExtractorTypes: Record<string, string> = {};
+const registeredExtractors = new Map<string, Extractor>();
+const failedExtractors = new Map<Extractor, string>();
+const initializedExtractors = new Set<Extractor>();
 
 /**
- * Register an extractor
- * @param extractor extractor to register
+ * Check if a type or regex matches a mime type
+ * @param type type
+ * @param mimeType mime type
+ * @returns true if the type matches the mime type, false otherwise
  */
-function registerExtractor(extractor: Extractor) {
-  for (const type of extractor.types) {
-    if (typeof type === 'string') {
-      const normalizedType = type.toLowerCase();
-      typeExtractors[normalizedType] = extractor;
-    } else if (type instanceof RegExp) {
-      regexExtractors.push({ regexp: type, extractor });
-    }
+function matches(type: string | RegExp, mimeType: string): boolean {
+  if (typeof type === 'string') {
+    return mimeType.toLowerCase() === type.toLowerCase();
   }
+  return mimeType.match(type) !== null;
 }
 
 /**
- * Register a failed extractor
- * @param extractor extractor that failed to initialize
- * @param failedMessage message to register
+ * Find an extractor by mime type
+ * @param mimeType mime type
+ * @param options options
+ * @returns extractor
  */
-function registerFailedExtractor(extractor: Extractor, failedMessage: string) {
-  for (const type of extractor.types) {
-    failedExtractorTypes[type.toString().toLowerCase()] = failedMessage;
-  }
-}
+async function findExtractor(
+  mimeType: string,
+  options: Options,
+): Promise<Extractor | undefined> {
+  console.debug(`findExtractor for mime type: [[ ${mimeType} ]]`);
 
-/**
- * Try to register an extractor
- * @param extractor extractor to try to register
- * @param options options to pass to the extractor
- */
-async function tryRegisterExtractor(extractor: Extractor, options: Options) {
+  if (registeredExtractors.has(mimeType)) {
+    console.debug(
+      `findExtractor for mime type: [[ ${mimeType} ]] found in registeredExtractors`,
+    );
+    return registeredExtractors.get(mimeType);
+  }
+
+  const matchingExtractor = extractors.find((extractor) =>
+    extractor.types.some((type) => matches(type, mimeType)),
+  );
+  if (!matchingExtractor) {
+    console.debug(
+      `findExtractor for mime type: [[ ${mimeType} ]] not found in extractors`,
+    );
+    return undefined;
+  }
+  if (failedExtractors.has(matchingExtractor)) {
+    console.debug(
+      `findExtractor for mime type: [[ ${mimeType} ]] failed to initialize earlier`,
+    );
+    throw new Error(
+      `Extractor for type: [[ ${mimeType} ]] failed to initialize. Message: ${failedExtractors.get(matchingExtractor)}`,
+    );
+  }
+
+  let initialized: boolean;
+  if (initializedExtractors.has(matchingExtractor)) {
+    console.debug(
+      `findExtractor for mime type: [[ ${mimeType} ]] already initialized for a different mime type`,
+    );
+    registeredExtractors.set(mimeType, matchingExtractor);
+    return matchingExtractor;
+  }
+
   try {
-    const passedTest = (await extractor.test?.(options)) ?? true;
-    if (passedTest) {
-      registerExtractor(extractor);
+    console.debug(
+      `findExtractor for mime type: [[ ${mimeType} ]] initializing`,
+    );
+    if (matchingExtractor.test) {
+      initialized = await matchingExtractor.test(options);
     } else {
-      registerFailedExtractor(extractor, 'Extractor failed to initialize');
+      initialized = true;
     }
   } catch (error) {
-    registerFailedExtractor(extractor, (error as Error).message);
+    console.debug(
+      `findExtractor for mime type: [[ ${mimeType} ]] failed to initialize`,
+    );
+    failedExtractors.set(
+      matchingExtractor,
+      error instanceof Error ? error.message : 'Unknown error',
+    );
+    throw new Error(
+      `Extractor for type: [[ ${mimeType} ]] failed to initialize. Message: ${error instanceof Error ? error.message : 'Unknown error'}`,
+    );
   }
+
+  if (!initialized) {
+    console.debug(
+      `findExtractor for mime type: [[ ${mimeType} ]] failed to initialize`,
+    );
+    failedExtractors.set(matchingExtractor, 'Extractor failed to initialize');
+    throw new Error(
+      `Extractor for type: [[ ${mimeType} ]] failed to initialize. Message: ${failedExtractors.get(matchingExtractor)}`,
+    );
+  }
+
+  console.debug(`findExtractor for mime type: [[ ${mimeType} ]] initialized`);
+  initializedExtractors.add(matchingExtractor);
+  registeredExtractors.set(mimeType, matchingExtractor);
+  return matchingExtractor;
 }
 
 // global, all file type, content cleansing
@@ -94,45 +141,6 @@ function cleanText(inputText: string, options: Options): string {
 }
 
 /**
- * Initialize extractors
- * @param options options
- * @returns void
- */
-async function initializeExtractors(options: Options) {
-  hasInitialized = true;
-
-  // perform any binary tests to ensure extractor is possible
-  // given execution environment
-  for (const extractor of extractors) {
-    if (extractor.test) {
-      await tryRegisterExtractor(extractor, options);
-    } else {
-      registerExtractor(extractor);
-    }
-  }
-}
-
-/**
- * Find an extractor by mime type
- * @param mimeType mime type
- * @returns extractor
- */
-function findExtractor(mimeType: string): Extractor | undefined {
-  const normalizedFileType = mimeType.toLowerCase();
-  if (typeExtractors[normalizedFileType]) {
-    return typeExtractors[normalizedFileType];
-  }
-
-  for (const regexExtractor of regexExtractors) {
-    if (normalizedFileType.match(regexExtractor.regexp)) {
-      return regexExtractor.extractor;
-    }
-  }
-
-  return undefined;
-}
-
-/**
  * Extract text from a file
  * @param mimeType mime type
  * @param input input
@@ -144,21 +152,24 @@ export default async function extract(
   input: Input,
   options: Options,
 ): Promise<string> {
-  if (!hasInitialized) {
-    await initializeExtractors(options);
-  }
+  let extractor: Extractor | undefined;
 
-  const extractor = findExtractor(mimeType);
+  try {
+    extractor = await findExtractor(mimeType, options);
+  } catch (error) {
+    if (
+      error instanceof Error &&
+      (error as Error & { typeNotFound: boolean }).typeNotFound
+    ) {
+      throw error;
+    }
+    (error as Error & { typeNotFound: boolean }).typeNotFound = true;
+    throw error;
+  }
 
   if (!extractor) {
     // cannot extract this file type
-    let msg = `Error for type: [[ ${mimeType} ]], mimeType: [[ ${mimeType} ]]`;
-
-    // update error message if type is supported but just not configured/installed properly
-    if (failedExtractorTypes[mimeType]) {
-      msg += `, extractor for type exists, but failed to initialize. Message: ${failedExtractorTypes[mimeType]}`;
-    }
-
+    const msg = `Error for type: [[ ${mimeType} ]], extractor not found`;
     const error = new Error(msg);
     (error as Error & { typeNotFound: boolean }).typeNotFound = true;
     throw error;
