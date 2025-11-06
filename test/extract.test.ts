@@ -507,7 +507,7 @@ describe('textract', () => {
         'Slide 11: Vertical Title and text',
       ];
 
-      expect(lines).to.eql(expectedLines);
+      expect(lines).toEqual(expectedLines);
     });
 
     it('will keep preserved characters', async () => {

@@ -100,6 +100,7 @@ function extractParagraphs(obj: unknown, out: string[], includeBlank: boolean) {
         if (Array.isArray(value)) {
           for (const p of value) {
             const t = paragraphToText(p);
+            // eslint-disable-next-line max-depth
             if (t.length > 0 || includeBlank) {
               out.push(t);
             }
@@ -122,7 +123,7 @@ function extractParagraphs(obj: unknown, out: string[], includeBlank: boolean) {
  * @returns text from the slide
  */
 function extractTextFromSlideXml(xml: string, includeBlank: boolean): string {
-  const obj = xmlParser.parse(xml);
+  const obj = xmlParser.parse(xml) as unknown;
   const paragraphs: string[] = [];
   extractParagraphs(obj, paragraphs, includeBlank);
   const s = paragraphs.map((p) => `${p}\n`).join('');
