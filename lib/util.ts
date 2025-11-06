@@ -76,8 +76,7 @@ async function unzipCheck(type: string): Promise<boolean> {
     exec('unzip', (error /* , stdout, stderr */) => {
       if (error) {
         console.error(
-          `textract: 'unzip' does not appear to be installed, ` +
-            `so textract will be unable to extract ${type}.`,
+          `textract: 'unzip' does not appear to be installed, so textract will be unable to extract ${type}.`,
         );
       }
       resolve(error === null);
