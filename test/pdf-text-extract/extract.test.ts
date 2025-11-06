@@ -7,9 +7,15 @@ const DIR = fileURLToPath(path.dirname(import.meta.url));
 
 describe('Pdf extract', () => {
   it('should return output and no error when everything is ok', async () => {
+    const desiredNumPages = 8;
     const filePath = path.join(DIR, 'data', 'multipage.pdf');
     const pages = await pdfTextExtract(filePath);
-    expect(pages.length).toBeGreaterThan(0);
+
+    expect(pages.length).toBe(desiredNumPages);
+    for (const page of pages) {
+      expect(page).toBeDefined();
+      expect(page.length).toBeGreaterThan(0);
+    }
   });
 
   it('should accept files with space in name', async () => {
