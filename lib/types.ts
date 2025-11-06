@@ -58,7 +58,7 @@ export interface Options {
          * but if you need to configure more options, you can simply pass `cmd`.
          * `cmd` is the string that matches the command-line options you want to pass to tesseract.
          * For instance, to provide language and psm,
-         * you would pass `{ tesseract: { cmd:"-l chi_sim -psm 10" } }`
+         * you would pass `{ tesseract: { cmd:"-l chi_sim --psm 10" } }`
          */
         cmd: string;
       }

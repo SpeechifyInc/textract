@@ -586,7 +586,7 @@ describe('textract', () => {
     it('will take tesseract.cmd option', { timeout: 5000 }, async () => {
       const filePath = path.join(DIR, 'files', 'testpng.png');
       const text = await fromFileWithPath(filePath, {
-        tesseract: { cmd: '-l eng -psm 3' },
+        tesseract: { cmd: '-l eng --psm 3' },
       });
       expect(text.substring(0, 100)).toEqual(
         'The (quick) [brown] {fox} jumps! Over the $43,456.78 <lazy> #90 dog & duck/goose, as 12.5% of E-mail',
