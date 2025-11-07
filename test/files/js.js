@@ -1,1 +1,1 @@
-console.log("javascript is cooler than you")
+console.log('javascript is cooler than you');
