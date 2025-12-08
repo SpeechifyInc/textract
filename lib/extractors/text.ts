@@ -1,4 +1,4 @@
-import { decode } from 'iconv-lite';
+import iconv from 'iconv-lite';
 import { detect } from 'jschardet';
 import type { Options } from '../types.js';
 
@@ -15,7 +15,7 @@ function extractText(buffer: Buffer, _options: Options): string {
   }
   const encoding = detectedEncoding.toLowerCase();
 
-  return decode(buffer, encoding);
+  return iconv.decode(buffer, encoding);
 }
 
 export default {
