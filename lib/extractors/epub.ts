@@ -1,4 +1,4 @@
-import { EPub } from 'epub2';
+import { EPub } from '@speechifyinc/epub-lib';
 import type { Options } from '../types.js';
 import htmlExtract from './html.js';
 
@@ -14,7 +14,7 @@ async function extractText(
   filePath: string,
   options: Options,
 ): Promise<string> {
-  const epub = (await EPub.createAsync(filePath)) as EPub;
+  const epub = await EPub.createAsync(filePath);
 
   let allText = '';
 

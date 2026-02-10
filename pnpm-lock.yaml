@@ -8,12 +8,12 @@ importers:
 
   .:
     dependencies:
+      '@speechifyinc/epub-lib':
+        specifier: 3.1.0
+        version: 3.1.0(ts-toolbelt@9.6.0)
       cheerio:
         specifier: ^1.1.2
         version: 1.1.2
-      epub2:
-        specifier: ^3.0.2
-        version: 3.0.2(ts-toolbelt@9.6.0)
       fast-xml-parser:
         specifier: ^5.3.1
         version: 5.3.1
@@ -664,6 +664,10 @@ packages:
   '@rushstack/eslint-patch@1.14.1':
     resolution: {integrity: sha512-jGTk8UD/RdjsNZW8qq10r0RBvxL8OWtoT+kImlzPDFilmozzM+9QmIJsmze9UiSBrFU45ZxhTYBypn9q9z/VfQ==}
 
+  '@speechifyinc/epub-lib@3.1.0':
+    resolution: {integrity: sha512-4AD3EjYHxcYRKwsJjGDhE0l2hYwe5VF6k3lT6SWiwaN8Hnts4cPtf/ww+0d8gLmL6D4veERhHRsK2GhCqOPBDg==, tarball: https://npm.pkg.github.com/download/@speechifyinc/epub-lib/3.1.0/eb249f33486cc1263959ae823626425510fc002d}
+    engines: {node: '>=18'}
+
   '@speechifyinc/platform-code-conformity-kit@3.0.0':
     resolution: {integrity: sha512-QJ2sfXgt4AZsmFyVRiN34+mPTRhKepZH7u6zA3DtgYrmybWAT3s2rrhRlUM9SOmjw2QPp67jDT8kPmsvtQIf9w==, tarball: https://npm.pkg.github.com/download/@speechifyinc/platform-code-conformity-kit/3.0.0/16a271b9c68c492c79952f042fdf2b09f0af60bf}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
@@ -1276,9 +1280,6 @@ packages:
   entities@6.0.1:
     resolution: {integrity: sha512-aN97NXWF6AWBTahfVOIrB/NShkzi5H7F9r1s9mD3cDj4Ko5f2qhhVoYMibXF7GlLveb/D2ioWay8lxI97Ven3g==}
     engines: {node: '>=0.12'}
-
-  epub2@3.0.2:
-    resolution: {integrity: sha512-rhvpt27CV5MZfRetfNtdNwi3XcNg1Am0TwfveJkK8YWeHItHepQ8Js9J06v8XRIjuTrCW/NSGYMTy55Of7BfNQ==}
 
   error-ex@1.3.4:
     resolution: {integrity: sha512-sqQamAnR14VgCr1A618A3sGrygcpK+HEbenA/HiEAkkUwcZIIB/tgWqHFxWgOyDh4nB4JCRimh79dR5Ywc9MDQ==}
@@ -2007,8 +2008,8 @@ packages:
   lodash.merge@4.6.2:
     resolution: {integrity: sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==}
 
-  lodash@4.17.21:
-    resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
+  lodash@4.17.23:
+    resolution: {integrity: sha512-LgVTMpQtIopCi79SJeDiP0TfWi5CNEc/L/aRdTh3yIvmZXTnheWpKjSZhnvMl8iXbC1tFg9gdHHDMLoV7CnG+w==}
 
   longest-streak@3.1.0:
     resolution: {integrity: sha512-9Ri+o0JYgehTaVBBDoMqIl8GXtbWg711O3srftcHhZ0dqnETqLaoIK0x17fUw9rFSlK/0NlsKe0Ahhyl5pXE2g==}
@@ -2225,6 +2226,7 @@ packages:
   next@15.5.6:
     resolution: {integrity: sha512-zTxsnI3LQo3c9HSdSf91O1jMNsEzIXDShXd4wVdg9y5shwLqBXi4ZtUUJyB86KGVSJLZx0PFONvO54aheGX8QQ==}
     engines: {node: ^18.18.0 || ^19.8.0 || >= 20.0.0}
+    deprecated: This version has a security vulnerability. Please upgrade to a patched version. See https://nextjs.org/blog/CVE-2025-66478 for more details.
     hasBin: true
     peerDependencies:
       '@opentelemetry/api': ^1.1.0
@@ -2512,8 +2514,9 @@ packages:
   safer-buffer@2.1.2:
     resolution: {integrity: sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==}
 
-  sax@1.4.3:
-    resolution: {integrity: sha512-yqYn1JhPczigF94DMS+shiDMjDowYO6y9+wB/4WgO0Y19jWYk0lQ4tuG5KI7kj4FTp1wxPj5IFfcrz/s1c3jjQ==}
+  sax@1.4.4:
+    resolution: {integrity: sha512-1n3r/tGXO6b6VXMdFT54SHzT9ytu9yr7TaELowdYpMqY/Ao7EnlQGmAQ1+RatX7Tkkdm6hONI2owqNx2aZj5Sw==}
+    engines: {node: '>=11.0.0'}
 
   scheduler@0.27.0:
     resolution: {integrity: sha512-eNv+WrVbKu1f3vbYJT/xtiF5syA5HPIMtf9IgY/nKg0sWqzAUEvqY/xm7OcZc/qafLx/iO9FgOmeSAp4v5ti/Q==}
@@ -3458,6 +3461,17 @@ snapshots:
 
   '@rushstack/eslint-patch@1.14.1': {}
 
+  '@speechifyinc/epub-lib@3.1.0(ts-toolbelt@9.6.0)':
+    dependencies:
+      adm-zip: 0.5.16
+      array-hyper-unique: 2.1.6
+      bluebird: 3.7.2
+      crlf-normalize: 1.0.20(ts-toolbelt@9.6.0)
+      tslib: 2.8.1
+      xml2js: 0.6.2
+    transitivePeerDependencies:
+      - ts-toolbelt
+
   '@speechifyinc/platform-code-conformity-kit@3.0.0(@typescript-eslint/eslint-plugin@8.46.3(@typescript-eslint/parser@8.46.3(eslint@9.39.1)(typescript@5.9.3))(eslint@9.39.1)(typescript@5.9.3))(@typescript-eslint/parser@8.46.3(eslint@9.39.1)(typescript@5.9.3))(@typescript-eslint/utils@8.46.3(eslint@9.39.1)(typescript@5.9.3))(class-validator@0.14.2)(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.46.3(eslint@9.39.1)(typescript@5.9.3))(eslint-import-resolver-typescript@3.10.1)(eslint@9.39.1))(eslint@9.39.1)(next@15.5.6(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(prettier@3.6.2)(typescript@5.9.3)':
     dependencies:
       '@darraghor/eslint-plugin-nestjs-typed': 6.9.3(@typescript-eslint/parser@8.46.3(eslint@9.39.1)(typescript@5.9.3))(class-validator@0.14.2)(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.10.1)(eslint@9.39.1)(typescript@5.9.3)
@@ -3783,7 +3797,7 @@ snapshots:
   array-hyper-unique@2.1.6:
     dependencies:
       deep-eql: 4.0.0
-      lodash: 4.17.21
+      lodash: 4.17.23
 
   array-includes@3.1.9:
     dependencies:
@@ -4127,17 +4141,6 @@ snapshots:
   entities@4.5.0: {}
 
   entities@6.0.1: {}
-
-  epub2@3.0.2(ts-toolbelt@9.6.0):
-    dependencies:
-      adm-zip: 0.5.16
-      array-hyper-unique: 2.1.6
-      bluebird: 3.7.2
-      crlf-normalize: 1.0.20(ts-toolbelt@9.6.0)
-      tslib: 2.8.1
-      xml2js: 0.6.2
-    transitivePeerDependencies:
-      - ts-toolbelt
 
   error-ex@1.3.4:
     dependencies:
@@ -5058,7 +5061,7 @@ snapshots:
 
   lodash.merge@4.6.2: {}
 
-  lodash@4.17.21: {}
+  lodash@4.17.23: {}
 
   longest-streak@3.1.0: {}
 
@@ -5791,7 +5794,7 @@ snapshots:
 
   safer-buffer@2.1.2: {}
 
-  sax@1.4.3: {}
+  sax@1.4.4: {}
 
   scheduler@0.27.0:
     optional: true
@@ -6352,7 +6355,7 @@ snapshots:
 
   xml2js@0.6.2:
     dependencies:
-      sax: 1.4.3
+      sax: 1.4.4
       xmlbuilder: 11.0.1
 
   xmlbuilder@10.1.1: {}
