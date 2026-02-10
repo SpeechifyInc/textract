@@ -14,7 +14,7 @@ async function extractText(
   filePath: string,
   options: Options,
 ): Promise<string> {
-  const epub = await EPub.createAsync(filePath);
+  const epub = (await EPub.createAsync(filePath)) as InstanceType<typeof EPub>;
 
   let allText = '';
 
