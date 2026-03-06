@@ -179,8 +179,11 @@ export default async function extract(
 
   if (extractor.inputKind === 'filePath') {
     const { filePath, cleanup } = await getFilePathInput(input);
-    text = await extractor.extract(filePath, options);
-    await cleanup();
+    try {
+      text = await extractor.extract(filePath, options);
+    } finally {
+      await cleanup();
+    }
   } else {
     const buffer = await getBufferInput(input);
     text = await extractor.extract(buffer, options);
