@@ -57,7 +57,7 @@ export function createExecOptions(
  * 2) runs that command against an input file path
  * resulting in an output file
  * 3) reads that output file in
- * 4) cleans the output file up
+ * 4) cleans temporary output artifacts up
  * 5) executes a callback with the contents of the file
  * @param label Name for the extractor, e.g. `Tesseract`
  * @param filePath path to file to be extractor
@@ -88,56 +88,83 @@ export async function runExecIntoFile(
   const escapedFilePath = filePath.replace(/\s/g, '\\ ');
   const escapedFileTempOutPath = fileTempOutPath.replace(/\s/g, '\\ ');
   const cmd = genCommand(escapedFilePath, escapedFileTempOutPath, options);
-
-  await new Promise<void>((resolve, reject) => {
-    exec(cmd, execOptions, (error /* , stdout, stderr */) => {
-      if (error) {
-        reject(
-          new Error(
-            `Error extracting [[ ${path.basename(filePath)} ]], exec error: ${
-              error.message
-            }`,
-          ),
-        );
-        return;
-      }
-      resolve();
+  let extractedText = '';
+  let extractionError: unknown;
+  let cleanupError: Error | undefined;
+  try {
+    await new Promise<void>((resolve, reject) => {
+      exec(cmd, execOptions, (error /* , stdout, stderr */) => {
+        if (error) {
+          reject(
+            new Error(
+              `Error extracting [[ ${path.basename(filePath)} ]], exec error: ${
+                error.message
+              }`,
+            ),
+          );
+          return;
+        }
+        resolve();
+      });
     });
-  });
 
-  try {
-    // check if the output file exists
-    await fs.promises.access(`${fileTempOutPath}.txt`);
-  } catch (_error) {
-    throw new Error(
-      `Error reading ${label} output at [[ ${
-        fileTempOutPath
-      } ]], file does not exist`,
-    );
-  }
+    try {
+      // check if the output file exists
+      await fs.promises.access(`${fileTempOutPath}.txt`);
+    } catch (_error) {
+      throw new Error(
+        `Error reading ${label} output at [[ ${
+          fileTempOutPath
+        } ]], file does not exist`,
+      );
+    }
 
-  let text: string;
-  try {
-    text = await fs.promises.readFile(outFilePath, 'utf8');
+    try {
+      extractedText = await fs.promises.readFile(outFilePath, 'utf8');
+    } catch (error) {
+      throw new Error(
+        `Error reading${label} output at [[ ${
+          fileTempOutPath
+        } ]], error: ${(error as Error).message}`,
+      );
+    }
   } catch (error) {
-    throw new Error(
-      `Error reading${label} output at [[ ${
-        fileTempOutPath
-      } ]], error: ${(error as Error).message}`,
-    );
+    extractionError = error;
+  } finally {
+    const cleanupErrors: string[] = [];
+
+    try {
+      await fs.promises.rm(outFilePath, { force: true });
+    } catch (error) {
+      cleanupErrors.push((error as Error).message);
+    }
+
+    try {
+      await fs.promises.rm(outDir, { recursive: true, force: true });
+    } catch (error) {
+      cleanupErrors.push((error as Error).message);
+    }
+
+    if (!extractionError && cleanupErrors.length > 0) {
+      cleanupError = new Error(
+        `Error, ${label}, cleaning up temp artifacts [[ ${
+          fileTempOutPath
+        } ]], errors: ${cleanupErrors.join('; ')}`,
+      );
+    }
   }
 
-  try {
-    await fs.promises.unlink(outFilePath);
-  } catch (error) {
-    throw new Error(
-      `Error, ${label}, cleaning up temp file [[ ${
-        fileTempOutPath
-      } ]], error: ${(error as Error).message}`,
-    );
+  if (extractionError) {
+    throw extractionError instanceof Error
+      ? extractionError
+      : new Error('Unknown extraction error');
   }
 
-  return text;
+  if (cleanupError) {
+    throw cleanupError;
+  }
+
+  return extractedText;
 }
 
 /**
