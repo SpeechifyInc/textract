@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@speechifyinc/epub-lib':
-        specifier: 3.1.1
-        version: 3.1.1(ts-toolbelt@9.6.0)
+        specifier: 3.1.2
+        version: 3.1.2(ts-toolbelt@9.6.0)
       cheerio:
         specifier: ^1.1.2
         version: 1.1.2
@@ -664,8 +664,8 @@ packages:
   '@rushstack/eslint-patch@1.14.1':
     resolution: {integrity: sha512-jGTk8UD/RdjsNZW8qq10r0RBvxL8OWtoT+kImlzPDFilmozzM+9QmIJsmze9UiSBrFU45ZxhTYBypn9q9z/VfQ==}
 
-  '@speechifyinc/epub-lib@3.1.1':
-    resolution: {integrity: sha512-KtnWYOXrcKxleH5axTfHgnlCC/8nnkCU4OLu3wFCQlaLrgF+ol27jThGPvpNyRpwzRmG20FAgiI2Be3ve73eLA==, tarball: https://npm.pkg.github.com/download/@speechifyinc/epub-lib/3.1.1/32761d19cc2dabd46ef2a63d100fb21b4e4818f0}
+  '@speechifyinc/epub-lib@3.1.2':
+    resolution: {integrity: sha512-n7eNFFq7YGHKNZqF/rNZsNJCYPUO1ZdiwsfdsZjXA1cLb3eQBOYDioILh/AwAWFiI9+5yOif2pUpMQFSMYHZ9Q==, tarball: https://npm.pkg.github.com/download/@speechifyinc/epub-lib/3.1.2/c4aab50dcd27476f15c56423f9c15c24f0b62a4c}
     engines: {node: '>=18'}
 
   '@speechifyinc/platform-code-conformity-kit@3.0.0':
@@ -3461,7 +3461,7 @@ snapshots:
 
   '@rushstack/eslint-patch@1.14.1': {}
 
-  '@speechifyinc/epub-lib@3.1.1(ts-toolbelt@9.6.0)':
+  '@speechifyinc/epub-lib@3.1.2(ts-toolbelt@9.6.0)':
     dependencies:
       adm-zip: 0.5.16
       array-hyper-unique: 2.1.6
