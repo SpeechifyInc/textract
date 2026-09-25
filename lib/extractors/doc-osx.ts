@@ -61,7 +61,8 @@ async function testForBinary(_options: Options): Promise<boolean> {
   }
 
   return new Promise((resolve, reject) => {
-    exec(`textutil ${__filename}`, (error /* , stdout, stderr */) => {
+    // `__filename` does not exist in this ESM build, so probe the binary itself: `-help` exits 0 when installed.
+    exec('textutil -help', (error /* , stdout, stderr */) => {
       if (error !== null) {
         reject(
           new Error(
