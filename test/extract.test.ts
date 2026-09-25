@@ -350,6 +350,24 @@ describe('textract', () => {
       expect(text.substring(0, 20)).toEqual('This is a test Just ');
     });
 
+    it('will extract the text around images in docx files without their bytes', async () => {
+      const filePath = path.join(DIR, 'files', 'images.docx');
+      const text = await extractFromFile(filePath);
+      expect(text).toEqual(
+        'Revenue grew in every region this quarter. The team shipped two releases. The chart repeats below. End of report.',
+      );
+    });
+
+    it('will keep the alt text of docx images when asked for it', async () => {
+      const filePath = path.join(DIR, 'files', 'images.docx');
+      const text = await extractFromFile(filePath, undefined, {
+        includeAltText: true,
+      });
+      expect(text).toEqual(
+        'Revenue grew in every region this quarter. Quarterly chart The team shipped two releases. Team photo The chart repeats below. Quarterly chart Team photo End of report.',
+      );
+    });
+
     it('will extract text from actual docx files and preserve line breaks', async () => {
       const filePath = path.join(DIR, 'files', 'docx.docx');
       const text = await extractFromFile(filePath, undefined, {

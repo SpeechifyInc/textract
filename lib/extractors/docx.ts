@@ -13,7 +13,15 @@ async function extractText(
   options: Options,
 ): Promise<string> {
   try {
-    const { value } = await mammoth.convertToHtml({ path: filePath });
+    const { value } = await mammoth.convertToHtml(
+      { path: filePath },
+      // Text is all that is read from the HTML: an image's alt survives, its bytes are never loaded.
+      {
+        convertImage: mammoth.images.imgElement(() =>
+          Promise.resolve({ src: '' }),
+        ),
+      },
+    );
     return htmlExtract.extractFromString(value, options).trim();
   } catch (error) {
     if (
