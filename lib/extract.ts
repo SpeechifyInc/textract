@@ -8,10 +8,12 @@ import {
 } from './util.js';
 
 const STRIP_ONLY_SINGLE_LINEBREAKS = /(^|[^\n])\n(?!\n)/g;
+// `+`, never `*`: a whitelist that can match nothing matches between every two characters, which
+// doubled the text and ran the process out of heap on long documents (PLA-12062).
 const WHITELIST_PRESERVE_LINEBREAKS =
-  /[^A-Za-z\x80-\xFF\x24\u20AC\xA3\xA5 0-9 \u2015\u2116\u2018\u2019\u201C|\u201D\u2026 \uFF0C \u2013 \u2014 \u00C0-\u1FFF \u2C00-\uD7FF \uFB50–\uFDFF \uFE70–\uFEFF \uFF01-\uFFE6 .,?""!@#$%^&*()-_=+;:<>/\\|}{[\]`~'-\w\n\r]*/g;
+  /[^A-Za-z\x80-\xFF\x24\u20AC\xA3\xA5 0-9 \u2015\u2116\u2018\u2019\u201C|\u201D\u2026 \uFF0C \u2013 \u2014 \u00C0-\u1FFF \u2C00-\uD7FF \uFB50–\uFDFF \uFE70–\uFEFF \uFF01-\uFFE6 .,?""!@#$%^&*()-_=+;:<>/\\|}{[\]`~'-\w\n\r]+/g;
 const WHITELIST_STRIP_LINEBREAKS =
-  /[^A-Za-z\x80-\xFF\x24\u20AC\xA3\xA5 0-9 \u2015\u2116\u2018\u2019\u201C|\u201D\u2026 \uFF0C \u2013 \u2014 \u00C0-\u1FFF \u2C00-\uD7FF \uFB50–\uFDFF \uFE70–\uFEFF \uFF01-\uFFE6 .,?""!@#$%^&*()-_=+;:<>/\\|}{[\]`~'-\w]*/g;
+  /[^A-Za-z\x80-\xFF\x24\u20AC\xA3\xA5 0-9 \u2015\u2116\u2018\u2019\u201C|\u201D\u2026 \uFF0C \u2013 \u2014 \u00C0-\u1FFF \u2C00-\uD7FF \uFB50–\uFDFF \uFE70–\uFEFF \uFF01-\uFFE6 .,?""!@#$%^&*()-_=+;:<>/\\|}{[\]`~'-\w]+/g;
 
 const registeredExtractors = new Map<string, Extractor>();
 const failedExtractors = new Map<Extractor, string>();
@@ -121,7 +123,7 @@ async function findExtractor(
  * @param options options
  * @returns cleaned text
  */
-function cleanText(inputText: string, options: Options): string {
+export function cleanText(inputText: string, options: Options): string {
   // clean up text
   let text = replaceBadCharacters(inputText);
 
@@ -135,7 +137,7 @@ function cleanText(inputText: string, options: Options): string {
   }
 
   // multiple spaces, tabs, vertical tabs, non-breaking space]
-  text = text.replace(/ (?! )/g, '').replace(/[ \t\v\u00A0]{2,}/g, ' ');
+  text = text.replace(/[ \t\v\u00A0]{2,}/g, ' ');
 
   return decode(text);
 }
