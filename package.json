@@ -1,6 +1,6 @@
 {
   "name": "@speechifyinc/textract",
-  "version": "3.1.4",
+  "version": "3.2.0",
   "type": "module",
   "publishConfig": {
     "access": "restricted",
@@ -32,12 +32,13 @@
   "dependencies": {
     "@speechifyinc/epub-lib": "3.1.2",
     "cheerio": "^1.1.2",
+    "dingbat-to-unicode": "^1.0.1",
     "fast-xml-parser": "^5.3.1",
     "html-entities": "^2.6.0",
+    "htmlparser2": "^10.0.0",
     "iconv-lite": "^0.7.0",
     "jschardet": "^3.1.4",
     "jszip": "^3.10.1",
-    "mammoth": "^1.11.0",
     "marked": "^16.4.1",
     "mime": "^4.1.0",
     "xlsx": "^0.18.5"
