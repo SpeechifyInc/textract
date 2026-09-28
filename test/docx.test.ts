@@ -1,9 +1,9 @@
-import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import JSZip from 'jszip';
-import { afterAll, describe, expect, it } from 'vitest';
+import { afterAll, describe, expect, it, vi } from 'vitest';
 import { extractFromFile } from '../lib/index.js';
 
 const DIR = fileURLToPath(path.dirname(import.meta.url));
@@ -125,6 +125,24 @@ describe('docx', () => {
       },
     );
     expect(text).toBe(FEATURES_LINES);
+  });
+
+  // Image bytes are never text; reading them ran the process out of heap on image-heavy files (PLA-12062)
+  it('will read only the parts that hold text', async () => {
+    const filePath = path.join(DIR, 'files', 'images.docx');
+    const zip = await JSZip.loadAsync(readFileSync(filePath));
+    // Every entry shares JSZip's ZipObject prototype, whose async and nodeStream are the only ways to read one
+    const entry = Object.getPrototypeOf(
+      zip.files['word/document.xml'],
+    ) as JSZip.JSZipObject;
+    const reads = [vi.spyOn(entry, 'async'), vi.spyOn(entry, 'nodeStream')];
+    await extractFromFile(filePath, MIME, { includeAltText: true });
+    const read = reads.flatMap((spy) =>
+      spy.mock.contexts.map((context) => (context as JSZip.JSZipObject).name),
+    );
+    for (const spy of reads) spy.mockRestore();
+    expect(read).toContain('word/document.xml');
+    expect(read.filter((name) => name.includes('media/'))).toEqual([]);
   });
 
   it('will include image alt text only when asked', async () => {
