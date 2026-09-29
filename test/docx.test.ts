@@ -363,12 +363,12 @@ describe('docx', () => {
   });
 
   // mammoth built an object for every paragraph and run: the 50k-paragraph version of this document needed ~3.7 GB of
-  // heap and took down the 2 GB service worker reading it (PLA-12062). Kept at 20k here so the suite stays light: the
-  // OCR tests run alongside and time out when this one hogs the CPU.
-  it('will read a 20k-paragraph document', async () => {
-    const text = await extractFromFile(await writeLongDocument(20_000), MIME);
+  // heap and took down the 2 GB service worker reading it (PLA-12062). Kept at 5k here, as the OCR tests run alongside
+  // and time out when this one takes the CPU; memory on the large versions is measured outside the suite.
+  it('will read a 5k-paragraph document', async () => {
+    const text = await extractFromFile(await writeLongDocument(5_000), MIME);
     const words = text.split(' ').filter(Boolean);
-    expect(words).toHaveLength(160_000);
+    expect(words).toHaveLength(40_000);
     expect(words.slice(0, 3)).toEqual(['word0', 'word1', 'word2']);
     expect(words.at(-1)).toBe('word7');
   }, 60_000);
