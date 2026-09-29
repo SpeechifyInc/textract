@@ -1,7 +1,7 @@
 import type { Options } from '../types.js';
 import docOSX from './doc-osx.js';
 import doc from './doc.js';
-import docx from './docx.js';
+import docx from './docx/index.js';
 import epub from './epub.js';
 import html from './html.js';
 import images from './images.js';
