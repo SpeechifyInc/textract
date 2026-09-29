@@ -2,20 +2,15 @@ import { readFile } from 'node:fs/promises';
 import JSZip from 'jszip';
 import type { Options } from '../../types.js';
 import { normalizeLineBreaks } from '../html.js';
-import { readLists } from './lists.js';
+import { readLists, type Lists } from './lists.js';
 import {
   findPartPath,
   readRelationships,
   RELATIONSHIP_TYPE,
   splitPath,
 } from './package.js';
-import {
-  BLOCK,
-  NOTE_REFERENCE,
-  PartReader,
-  type NoteReference,
-  type NoteType,
-} from './reader.js';
+import { readDocument, readNotes } from './reader.js';
+import { BLOCK, NOTE_REFERENCE, type NoteReference } from './state.js';
 import { streamXml } from './xml.js';
 
 /**
@@ -31,30 +26,27 @@ import { streamXml } from './xml.js';
  * - note references become `[n]`, and the referenced footnotes and endnotes follow the body with a `↑`.
  *
  * Where each part lives:
- * - index.ts: this extractor; finds the parts, reads the body, then the notes, and numbers them;
- * - reader.ts: PartReader, which turns one streamed part into text, element by element;
- * - properties.ts: property elements, alternate content and drawings, read for a few attributes only;
+ * - index.ts: this extractor; opens the package, reads the body, then the notes;
+ * - reader.ts: reads a streamed part, handing each element to its reader;
+ * - paragraphs.ts: paragraphs, runs, text, hyperlinks, fields, note references and content controls;
+ * - tables.ts: tables, rows and cells, and how the HTML extractor spaced them out;
+ * - drawings.ts: text boxes and pictures;
+ * - state.ts: what the readers share while reading a part;
+ * - content.ts: how the text of an element's children is joined, links included;
  * - lists.ts: styles.xml and numbering.xml, and which paragraphs are list items;
- * - tables.ts: header rows, merged cells and cell spacing;
  * - fields.ts: complex field instructions (hyperlinks, checkboxes);
- * - frames.ts: the reader's stack of open elements;
  * - package.ts: relationships and part lookup;
  * - xml.ts: namespace resolution, line endings, and parsing a part whole or streamed.
  */
 
 /**
- * Extract text from a DOCX file
+ * Opens a DOCX file as a zip package.
  * @param filePath path to file
- * @param options options
- * @returns text from file
+ * @returns the package
  */
-async function extractText(
-  filePath: string,
-  options: Options,
-): Promise<string> {
-  let zip: JSZip;
+async function openPackage(filePath: string): Promise<JSZip> {
   try {
-    zip = await JSZip.loadAsync(await readFile(filePath));
+    return await JSZip.loadAsync(await readFile(filePath));
   } catch (error) {
     if (
       error instanceof Error &&
@@ -66,7 +58,65 @@ async function extractText(
     }
     throw error;
   }
+}
 
+/**
+ * The referenced footnotes and endnotes, in reference order, each as a list item whose last paragraph ends with the
+ * back-link. A reference inside a note continues the numbering, as notes are written in that order (the note it
+ * points to is not written).
+ * @param zip the package
+ * @param references the body's note references, in order
+ * @param parts the footnotes and endnotes parts, where they exist
+ * @param parts.footnote the footnotes part
+ * @param parts.endnote the endnotes part
+ * @param options extraction options
+ * @param lists styles and numbering
+ * @returns the notes' text
+ */
+async function notesText(
+  zip: JSZip,
+  references: NoteReference[],
+  parts: Record<NoteReference['type'], JSZip.JSZipObject | null>,
+  options: Options,
+  lists: Lists,
+): Promise<string> {
+  if (references.length === 0) return '';
+  const notes = {
+    footnote: new Map<string, string>(),
+    endnote: new Map<string, string>(),
+  };
+  for (const type of ['footnote', 'endnote'] as const) {
+    const part = parts[type];
+    if (!part) continue;
+    const relationships = await readRelationships(zip, part.name);
+    notes[type] = await streamXml(
+      part.nodeStream('nodebuffer'),
+      readNotes(options, relationships.byId, lists),
+    );
+  }
+  let noteNumber = references.length;
+  return references
+    .map(({ type, id }) => {
+      const note = (notes[type].get(id) ?? '').replaceAll(
+        NOTE_REFERENCE,
+        () => ` [${++noteNumber}] `,
+      );
+      return `${BLOCK}${note}  ↑ `;
+    })
+    .join('');
+}
+
+/**
+ * Extract text from a DOCX file
+ * @param filePath path to file
+ * @param options options
+ * @returns text from file
+ */
+async function extractText(
+  filePath: string,
+  options: Options,
+): Promise<string> {
+  const zip = await openPackage(filePath);
   const documentPath = findPartPath(
     zip,
     await readRelationships(zip, ''),
@@ -81,73 +131,44 @@ async function extractText(
     );
   }
 
-  const noteReferences: NoteReference[] = [];
-  const documentRelationships = await readRelationships(zip, documentPath);
-  const relatedPart = (name: string): string =>
-    findPartPath(
-      zip,
-      documentRelationships,
-      `${RELATIONSHIP_TYPE}${name}`,
-      splitPath(documentPath).dirname,
-      `word/${name}.xml`,
+  const relationships = await readRelationships(zip, documentPath);
+  // A part the document relates to, as mammoth finds it: by relationship, else at word/<name>.xml
+  const relatedPart = (name: string): JSZip.JSZipObject | null =>
+    zip.file(
+      findPartPath(
+        zip,
+        relationships,
+        `${RELATIONSHIP_TYPE}${name}`,
+        splitPath(documentPath).dirname,
+        `word/${name}.xml`,
+      ),
     );
-  const partText = async (name: string): Promise<string | undefined> =>
-    zip.file(relatedPart(name))?.async('string');
   const lists = readLists(
-    await partText('styles'),
-    await partText('numbering'),
+    await relatedPart('styles')?.async('string'),
+    await relatedPart('numbering')?.async('string'),
   );
-  const body = new PartReader(
-    options,
-    noteReferences,
-    false,
-    documentRelationships.byId,
-    lists,
+
+  const noteReferences: NoteReference[] = [];
+  const body = await streamXml(
+    documentFile.nodeStream('nodebuffer'),
+    readDocument(options, relationships.byId, lists, noteReferences),
   );
-  await streamXml(documentFile.nodeStream('nodebuffer'), body);
   if (!body.sawBody) {
     throw new Error(
       'Could not find the body element: are you sure this is a docx file?',
     );
   }
-
-  let notesText = '';
-  if (noteReferences.length > 0) {
-    const notes: Record<NoteType, Map<string, string>> = {
-      footnote: new Map(),
-      endnote: new Map(),
-    };
-    for (const type of ['footnote', 'endnote'] as const) {
-      const notesPath = relatedPart(`${type}s`);
-      const notesFile = zip.file(notesPath);
-      if (notesFile) {
-        const reader = new PartReader(
-          options,
-          [],
-          true,
-          (await readRelationships(zip, notesPath)).byId,
-          lists,
-        );
-        await streamXml(notesFile.nodeStream('nodebuffer'), reader);
-        notes[type] = reader.notes;
-      }
-    }
-    // Each referenced note, in reference order, as a list item whose last paragraph ends with the back-link. A
-    // reference inside a note continues the numbering, as notes are written in that order (the note it points to is
-    // not written).
-    let noteNumber = noteReferences.length;
-    notesText = noteReferences
-      .map(({ type, id }) => {
-        const note = (notes[type].get(id) ?? '').replaceAll(
-          NOTE_REFERENCE,
-          () => ` [${++noteNumber}] `,
-        );
-        return `${BLOCK}${note}  ↑ `;
-      })
-      .join('');
-  }
-
-  return normalizeLineBreaks(body.text + notesText).trim();
+  const notes = await notesText(
+    zip,
+    noteReferences,
+    {
+      footnote: relatedPart('footnotes'),
+      endnote: relatedPart('endnotes'),
+    },
+    options,
+    lists,
+  );
+  return normalizeLineBreaks(body.text + notes).trim();
 }
 
 export default {

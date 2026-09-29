@@ -1,3 +1,4 @@
+/* eslint-disable jsdoc/require-yields -- every reader yields only to take the next XML event (see Reader) */
 import { StringDecoder } from 'node:string_decoder';
 import { Parser } from 'htmlparser2';
 
@@ -125,22 +126,34 @@ export function walkXml(
   parser.end();
 }
 
-/** What streamXml calls back with: resolved element names, text, and element ends */
-export interface XmlHandler {
-  onOpen: (name: string, attributes: Record<string, string>) => void;
-  onText: (text: string) => void;
-  onClose: () => void;
-}
+/** One step of a parsed XML part, with names resolved by namespace */
+export type XmlEvent =
+  | { type: 'open'; name: string; attributes: Record<string, string> }
+  | { type: 'text'; text: string }
+  | { type: 'close' };
 
 /**
- * Parses an XML part as it streams in, so only the handler's state is held in memory.
- * @param stream XML part as a byte stream
- * @param reader handler to feed
+ * A reader of XML events written as ordinary recursive code: `const event = yield` takes the next event, and
+ * `yield* child()` hands the stream to another reader until it returns. A reader called for an element (after its
+ * open event) consumes everything up to and including that element's close event.
  */
-export async function streamXml(
+export type Reader<T> = Generator<undefined, T, XmlEvent>;
+
+/**
+ * Parses an XML part as it streams in and feeds it to a reader, so memory holds only the reader's state (the
+ * elements open around the current one), never the part.
+ * @param stream XML part as a byte stream
+ * @param reader reader of the whole part; it gets a final close event when the part ends
+ * @returns what the reader returns
+ */
+export async function streamXml<T>(
   stream: NodeJS.ReadableStream,
-  reader: XmlHandler,
-): Promise<void> {
+  reader: Reader<T>,
+): Promise<T> {
+  let result: IteratorResult<undefined, T> = reader.next();
+  const send = (event: XmlEvent): void => {
+    if (!result.done) result = reader.next(event);
+  };
   const names = new NameResolver();
   // mammoth's XML reader keeps elements and text nodes only, so CDATA sections are not read
   let cdata = false;
@@ -148,10 +161,10 @@ export async function streamXml(
     {
       onopentag: (qname, qattributes) => {
         const { name, attributes } = names.open(qname, qattributes);
-        reader.onOpen(name, attributes);
+        send({ type: 'open', name, attributes });
       },
       ontext: (text) => {
-        if (!cdata) reader.onText(text);
+        if (!cdata) send({ type: 'text', text });
       },
       oncdatastart: () => {
         cdata = true;
@@ -161,7 +174,7 @@ export async function streamXml(
       },
       onclosetag: () => {
         names.close();
-        reader.onClose();
+        send({ type: 'close' });
       },
     },
     { xmlMode: true, decodeEntities: true },
@@ -187,4 +200,60 @@ export async function streamXml(
     });
     stream.on('error', reject);
   });
+  send({ type: 'close' });
+  if (!result.done) throw new Error('XML reader did not finish');
+  return result.value;
+}
+
+/**
+ * Skips the rest of the current element.
+ * @returns nothing
+ */
+export function* skip(): Reader<void> {
+  for (let depth = 1; depth > 0; ) {
+    const event = yield;
+    if (event.type === 'open') depth++;
+    else if (event.type === 'close') depth--;
+  }
+}
+
+/**
+ * Skips the rest of the current element and writes a fixed text for it.
+ * @param value the text
+ * @returns the text
+ */
+export function* constant(value: string): Reader<string> {
+  yield* skip();
+  return value;
+}
+
+/**
+ * The text directly in the current element; child elements are skipped.
+ * @returns the text
+ */
+export function* textContent(): Reader<string> {
+  let value = '';
+  for (let event = yield; event.type !== 'close'; event = yield) {
+    if (event.type === 'text') value += event.text;
+    else if (event.type === 'open') yield* skip();
+  }
+  return value;
+}
+
+/**
+ * The w:val of the first child element of each given name; child elements are otherwise skipped.
+ * @param names the names to look for
+ * @returns w:val by name for the names present (undefined when that element has no w:val)
+ */
+export function* attributesOf(
+  names: string[],
+): Reader<Record<string, string | undefined>> {
+  const found: Record<string, string | undefined> = {};
+  for (let event = yield; event.type !== 'close'; event = yield) {
+    if (event.type !== 'open') continue;
+    if (names.includes(event.name) && !(event.name in found))
+      found[event.name] = event.attributes['w:val'];
+    yield* skip();
+  }
+  return found;
 }
