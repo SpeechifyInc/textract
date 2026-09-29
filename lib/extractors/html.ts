@@ -51,6 +51,22 @@ function getTextWithAlt<T extends AnyNode>(
 }
 
 /**
+ * Turns the block markers (`|||||`) into line breaks and collapses breaks, tabs and the spaces around them.
+ * Shared with the DOCX extractor, which emits the same markers without building HTML.
+ * @param text text with block markers
+ * @returns normalized text
+ */
+export function normalizeLineBreaks(text: string): string {
+  return text
+    .replace(/\|\|\|\|\|/g, '\n')
+    .replace(/(\n\u00A0|\u00A0\n|\n | \n)+/g, '\n')
+    .replace(/(\r\u00A0|\u00A0\r|\r | \r)+/g, '\n')
+    .replace(/(\v\u00A0|\u00A0\v|\v | \v)+/g, '\n')
+    .replace(/(\t\u00A0|\u00A0\t|\t | \t)+/g, '\n')
+    .replace(/[\n\r\t\v]+/g, '\n');
+}
+
+/**
  * Extract text from HTML
  * @param data HTML data
  * @param options options
@@ -87,15 +103,7 @@ export function extractFromString(data: string, options: Options): string {
     extractedText = $docElement.text();
   }
 
-  extractedText = extractedText
-    .replace(/\|\|\|\|\|/g, '\n')
-    .replace(/(\n\u00A0|\u00A0\n|\n | \n)+/g, '\n')
-    .replace(/(\r\u00A0|\u00A0\r|\r | \r)+/g, '\n')
-    .replace(/(\v\u00A0|\u00A0\v|\v | \v)+/g, '\n')
-    .replace(/(\t\u00A0|\u00A0\t|\t | \t)+/g, '\n')
-    .replace(/[\n\r\t\v]+/g, '\n');
-
-  return extractedText;
+  return normalizeLineBreaks(extractedText);
 }
 
 /**
