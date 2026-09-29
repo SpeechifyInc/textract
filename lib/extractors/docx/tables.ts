@@ -114,8 +114,7 @@ export function* readRow(state: State): Reader<string> {
   yield* state.readChildren('w:tr');
   state.rows.pop();
   const table = state.tables.at(-1);
-  if (table && !row.deleted)
-    table.rows.push({ header: row.header, cells: row.cells });
+  if (table && !row.deleted) table.rows.push(row);
   return '';
 }
 

@@ -112,8 +112,10 @@ export function* readNotes(
         yield* skip();
         continue;
       }
-      // Each note is a list item of its own, so a list does not continue from one note into the next
+      // Each note is a list item of its own, so a list does not continue from one note into the next, and a deleted
+      // paragraph mark at the end of a note joins nothing
       state.containers[0].listPath = undefined;
+      state.pendingDeleted = undefined;
       const content = yield* children(note.name, state);
       if (note.attributes['w:id'] !== undefined)
         notes.set(note.attributes['w:id'], content);
@@ -164,7 +166,7 @@ function newState(
  * @param state reading state
  * @returns their text
  */
-export function* children(parent: string, state: State): Reader<string> {
+function* children(parent: string, state: State): Reader<string> {
   const content = new Content();
   for (let event = yield; event.type !== 'close'; event = yield) {
     if (event.type === 'open')
@@ -176,11 +178,11 @@ export function* children(parent: string, state: State): Reader<string> {
 /**
  * Reads one element of document content.
  * @param event its open event
- * @param parent its parent's name
+ * @param parent its parent's name; only a bookmark's text depends on it (see bookmark in tables.ts)
  * @param state reading state
  * @returns its text, or a link
  */
-export function* element(
+function* element(
   event: OpenEvent,
   parent: string,
   state: State,
@@ -248,8 +250,10 @@ export function* element(
     }
     case 'mc:AlternateContent':
       return yield* readAlternateContent(state);
+    case 'w:body':
+      state.sawBody = true;
+      return yield* children(name, state);
     default:
-      if (name === 'w:body') state.sawBody = true;
       if (CONTAINERS.has(name)) return yield* children(name, state);
       // Unknown and ignored elements are skipped with everything inside them, as in mammoth
       yield* skip();

@@ -71,15 +71,17 @@ export function* readParagraph(state: State): Reader<string> {
  */
 export function* readParagraphProperties(state: State): Reader<string> {
   const paragraph = state.paragraphs.at(-1);
+  if (!paragraph) {
+    yield* skip();
+    return '';
+  }
   for (let event = yield; event.type !== 'close'; event = yield) {
     if (event.type !== 'open') continue;
-    const value = event.attributes['w:val'];
-    if (event.name === 'w:pStyle' && paragraph?.styleId === undefined) {
-      if (paragraph) paragraph.styleId = value;
+    if (event.name === 'w:pStyle' && paragraph.styleId === undefined) {
+      paragraph.styleId = event.attributes['w:val'];
       yield* skip();
     } else if (
       event.name === 'w:numPr' &&
-      paragraph &&
       paragraph.numId === undefined &&
       paragraph.ilvl === undefined
     ) {
@@ -88,7 +90,7 @@ export function* readParagraphProperties(state: State): Reader<string> {
       paragraph.numId = numbering['w:numId'];
     } else if (event.name === 'w:rPr') {
       const marks = yield* attributesOf(['w:del']);
-      if (paragraph && 'w:del' in marks) paragraph.deleted = true;
+      if ('w:del' in marks) paragraph.deleted = true;
     } else {
       yield* skip();
     }
@@ -224,7 +226,7 @@ export function noteReference(
 }
 
 /**
- * A content control, read as its content; a checkbox control is noted for its first character (see text).
+ * A content control, read as its content; a checkbox control is noted for its first character (see readText).
  * @param state reading state
  * @returns its text
  */

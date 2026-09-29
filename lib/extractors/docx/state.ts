@@ -2,7 +2,7 @@ import type { Options } from '../../types.js';
 import type { Piece } from './content.js';
 import type { Field } from './fields.js';
 import type { Lists, ListTag } from './lists.js';
-import type { TableCell, TableRow } from './tables.js';
+import type { TableRow } from './tables.js';
 import type { Reader, XmlEvent } from './xml.js';
 
 /*
@@ -55,9 +55,7 @@ export interface Table {
 }
 
 /** A row being read */
-export interface Row {
-  cells: (TableCell | string)[];
-  header: boolean;
+export interface Row extends TableRow {
   deleted: boolean;
 }
 

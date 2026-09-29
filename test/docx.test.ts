@@ -322,6 +322,34 @@ describe('docx', () => {
     ).toBe('label\nstray\ncell\ntext');
   });
 
+  it('will not join a note to the next when it ends in a deleted paragraph mark', async () => {
+    const deleted =
+      '<w:pPr><w:rPr><w:del w:id="1" w:author="a" w:date="2020-01-01T00:00:00Z"/></w:rPr></w:pPr>';
+    const footnotes =
+      '<?xml version="1.0" encoding="UTF-8"?><w:footnotes xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">' +
+      `<w:footnote w:id="1">${paragraph('n1')}<w:p>${deleted}${run('tail')}</w:p></w:footnote>` +
+      `<w:footnote w:id="2">${paragraph('n2')}</w:footnote></w:footnotes>`;
+    const file = await writeDocument(
+      'note-deleted-mark.docx',
+      `<w:body><w:p>${run('x')}<w:r><w:footnoteReference w:id="1"/></w:r><w:r><w:footnoteReference w:id="2"/></w:r></w:p></w:body>`,
+      { 'word/footnotes.xml': footnotes },
+    );
+    expect(await extractFromFile(file, MIME)).toBe('x [1] [2] n1 n2 ');
+  });
+
+  // Every open element adds a reader to each event's path: nesting is capped, and going past the cap rejects the
+  // extraction instead of overflowing the stack inside the stream's event handler
+  it('will read deep nesting, and reject nesting deeper than any real document', async () => {
+    const nested = (depth: number): string =>
+      `<w:body>${'<w:ins>'.repeat(depth)}${paragraph('deep')}${'</w:ins>'.repeat(depth)}</w:body>`;
+    const readable = await writeDocument('nested-200.docx', nested(200));
+    expect(await extractFromFile(readable, MIME)).toBe('deep');
+    const tooDeep = await writeDocument('nested-2000.docx', nested(2000));
+    await expect(extractFromFile(tooDeep, MIME)).rejects.toThrow(
+      'XML nested deeper than 256 elements',
+    );
+  });
+
   it('will fail on a package without a document part or body', async () => {
     await expect(
       extractFromFile(await writeDocument('no-part.docx', null), MIME),

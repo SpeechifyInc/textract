@@ -140,6 +140,12 @@ export type XmlEvent =
 export type Reader<T> = Generator<undefined, T, XmlEvent>;
 
 /**
+ * The deepest element nesting read. Every open element adds a reader to the path each event takes, so a part nested
+ * thousands deep would be slow and could overflow the stack; real documents stay far below this.
+ */
+export const MAX_DEPTH = 256;
+
+/**
  * Parses an XML part as it streams in and feeds it to a reader, so memory holds only the reader's state (the
  * elements open around the current one), never the part.
  * @param stream XML part as a byte stream
@@ -151,8 +157,16 @@ export async function streamXml<T>(
   reader: Reader<T>,
 ): Promise<T> {
   let result: IteratorResult<undefined, T> = reader.next();
+  // An error in a reader stops the parse and rejects, rather than escaping from the stream's event handler
+  let failure: Error | undefined;
+  let depth = 0;
   const send = (event: XmlEvent): void => {
-    if (!result.done) result = reader.next(event);
+    if (result.done || failure) return;
+    try {
+      result = reader.next(event);
+    } catch (error) {
+      failure = error instanceof Error ? error : new Error(String(error));
+    }
   };
   const names = new NameResolver();
   // mammoth's XML reader keeps elements and text nodes only, so CDATA sections are not read
@@ -161,6 +175,8 @@ export async function streamXml<T>(
     {
       onopentag: (qname, qattributes) => {
         const { name, attributes } = names.open(qname, qattributes);
+        if (++depth > MAX_DEPTH && !failure)
+          failure = new Error(`XML nested deeper than ${MAX_DEPTH} elements`);
         send({ type: 'open', name, attributes });
       },
       ontext: (text) => {
@@ -173,6 +189,7 @@ export async function streamXml<T>(
         cdata = false;
       },
       onclosetag: () => {
+        depth--;
         names.close();
         send({ type: 'close' });
       },
@@ -183,6 +200,7 @@ export async function streamXml<T>(
   // A CR at the end of a chunk may pair with a LF or NEL at the start of the next one
   let carry = '';
   const write = (text: string, last: boolean): void => {
+    if (failure) return;
     let xml = carry + text;
     carry = '';
     if (!last && xml.endsWith('\r')) {
@@ -192,15 +210,26 @@ export async function streamXml<T>(
     parser.write(normalizeLineEndings(xml));
   };
   await new Promise<void>((resolve, reject) => {
-    stream.on('data', (chunk: Buffer) => write(decoder.write(chunk), false));
+    stream.on('data', (chunk: Buffer) => {
+      write(decoder.write(chunk), false);
+      if (failure) {
+        stream.removeAllListeners('data');
+        stream.pause();
+        reject(failure);
+      }
+    });
     stream.on('end', () => {
       write(decoder.end(), true);
-      parser.end();
-      resolve();
+      if (!failure) parser.end();
+      if (failure) reject(failure);
+      else resolve();
     });
     stream.on('error', reject);
   });
+  // The part's own end: the root reader returns here. Malformed XML does not stop it: htmlparser2 closes any element
+  // still open at the end, so a truncated part is read as far as it goes.
   send({ type: 'close' });
+  if (failure) throw failure;
   if (!result.done) throw new Error('XML reader did not finish');
   return result.value;
 }
