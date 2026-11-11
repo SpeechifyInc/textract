@@ -3,3 +3,7 @@ onlyBuiltDependencies:
   - esbuild
   - sharp
   - unrs-resolver
+
+overrides:
+  # epub-lib still asks for ^0.5.10; 0.6.1 fixes the zip-bomb and crash advisories (same as platform's root override)
+  adm-zip@<0.6.1: ^0.6.1
